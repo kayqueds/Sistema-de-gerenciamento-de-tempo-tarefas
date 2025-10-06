@@ -1,5 +1,5 @@
 # ignorar arquivos de build e dependencias
 /build
+*.env
 /node_modules
 *.DS_Store
-*.env
