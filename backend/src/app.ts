@@ -1,11 +1,10 @@
 import express from 'express';
+import rota from './router';
 
 const app = express();
 
-// rotas
-app.get('/', (req, res) => {
-    res.send('Olá Mundo');
-});
+// chamando o router
+app.use(rota);
 
 
 export default app;
