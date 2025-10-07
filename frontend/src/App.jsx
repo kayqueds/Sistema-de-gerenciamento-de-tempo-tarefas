@@ -2,7 +2,7 @@ import "./App.css";
 import { BrowserRouter } from "react-router-dom";
 import { useState } from "react";
 import RotasSite from "./routes/RotasSite";
-import Navigation from "./components/common/Navigation/Navigation";
+import Navigation from "./components/common/navigation/Navigation.jsx";
 import Loading from "./pages/loading/Loading";
 import Footer from "./components/common/footer/Footer";
 
