@@ -1,26 +1,16 @@
 // CRIANDO ROTAS E IMPORTANDO NO app.ts
 import {Router} from 'express';
+import { Request, Response } from "express";
+import usuarioController from './controller/usuarioController';
+
 const rota = Router();
 
-const usuarios = [
-    {id: 1, nome: 'Eduardo'},
-    {id: 2, nome: 'Maria'},
-    {id: 3, nome: 'João'},
-]
-// rotas da aplicação
-rota.get('/', (req, res) => {
-    res.send('Página Inicial');
-})
-
-rota.get('/tela2', (req, res) => {
-    res.send('Página Tela 2');
-})
-rota.get('/teste', (req, res) => {
-    res.send('Testando rota de teste');
-})
-
-rota.get('/usuarios', (req, res) => {
-    res.status(200).send(usuarios);
-})
+rota.get('/', (req: Request, res: Response) => {
+    res.send('API de Usuários');
+});
+// métodos da controller para cada rota
+rota.get('/usuarios', usuarioController.getUsuariosAll);
+rota.post('/usuarios', usuarioController.createNewUsuario);
+rota.put('/usuarios/:id', usuarioController.updateUsuario);
 
 export default rota;

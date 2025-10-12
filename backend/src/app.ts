@@ -1,10 +1,7 @@
-import express from 'express';
-import rota from './router';
+import express from "express";
+import usuarioRoutes from "./router";
 
 const app = express();
-
-// chamando o router
-app.use(rota);
-
-
+app.use(express.json());
+app.use("/", usuarioRoutes);
 export default app;
