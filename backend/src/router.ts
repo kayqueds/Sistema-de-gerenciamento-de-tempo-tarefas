@@ -12,5 +12,6 @@ rota.get('/', (req: Request, res: Response) => {
 rota.get('/usuarios', usuarioController.getUsuariosAll);
 rota.post('/usuarios', usuarioController.createNewUsuario);
 rota.put('/usuarios/:id', usuarioController.updateUsuario);
+rota.delete('/usuarios/:id', usuarioController.deleteUsuario);
 
 export default rota;
