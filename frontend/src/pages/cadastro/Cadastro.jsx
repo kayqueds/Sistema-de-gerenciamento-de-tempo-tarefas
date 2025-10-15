@@ -7,12 +7,12 @@ import "./Cadastro.css";
 
 function Cadastro() {
   const navigate = useNavigate();
-
+/*
   // testar aleta com toastify
   useEffect(() => {
   toast.info("Teste de toast!");
 }, []);
-
+*/
 
   const imagens = [
     "https://blogprodutivamente.files.wordpress.com/2022/07/post-como-fazer-lista-de-tarefas-2.jpg?w=1024",
