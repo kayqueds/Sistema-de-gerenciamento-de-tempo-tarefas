@@ -1,20 +1,18 @@
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from "react-toastify";
 import "./Cadastro.css";
 // usar toastify no alert
 
 function Cadastro() {
   const navigate = useNavigate();
 
-/*
-// testar aleta com toastify
+  // testar aleta com toastify
   useEffect(() => {
   toast.info("Teste de toast!");
 }, []);
-*/
+
 
   const imagens = [
     "https://blogprodutivamente.files.wordpress.com/2022/07/post-como-fazer-lista-de-tarefas-2.jpg?w=1024",
@@ -131,7 +129,6 @@ function Cadastro() {
           </div>
         </div>
       </main>
-      <ToastContainer />
     </div>
   );
 }
