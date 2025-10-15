@@ -1,10 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import "./Cadastro.css";
+// usar toastify no alert
 
 function Cadastro() {
   const navigate = useNavigate();
+
+/*
+// testar aleta com toastify
+  useEffect(() => {
+  toast.info("Teste de toast!");
+}, []);
+*/
 
   const imagens = [
     "https://blogprodutivamente.files.wordpress.com/2022/07/post-como-fazer-lista-de-tarefas-2.jpg?w=1024",
@@ -38,12 +48,14 @@ function Cadastro() {
         email_usuario,
         senha_usuario,
       });
-      alert("✅ Cadastro realizado com sucesso!");
       console.log(response.data);
-      navigate("/login");
+      toast.success("Cadastro realizado com sucesso!");
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
     } catch (error) {
       console.error("❌ Erro ao cadastrar:", error);
-      alert("Erro ao cadastrar. Tente novamente.");
+      toast.error("Erro ao cadastrar. Tente novamente.");
     }
   };
 
@@ -119,6 +131,7 @@ function Cadastro() {
           </div>
         </div>
       </main>
+      <ToastContainer />
     </div>
   );
 }
