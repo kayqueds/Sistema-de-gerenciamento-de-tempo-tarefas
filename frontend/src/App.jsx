@@ -8,6 +8,8 @@ import Footer from "./components/common/footer/Footer";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+import "bootstrap/dist/js/bootstrap.bundle.min.js"; // JS do Bootstrap (dropdown, collapse, etc)
+
 function App() {
   const [showLoading, setShowLoading] = useState(true);
 

@@ -1,0 +1,194 @@
+body {
+  background: #f4f5f7;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+}
+
+/* LAYOUT PRINCIPAL */
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 220px;
+  background-color: #616771;
+  color: #fff;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.sidebar h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sidebar li:hover,
+.sidebar li.active {
+  background-color: #646cff;
+  color: #fff;
+}
+
+/* CONTEÚDO */
+.dashboard-content {
+  flex: 1;
+  padding: 2rem;
+}
+
+/* TÍTULO */
+.dashboard-content h1 {
+  text-align: left;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 2rem;
+}
+
+/* FORMULÁRIO */
+.task-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.task-form input,
+.task-form select {
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  flex: 1;
+  min-width: 120px;
+  outline: none;
+}
+
+.task-form input:focus,
+.task-form select:focus {
+  border-color: #646cff;
+  box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.2);
+}
+
+.task-form button {
+  background-color: #646cff;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.task-form button:hover {
+  background-color: #535bf2;
+}
+
+/* GRID DE TAREFAS */
+.tasks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+/* CARD DE TAREFA */
+.task-card {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.task-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+}
+
+.task-info h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.task-info span {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* PRIORIDADE */
+.task-card.high {
+  border-left: 5px solid #dc3545;
+}
+
+.task-card.normal {
+  border-left: 5px solid #ffc107;
+}
+
+.task-card.low {
+  border-left: 5px solid #198754;
+}
+
+/* BOTÕES DE AÇÃO */
+.task-actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  margin-left: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.task-actions .edit:hover {
+  color: #646cff;
+}
+
+.task-actions .delete:hover {
+  color: #dc3545;
+}
+
+/* MENSAGEM DE TAREFAS VAZIAS */
+.empty {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+}
+
+/* RESPONSIVIDADE */
+@media (max-width: 768px) {
+  .dashboard-layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 0.5rem;
+    padding: 1rem;
+  }
+
+  .sidebar ul {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .sidebar li {
+    flex: none;
+  }
+}
