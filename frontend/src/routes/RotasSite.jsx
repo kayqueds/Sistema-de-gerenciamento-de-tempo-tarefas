@@ -3,7 +3,7 @@ import Home from "../pages/home/Home";
 import Login from "../pages/login/Login";
 import Cadastro from "../pages/cadastro/Cadastro";
 import Sobre from "../pages/sobre/Sobre";
-import Dashboard from "../pages/Dashboard/Dashboard";
+import Dashboard from "../pages/dashboard/Dashboard";
 
 // rotas do site
 function RotasSite() {
