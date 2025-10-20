@@ -1,4 +1,3 @@
-import React from "react";
 import { motion } from "framer-motion";
 import "./Sobre.css";
 
@@ -6,7 +5,7 @@ import "./Sobre.css";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
 import gabrielImg from "../../assets/gabriel.png";
-import KayqueImg from "../../assets/Kayque.jpg";
+import KayqueImg from "../../assets/kayque.jpg";
 import AndreImg from "../../assets/andre.png";
 import MarinaImg from "../../assets/marina.jpeg";
 import LuisImg from "../../assets/luis.jpeg";
