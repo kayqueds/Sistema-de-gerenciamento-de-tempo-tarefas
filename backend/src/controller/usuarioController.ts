@@ -11,6 +11,20 @@ const getUsuariosAll = async (req: Request, res: Response) => {
     return res.status(500).json({ mensagem: "Erro ao buscar usuários." });
   }
 };
+// Buscar usuário por ID
+const getUsuarioById = async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+    const usuario = await usuarioModel.getUsuarioById(id);
+    if (!usuario) {
+      return res.status(404).json({ mensagem: "Usuário não encontrado." });
+    }
+    return res.status(200).json(usuario);
+  } catch (error) {
+    console.error(`Erro ao buscar usuário com ID ${req.params.id}:`, error);
+    return res.status(500).json({ mensagem: "Erro ao buscar usuário." });
+  }
+};
 
 // Criar novo usuário
 const createNewUsuario = async (req: Request, res: Response) => {
@@ -50,6 +64,7 @@ const deleteUsuario = async (req: Request, res: Response) => {
 // Exportando as funções
 export default {
   getUsuariosAll,
+  getUsuarioById,
   createNewUsuario,
   updateUsuario,
   deleteUsuario,
