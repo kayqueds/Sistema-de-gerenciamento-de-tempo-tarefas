@@ -24,9 +24,9 @@ function Navigation() {
               </Link>
             </li>
             <li className="navigation-item">
-              <a className="navigation-link" href="#about">
+              <Link className="navigation-nav-link" to="/sobre">
                 Sobre
-              </a>
+              </Link>
             </li>
             <li className="navigation-item">
               <Link

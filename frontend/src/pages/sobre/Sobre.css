@@ -1,0 +1,181 @@
+/* Container principal */
+.sobre-container {
+  font-family: "Inter", system-ui, sans-serif;
+  color: #2c2c2c;
+  background: #f7f8fa;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+}
+
+/* Hero section */
+.sobre-hero {
+  width: 100%;
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: #fff;
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.sobre-hero h1 {
+  font-size: 2.8rem;
+  margin-bottom: 15px;
+}
+
+.sobre-hero p {
+  font-size: 1.2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Missão, Visão, Valores - cards mais largos e próximos */
+.sobre-missao {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); /* cards mais largos */
+  gap: 15px; /* mais próximos */
+  margin: 40px 20px; /* diminui margem vertical */
+  max-width: 1000px;
+}
+
+.sobre-card {
+  background: #fff;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 250px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sobre-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.sobre-card h2 {
+  color: #4f46e5;
+  margin-bottom: 10px;
+}
+
+/* Funcionalidades */
+.sobre-funcionalidades {
+  background: #eef0f6;
+  width: 100%;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.sobre-funcionalidades h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.sobre-funcionalidades ul {
+  list-style: none;
+  padding: 0;
+  line-height: 2;
+  font-size: 1.1rem;
+}
+
+/* Equipe / Carrossel */
+.sobre-equipe {
+  color: #313437;
+  background-color: #eef4f7;
+  padding: 50px 20px;
+  width: 100%;
+}
+
+.sobre-equipe h2 {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+/* Ajuste das colunas do Bootstrap para cards mais próximos */
+.row.justify-content-center > .col-12.col-sm-6.col-lg-4 {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+/* Cards da equipe - mais largos e uniformes */
+.item.box {
+  width: 100%;
+  max-width: 400px; /* largura maior */
+  padding: 100px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 300px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.item.box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+/* Imagens da equipe */
+.item img {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Nome e função */
+.item .name {
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.item .title {
+  text-transform: uppercase;
+  font-weight: bold;
+  color: #d0d0d0;
+  letter-spacing: 2px;
+  font-size: 0.85rem;
+  text-align: center;
+}
+/* Afasta as setas do carrossel */
+.carousel-control-prev {
+  left: -60px; /* afasta a seta da esquerda para fora do container */
+}
+
+.carousel-control-next {
+  right: -60px; /* afasta a seta da direita para fora do container */
+
+}
+/* Controles do carrossel */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  filter: invert(1); /* ícones brancos */
+  
+  width: 10px;
+  height: 20px;
+}
+/* Redes sociais nos cards da equipe */
+.item .social {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
+  font-size: 18px;
+}
+
+.item .social a {
+  color: #a2a8ae;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.item .social a:hover {
+  color: #4f46e5; /* cor ao passar o mouse */
+  transform: translateY(-2px);
+}

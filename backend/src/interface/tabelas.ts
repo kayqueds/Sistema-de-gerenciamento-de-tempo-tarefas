@@ -7,3 +7,4 @@ export interface Usuario {
     createdAt: Date;
     updatedAt: Date;
 }
+

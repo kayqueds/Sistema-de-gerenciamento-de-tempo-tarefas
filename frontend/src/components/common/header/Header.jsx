@@ -24,9 +24,9 @@ function Header() {
               </Link>
             </li>
             <li className="header-nav-item">
-              <a className="header-nav-link" href="#about">
+              <Link className="header-nav-link" to="/sobre">
                 Sobre
-              </a>
+              </Link>
             </li>
             <li className="header-nav-item">
               <Link className="header-nav-link" to="/cadastro">

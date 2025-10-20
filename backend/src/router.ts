@@ -10,6 +10,7 @@ rota.get('/', (req: Request, res: Response) => {
 });
 // métodos da controller para cada rota
 rota.get('/usuarios', usuarioController.getUsuariosAll);
+rota.get('/usuarios/:id', usuarioController.getUsuarioById);
 rota.post('/usuarios', usuarioController.createNewUsuario);
 rota.put('/usuarios/:id', usuarioController.updateUsuario);
 rota.delete('/usuarios/:id', usuarioController.deleteUsuario);
