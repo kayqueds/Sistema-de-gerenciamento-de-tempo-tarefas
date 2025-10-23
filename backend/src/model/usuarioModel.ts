@@ -1,5 +1,6 @@
 import { connectionModel } from "./connectionModel";
 import type { Usuario } from "../interface/tabelas";
+import {hash} from "bcrypt";
 
 const getUsuariosAll = async () => {
   try {
@@ -29,8 +30,9 @@ const createUsuario = async (body: Usuario) => {
   }
 
   try {
+    const hashedPassword = await hash(senha_usuario, 10);
     const query = "INSERT INTO usuarios(nome_usuario, email_usuario, senha_usuario) VALUES(?, ?, ?)";
-    const [result] = await connectionModel.execute(query, [nome_usuario, email_usuario, senha_usuario]);
+    const [result] = await connectionModel.execute(query, [nome_usuario, email_usuario, hashedPassword]);
     return result;
   } catch (erro) {
     console.error("Erro ao criar usuário:", erro);
@@ -46,8 +48,9 @@ const updateUsuario = async (id: number, body: Usuario) => {
   }
 
   try {
+    const hashedPassword = await hash(senha_usuario, 10);
     const query = "UPDATE usuarios SET nome_usuario=?, email_usuario=?, senha_usuario=? WHERE id = ?";
-    const [result] = await connectionModel.execute(query, [nome_usuario, email_usuario, senha_usuario, id]);
+    const [result] = await connectionModel.execute(query, [nome_usuario, email_usuario, hashedPassword, id]);
     return result;
   } catch (erro) {
     console.error(`Erro ao atualizar usuário com ID ${id}:`, erro);
@@ -58,7 +61,14 @@ const updateUsuario = async (id: number, body: Usuario) => {
 const updateUsuarioPartial = async (id: number, updates: Partial<Usuario>) => {
   try {
     const fields = Object.keys(updates);
-    const values = Object.values(updates);
+    const values = await Promise.all(
+      fields.map(async (field) => {
+        if (field === 'senha_usuario' && updates.senha_usuario) {
+          return await hash(updates.senha_usuario, 10);
+        }
+        return updates[field as keyof Usuario];
+      })
+    );
 
     if (fields.length === 0) {
       throw new Error("Nenhum campo foi fornecido para atualização parcial.");
