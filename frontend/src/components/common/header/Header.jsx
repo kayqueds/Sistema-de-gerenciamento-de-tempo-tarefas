@@ -6,7 +6,7 @@ function Header() {
     <nav className="header-navbar">
       <div className="header-container">
         <Link className="header-brand" to="/">
-          TaskBoost
+          Organix
         </Link>
         <button
           className="header-toggler"

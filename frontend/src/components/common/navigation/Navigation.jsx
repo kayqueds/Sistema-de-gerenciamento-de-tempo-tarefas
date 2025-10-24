@@ -8,7 +8,7 @@ function Navigation() {
     <nav className="navigation-component">
       <div className="navigation-container">
         <Link className="navigation-brand" to="/">
-          TaskBoost
+          Organix
         </Link>
 
         <div className="navigation-menu">
