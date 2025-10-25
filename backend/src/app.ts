@@ -1,8 +1,7 @@
 import express from "express";
-import usuarioRoutes from "./router";
-// usar o cors se for necessário
+import usuarioRoutes from "./routes/usuarioRouter";
+// usar o cors se for necessário pro React acessar a API
 import cors from "cors";
-
 
 const app = express();
 app.use(express.json());
