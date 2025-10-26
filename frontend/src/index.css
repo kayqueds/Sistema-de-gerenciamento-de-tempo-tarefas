@@ -1,5 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Caprasimo&display=swap');
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Caprasimo', cursive;
   line-height: 1.5;
   font-weight: 400;
 
@@ -15,7 +16,7 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: #4267b3;
   text-decoration: inherit;
 }
 a:hover {
@@ -23,6 +24,7 @@ a:hover {
 }
 
 body {
+  
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -98,7 +100,7 @@ button:focus-visible {
 }
 
 .navbar-nav a {
-  color: #646cff;
+  color: #4267b3;
   text-decoration: none;
   font-weight: 500;
 }
@@ -128,7 +130,7 @@ button:focus-visible {
 
  /* Estilo adicional opcional */
     .hero {
-      background: linear-gradient(to right, #007bff, #00c6ff);
+      background: linear-gradient(to right, #4267b3, #00c6ff);
       color: white;
       padding: 100px 0;
       text-align: center;

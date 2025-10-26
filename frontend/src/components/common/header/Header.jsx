@@ -7,7 +7,7 @@ function Header() {
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark header-navbar">
       <div className="container-fluid">
         <Link className="navbar-brand header-brand" to="/">
-          TaskBoost
+          Organix
         </Link>
 
         <button

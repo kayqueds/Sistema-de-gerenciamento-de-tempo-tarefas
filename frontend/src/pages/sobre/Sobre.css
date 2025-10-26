@@ -1,8 +1,9 @@
 /* Container principal */
+@import url('https://fonts.googleapis.com/css2?family=Caprasimo&display=swap');
 .sobre-container {
-  font-family: "Inter", system-ui, sans-serif;
+  font-family: 'Caprasimo', cursive;
   color: #2c2c2c;
-  background: #f7f8fa;
+  background: #e9ebee;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -12,8 +13,8 @@
 /* Hero section */
 .sobre-hero {
   width: 100%;
-  background: linear-gradient(135deg, #4f46e5, #6366f1);
-  color: #fff;
+  background: linear-gradient(135deg, #5096c7, #4267b3);
+  color: #e9ebee;
   text-align: center;
   padding: 80px 20px;
 }
@@ -56,7 +57,7 @@
 }
 
 .sobre-card h2 {
-  color: #4f46e5;
+  color: #4267b3;
   margin-bottom: 10px;
 }
 
@@ -83,7 +84,7 @@
 /* Equipe / Carousel */
 .sobre-equipe {
   color: #313437;
-  background-color: #eef4f7;
+  background-color: #e9ebee;
   padding: 50px 20px;
   width: 100%;
 }
@@ -151,7 +152,7 @@
 .item .title {
   text-transform: uppercase;
   font-weight: bold;
-  color: #d0d0d0;
+  color: #4267b3;
   letter-spacing: 2px;
   font-size: 0.85rem;
   text-align: center;
@@ -171,7 +172,7 @@
 }
 
 .item .social a:hover {
-  color: #4f46e5;
+  color: #4267b3;
   transform: translateY(-2px);
 }
 
