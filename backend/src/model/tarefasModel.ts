@@ -9,6 +9,7 @@ const getTarefasAll = async () => {
     return listTarefas;
   } catch (erro) {
     console.error("Erro ao buscar todos as tarefas:", erro);
+    
     throw erro;
   }
 };
@@ -24,15 +25,13 @@ const getTarefaById = async (id: number) => {
 };
 
 const createTarefa = async (body: Tarefa) => {
-  const { nome_tarefa, descricao_tarefa, id_usuario } = body;
-
-  if (!nome_tarefa || !descricao_tarefa || !id_usuario) {
-    throw new Error("Os campos 'nome_tarefa', 'descricao_tarefa' e 'id_usuario' são obrigatórios!");
+  const { nome_tarefa, descricao_tarefa, data_criacao, status_tarefa, id_usuario } = body;
+  if (!nome_tarefa || !descricao_tarefa || !data_criacao || !status_tarefa || !id_usuario) {
+    throw new Error("Todos os campos são obrigatórios!");
   }
-
   try {
-    const query = "INSERT INTO tarefas(nome_tarefa, descricao_tarefa, id_usuario) VALUES(?, ?, ?)";
-    const [result] = await connectionModel.execute(query, [nome_tarefa, descricao_tarefa, id_usuario]);
+    const query = "INSERT INTO tarefas(nome_tarefa, descricao_tarefa, data_criacao, status_tarefa, id_usuario) VALUES(?, ?, ?, ?, ?)";
+    const [result] = await connectionModel.execute(query, [nome_tarefa, descricao_tarefa, data_criacao, status_tarefa, id_usuario]);
     return result;
   } catch (erro) {
     console.error("Erro ao criar tarefa:", erro);
@@ -40,16 +39,17 @@ const createTarefa = async (body: Tarefa) => {
   }
 };
 
-const updateTarefa = async (id: number, body: Tarefa) => {
-  const { nome_tarefa, descricao_tarefa, id_usuario } = body;
 
-  if (!nome_tarefa || !descricao_tarefa || !id_usuario) {
-    throw new Error("Os campos 'nome_tarefa', 'descricao_tarefa' e 'id_usuario' são obrigatórios!");
+const updateTarefa = async (id: number, body: Tarefa) => {
+  const { nome_tarefa, descricao_tarefa, data_criacao, status_tarefa, id_usuario } = body;
+
+  if (!nome_tarefa || !descricao_tarefa || !data_criacao || !status_tarefa || !id_usuario) {
+    throw new Error("Os campos 'nome_tarefa', 'descricao_tarefa', 'data_criacao', 'status_tarefa' e 'id_usuario' são obrigatórios!");
   }
 
   try {
-    const query = "UPDATE tarefas SET nome_tarefa=?, descricao_tarefa=?, id_usuario=? WHERE id = ?";
-    const [result] = await connectionModel.execute(query, [nome_tarefa, descricao_tarefa, id_usuario, id]);
+    const query = "UPDATE tarefas SET nome_tarefa=?, descricao_tarefa=?, data_criacao=?, status_tarefa=?, id_usuario=? WHERE id = ?";
+    const [result] = await connectionModel.execute(query, [nome_tarefa, descricao_tarefa, data_criacao, status_tarefa, id_usuario, id]);
     return result;
   } catch (erro) {
     console.error(`Erro ao atualizar tarefa com ID ${id}:`, erro);
@@ -67,11 +67,11 @@ const updateTarefaPartial = async (id: number, updates: Partial<Tarefa>) => {
     }
 
     const setClause = fields.map((f) => `${f} = ?`).join(", ");
-    const query = `UPDATE usuarios SET ${setClause} WHERE id = ?`;
+    const query = `UPDATE tarefas SET ${setClause} WHERE id = ?`;
     const [result] = await connectionModel.execute(query, [...values, id]);
     return result;
   } catch (erro) {
-    console.error(`Erro ao atualizar parcialmente o usuário com ID ${id}:`, erro);
+    console.error(`Erro ao atualizar parcialmente a tarefa com ID ${id}:`, erro);
     throw erro;
   }
 };

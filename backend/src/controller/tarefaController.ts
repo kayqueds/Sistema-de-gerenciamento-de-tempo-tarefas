@@ -43,6 +43,7 @@ const updateTarefa = async (req: Request, res: Response) => {
     const id = Number(req.params.id);
     const tarefaEdit = await tarefasModel.updateTarefa(id, req.body);
     return res.status(200).json(tarefaEdit);
+     // Formata a data para "dd/mm/aaaa"
   } catch (error) {
     console.error(`Erro ao atualizar tarefa com ID ${req.params.id}:`, error);
     return res.status(400).json({ mensagem: "Erro ao atualizar tarefa.", erro: (error as Error).message });
