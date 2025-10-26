@@ -1,6 +1,6 @@
 import { connectionModel } from "./connectionModel";
 import type { Usuario } from "../interface/tabelas";
-import {hash} from "bcrypt";
+import {hash, compare} from "bcrypt";
 
 const getUsuariosAll = async () => {
   try {
@@ -94,6 +94,21 @@ const deleteUsuario = async (id: number) => {
   }
 };
 
+// autenticar usuário usando o compare
+const authenticateUser = async (email:string, password:string) => {
+    const [result]: any = await connectionModel.execute('SELECT * FROM user WHERE email = ?', [email]);
+    if (result.length === 0) {
+        throw new Error('Usuário não encontrado');
+    }
+    const user = result[0];
+    const isPasswordValid = await compare(password, user.senha_usuario);
+    if (!isPasswordValid) {
+        throw new Error('Senha inválida');
+    }
+    delete user.senha_usuario;
+    return user;
+}
+
 export default {
   getUsuariosAll,
   getUsuarioById,
@@ -101,4 +116,5 @@ export default {
   updateUsuario,
   updateUsuarioPartial,
   deleteUsuario,
+  authenticateUser
 };
