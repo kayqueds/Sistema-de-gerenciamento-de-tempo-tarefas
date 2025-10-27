@@ -4,10 +4,10 @@ import "./Header.css";
 
 function Header() {
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark header-navbar">
-      <div className="container-fluid">
-        <Link className="navbar-brand header-brand" to="/">
-          TaskBoost
+    <nav className="header-navbar">
+      <div className="header-container">
+        <Link className="header-brand" to="/">
+          Organix
         </Link>
 
         <button
