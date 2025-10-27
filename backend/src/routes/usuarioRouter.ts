@@ -1,7 +1,7 @@
 // CRIANDO ROTAS E IMPORTANDO NO app.ts
 import {Router} from 'express';
 import { Request, Response } from "express";
-import usuarioController from './controller/usuarioController';
+import usuarioController from '../controller/usuarioController';
 
 const rota = Router();
 
