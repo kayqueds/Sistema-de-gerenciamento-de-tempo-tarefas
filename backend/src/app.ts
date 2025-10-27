@@ -1,10 +1,13 @@
-import express from 'express';
-import rota from './router';
+import express from "express";
+import usuarioRoutes from "./routes/usuarioRouter";
+import tarefaRouter from "./routes/tarefaRouter";
+
+// usar o cors se for necessário pro React acessar a API
+import cors from "cors";
 
 const app = express();
-
-// chamando o router
-app.use(rota);
-
+app.use(express.json());
+app.use(cors());
+app.use("/", usuarioRoutes, tarefaRouter);
 
 export default app;

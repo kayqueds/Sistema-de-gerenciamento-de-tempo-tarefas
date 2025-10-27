@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import "./home.css";
 import Banner from "../../components/common/banner/Banner";
 
@@ -8,25 +9,25 @@ function Home() {
       nome: "Checklist Inteligente",
       descricao: "Crie tarefas com prazos, lembretes e níveis de prioridade.",
       imagem: "https://media.istockphoto.com/id/1482219003/pt/foto/digital-work-checklist-or-electronic-smart-daily-checklist-concept-check-mark-on-virtual.jpg?s=170667a&w=0&k=20&c=lK9a6jyYoMQYuKvQ96OHNkQt6_xoGQhFHiL0IIpiKz0=",
-      link: "#"
+      link: "/Cadastro"
     },
     {
       nome: "Análises de Produtividade",
       descricao: "Acompanhe seu desempenho semanal e identifique melhorias.",
       imagem: "https://img.freepik.com/fotos-premium/um-monitor-de-computador-exibindo-varias-visualizacoes-e-analises-de-dados-transmitindo-uma-sensacao-de-eficiencia-e-produtividade-gerador-de-ia_579956-4597.jpg?w=2000",
-      link: "#"
+      link: "/Cadastro"
     },
     {
       nome: "Colaboração em Equipe",
       descricao: "Compartilhe tarefas e projetos com sua equipe em tempo real.",
       imagem: "https://cdn.pixabay.com/photo/2025/02/21/17/22/teamwork-9422683_1280.png",
-      link: "#"
+      link: "/Cadastro"
     },
     {
       nome: "Automação de Rotina",
       descricao: "Configure tarefas recorrentes para não esquecer nada importante.",
       imagem: "https://ceosgo.com.br/storage/blog/1603332023021563ed1e75ccc61.png",
-      link: "#"
+      link: "/Cadastro"
     },
   ];
 
@@ -75,7 +76,9 @@ function Home() {
               <div className="content">
                 <div className="name">{func.nome}</div>
                 <div className="des">{func.descricao}</div>
-                <a href={func.link}><button>Saiba Mais</button></a>
+                <Link to={func.link}>
+                  <button>Saiba Mais</button>
+                </Link>
               </div>
             </div>
           ))}
@@ -86,7 +89,6 @@ function Home() {
         </div>
       </section>
     </div>
-    
   );
 }
 

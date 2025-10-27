@@ -5,6 +5,16 @@ import RotasSite from "./routes/RotasSite";
 import Navigation from "./components/common/navigation/Navigation.jsx";
 import Loading from "./pages/loading/Loading";
 import Footer from "./components/common/footer/Footer";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+// Import do Bootstrap CSS
+import "bootstrap/dist/css/bootstrap.min.css";
+
+// Import do Bootstrap JS
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
+
+
+import "bootstrap/dist/js/bootstrap.bundle.min.js"; // JS do Bootstrap (dropdown, collapse, etc)
 
 function App() {
   const [showLoading, setShowLoading] = useState(true);
@@ -23,6 +33,7 @@ function App() {
           <Navigation />
           <main className="main-content">
             <RotasSite />
+            <ToastContainer position="top-right" />
           </main>
           <Footer />
         </div>

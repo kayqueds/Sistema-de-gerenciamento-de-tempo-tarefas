@@ -20,7 +20,7 @@
 
 .login-left {
   flex: 1;
-  background: linear-gradient(to bottom right, #646cff, #535bf2);
+  background: linear-gradient(to bottom right, #9d9fc9, #535bf2);
   color: white;
   padding: 2rem;
   display: flex;

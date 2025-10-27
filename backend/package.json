@@ -1,29 +1,28 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "type": "module",
-  "main": "./build/server.js",
+  "description": "",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
-    "build": "tsc",
-    "build:clean": "rimraf build && tsc",
-    "build:watch": "tsc --watch",
-    "start": "node ./build/server.js",
-    "start:prod": "npm run build && npm start"
+    "dev": "nodemon --exec ts-node src/server.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
-  "devDependencies": {
-    "@types/express": "^5.0.3",
-    "@types/node": "^24.6.2",
-    "dotenv": "^17.2.3",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
     "express": "^5.1.0",
+    "mysql2": "^3.15.2"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.7.0",
+    "@types/typescript": "^0.4.29",
+    "dotenv": "^17.2.3",
     "nodemon": "^3.1.10",
-    "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
-    "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   }
 }
