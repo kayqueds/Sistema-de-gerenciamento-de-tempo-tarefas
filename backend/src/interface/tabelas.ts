@@ -14,5 +14,7 @@ export interface Tarefa {
     data_criacao: Date;
     status_tarefa: 'pendente' | 'em andamento' | 'concluida';
     id_usuario: string;
+    horario?: string | null;
+    prioridade?: 'Baixa' | 'Normal' | 'Alta';
 }
 

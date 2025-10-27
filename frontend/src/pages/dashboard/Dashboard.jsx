@@ -5,10 +5,10 @@ import api from "../../api";
 
 function Dashboard() {
   const [tarefas, setTarefas] = useState([]);
-  const [form, setForm] = useState({ titulo: "", horario: "", prioridade: "Normal" });
+  const [form, setForm] = useState({ titulo: "", horario: "", prioridade: "Normal", descricao: "" });
   const [editIndex, setEditIndex] = useState(null);
 
-  // Busca as tarefas da API ao carregar a página
+  // listar as tarefas
   useEffect(() => {
     const fetchTarefas = async () => {
       try {
@@ -27,41 +27,46 @@ function Dashboard() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  // criar ou editar tarefa
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.titulo) return;
 
     try {
-      // Mapear os campos do formulário para os campos do backend
       const statusMap = {
         Baixa: "pendente",
         Normal: "em andamento",
         Alta: "concluida",
       };
 
+      const prioridadeMap = {
+        Baixa: "Baixa",
+        Normal: "Normal",
+        Alta: "Alta",
+      };
+
       const tarefaParaBackend = {
         nome_tarefa: form.titulo,
+        horario: form.horario || null,
         descricao_tarefa: form.descricao || "",
-        data_criacao: new Date().toISOString().split('T')[0], // Formato YYYY-MM-DD
+        data_criacao: new Date().toISOString().split('T')[0],
         status_tarefa: statusMap[form.prioridade] || "pendente",
-        id_usuario: 1, // Substitua pelo ID do usuário logado
+        prioridade: prioridadeMap[form.prioridade] || "Normal",
+        id_usuario: 1,
       };
 
       if (editIndex !== null) {
-        // Atualizar tarefa
         await api.put(`/tarefas/${tarefas[editIndex].id}`, tarefaParaBackend);
         toast.success("Tarefa atualizada com sucesso!");
       } else {
-        // Criar nova tarefa
         await api.post("/tarefas", tarefaParaBackend);
         toast.success("Tarefa adicionada com sucesso!");
       }
 
-      // Atualiza a lista de tarefas
       const response = await api.get("/tarefas");
       setTarefas(response.data);
 
-      setForm({ titulo: "", horario: "", prioridade: "Normal" });
+      setForm({ titulo: "", horario: "", prioridade: "Normal", descricao: "" });
       setEditIndex(null);
     } catch (error) {
       console.error("Erro ao salvar tarefa:", error);
@@ -75,17 +80,17 @@ function Dashboard() {
       titulo: tarefa.titulo || tarefa.nome_tarefa,
       horario: tarefa.horario || "",
       prioridade: tarefa.prioridade || (tarefa.status_tarefa === "concluida" ? "Alta" : tarefa.status_tarefa === "em andamento" ? "Normal" : "Baixa"),
+      descricao: tarefa.descricao_tarefa || "",
     });
     setEditIndex(i);
   };
 
+  // deletar tarefa
   const handleDelete = async (i) => {
     try {
       const tarefaId = tarefas[i].id;
       await api.delete(`/tarefas/${tarefaId}`);
       toast.success("Tarefa deletada com sucesso!");
-
-      // Atualiza a lista de tarefas
       const response = await api.get("/tarefas");
       setTarefas(response.data);
     } catch (error) {
@@ -130,6 +135,13 @@ function Dashboard() {
             value={form.horario}
             onChange={handleChange}
           />
+          <input
+            type="text"
+            placeholder="Descrição"
+            name="descricao"
+            value={form.descricao}
+            onChange={handleChange}
+          />
           <select name="prioridade" value={form.prioridade} onChange={handleChange}>
             <option value="Baixa">Baixa</option>
             <option value="Normal">Normal</option>
@@ -147,6 +159,7 @@ function Dashboard() {
               <div className="task-info">
                 <h3>{t.titulo || t.nome_tarefa}</h3>
                 <span>{t.horario || "--:--"}</span>
+                <p>{t.descricao_tarefa || ""}</p>
               </div>
               <div className="task-actions">
                 <button className="edit" onClick={() => handleEdit(i)}>✏️</button>
