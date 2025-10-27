@@ -3,7 +3,7 @@
 **Descrição:** Projeto para gerenciar tarefas e proporcionar facilidade ao realizar quaisquer atividades
 
 
-[salão/restaurante/clínica].
+[organização/tarefas/tempo].
 
 ---
 
@@ -41,3 +41,4 @@ npm start
 cd frontend
 npm install
 npm run dev
+
