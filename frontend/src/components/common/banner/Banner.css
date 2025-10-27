@@ -1,9 +1,11 @@
 /* Banner Component - Estilos padronizados para reutilização */
+@import url('https://fonts.googleapis.com/css2?family=Caprasimo&display=swap');
 .hero {
+  font-family: 'Caprasimo', cursive;
   padding: 130px 150px 100px 150px;
   text-align: center;
-  background: linear-gradient(to right, #007bff, #00c6ff);
-  color: white;
+  background: linear-gradient(to right, #5096c7, #4267b3);
+  color: #e9ebee;
 }
 
 .hero .container {
@@ -25,8 +27,8 @@
 
 .hero .btn-hero {
   padding: 12px 25px;
-  background-color: #1a1a1a;
-  color: white;
+  background-color: #4267b3;
+  color: #e9ebee;
   text-decoration: none;
   border-radius: 8px;
   font-weight: bold;
@@ -35,7 +37,7 @@
 }
 
 .hero .btn-hero:hover {
-  background-color: #646cff;
+  background-color: #2f6eee;
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(100, 108, 255, 0.3);
 }

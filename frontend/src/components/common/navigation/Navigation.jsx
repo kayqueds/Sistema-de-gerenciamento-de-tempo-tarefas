@@ -13,7 +13,7 @@ function Navigation() {
     <nav className="navigation-component">
       <div className="navigation-container">
         <Link className="navigation-brand" to="/" onClick={closeMenu}>
-          TaskBoost
+          Organix
         </Link>
 
         {/* Botão hamburguer */}

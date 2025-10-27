@@ -4,8 +4,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #fff;
-  color: #fff;
+  background-color: #e9ebee;
+  color: #e9ebee;
 }
 
 .login-container {
@@ -20,8 +20,8 @@
 
 .login-left {
   flex: 1;
-  background: linear-gradient(to bottom right, #9d9fc9, #535bf2);
-  color: white;
+  background: linear-gradient(to bottom right, #73c1f8, #4267b3);
+  color: #e9ebee;
   padding: 2rem;
   display: flex;
   flex-direction: column;
@@ -64,12 +64,12 @@
 }
 
 .btn-login {
-  background-color: #1a1a1a;
+  background-color: #224fa9;
   color: white;
 }
 
 .btn-login:hover {
-  border-color: #646cff;
+ background-color: #3f72e1;
 }
 
 .btn-login-google {
@@ -124,7 +124,7 @@
 @media (prefers-color-scheme: light) {
   .login-page {
     color: #213547;
-    background-color: #ffffff;
+    background-color: #e9ebee;
   }
 }
 

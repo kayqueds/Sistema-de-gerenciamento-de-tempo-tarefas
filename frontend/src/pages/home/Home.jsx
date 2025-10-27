@@ -54,7 +54,7 @@ function Home() {
       {/* Hero */}
       <Banner 
         titulo="Gerencie seu tempo com eficiência" 
-        descricao="TaskBoost é a ferramenta ideal para organizar tarefas, aumentar produtividade e alcançar seus objetivos."
+        descricao="Organix é a ferramenta ideal para organizar tarefas, aumentar produtividade e alcançar seus objetivos."
         botaoTexto="Começar Agora"
         botaoLink="/cadastro"
       />

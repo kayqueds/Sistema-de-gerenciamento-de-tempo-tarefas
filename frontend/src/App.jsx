@@ -14,8 +14,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 
-import "bootstrap/dist/js/bootstrap.bundle.min.js"; // JS do Bootstrap (dropdown, collapse, etc)
-
 function App() {
   const [showLoading, setShowLoading] = useState(true);
 
