@@ -14,5 +14,6 @@ rota.get('/usuarios/:id', usuarioController.getUsuarioById);
 rota.post('/usuarios', usuarioController.createNewUsuario);
 rota.put('/usuarios/:id', usuarioController.updateUsuario);
 rota.delete('/usuarios/:id', usuarioController.deleteUsuario);
+rota.post('/usuarios/login', usuarioController.compareUsuarioSenha);
 
 export default rota;

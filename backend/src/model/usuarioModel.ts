@@ -1,6 +1,7 @@
 import { connectionModel } from "./connectionModel";
 import type { Usuario } from "../interface/tabelas";
 import {hash} from "bcrypt";
+import { compare } from "bcrypt";
 
 const getUsuariosAll = async () => {
   try {
@@ -94,6 +95,27 @@ const deleteUsuario = async (id: number) => {
   }
 };
 
+const compareSenha = async (email: string, senha: string) => {
+  try {
+    const [rows]: any = await connectionModel.execute("SELECT * FROM usuarios WHERE email_usuario = ?", [email]);
+    const usuario = rows[0];
+
+    if (!usuario) {
+      throw new Error("Usuário não encontrado.");
+    }
+
+    const senhaCorreta = await compare(senha, usuario.senha_usuario);
+    if (!senhaCorreta) {
+      throw new Error("Senha incorreta.");
+    }
+
+    return { mensagem: "Login bem-sucedido!", usuario };
+  } catch (erro) {
+    throw erro;
+  }
+};
+
+
 export default {
   getUsuariosAll,
   getUsuarioById,
@@ -101,4 +123,5 @@ export default {
   updateUsuario,
   updateUsuarioPartial,
   deleteUsuario,
+  compareSenha,
 };
