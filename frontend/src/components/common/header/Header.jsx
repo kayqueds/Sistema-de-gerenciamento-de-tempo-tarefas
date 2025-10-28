@@ -1,3 +1,4 @@
+// src/components/header/Header.jsx
 import { Link } from "react-router-dom";
 import "./Header.css";
 
@@ -6,37 +7,34 @@ function Header() {
     <nav className="header-navbar">
       <div className="header-container">
         <Link className="header-brand" to="/">
-          TaskBoost
+          Organix
         </Link>
+
         <button
-          className="header-toggler"
+          className="navbar-toggler"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#headerNav"
+          aria-controls="headerNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
         >
-          <span className="header-toggler-icon"></span>
+          <span className="navbar-toggler-icon"></span>
         </button>
-        <div className="header-collapse" id="headerNav">
-          <ul className="header-nav">
-            <li className="header-nav-item">
-              <Link className="header-nav-link" to="/">
-                Início
-              </Link>
+
+        <div className="collapse navbar-collapse" id="headerNav">
+          <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li className="nav-item">
+              <Link className="nav-link" to="/">Início</Link>
             </li>
-            <li className="header-nav-item">
-              <Link className="header-nav-link" to="/sobre">
-                Sobre
-              </Link>
+            <li className="nav-item">
+              <Link className="nav-link" to="/sobre">Sobre</Link>
             </li>
-            <li className="header-nav-item">
-              <Link className="header-nav-link" to="/cadastro">
-                Cadastro
-              </Link>
+            <li className="nav-item">
+              <Link className="nav-link" to="/cadastro">Cadastro</Link>
             </li>
-            <li className="header-nav-item">
-              <Link className="header-nav-link" to="/login">
-                Login
-              </Link>
+            <li className="nav-item">
+              <Link className="nav-link" to="/login">Login</Link>
             </li>
           </ul>
         </div>

@@ -29,13 +29,13 @@
   margin: 0 auto;
 }
 
-/* Missão, Visão, Valores - cards mais largos e próximos */
+/* Missão, Visão, Valores - cards */
 .sobre-missao {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); /* cards mais largos */
-  gap: 15px; /* mais próximos */
-  margin: 40px 20px; /* diminui margem vertical */
+  display: flex;
+  gap: 15px;
+  margin: 40px 20px;
   max-width: 1000px;
+  justify-content: center;
 }
 
 .sobre-card {
@@ -80,7 +80,7 @@
   font-size: 1.1rem;
 }
 
-/* Equipe / Carrossel */
+/* Equipe / Carousel */
 .sobre-equipe {
   color: #313437;
   background-color: #eef4f7;
@@ -93,23 +93,37 @@
   margin-bottom: 40px;
 }
 
-/* Ajuste das colunas do Bootstrap para cards mais próximos */
-.row.justify-content-center > .col-12.col-sm-6.col-lg-4 {
-  padding-left: 8px;
-  padding-right: 8px;
+/* Carousel container */
+.carousel-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
 
-/* Cards da equipe - mais largos e uniformes */
+.carousel-container {
+  display: flex;
+  gap: 15px;
+  overflow-x: hidden; /* oculta scroll */
+  scroll-behavior: smooth;
+  padding: 10px 0;
+}
+
+/* Cards da equipe */
+.col-card {
+  flex: 0 0 auto;
+  width: 300px; /* tamanho base do card */
+}
+
 .item.box {
   width: 100%;
-  max-width: 400px; /* largura maior */
-  padding: 100px;
   background-color: #fff;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 40px 20px;
   min-height: 300px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -119,7 +133,6 @@
   box-shadow: 0 8px 20px rgba(0,0,0,0.12);
 }
 
-/* Imagens da equipe */
 .item img {
   width: 200px;
   height: 200px;
@@ -127,7 +140,6 @@
   object-fit: cover;
 }
 
-/* Nome e função */
 .item .name {
   font-weight: bold;
   margin-top: 20px;
@@ -144,24 +156,7 @@
   font-size: 0.85rem;
   text-align: center;
 }
-/* Afasta as setas do carrossel */
-.carousel-control-prev {
-  left: -60px; /* afasta a seta da esquerda para fora do container */
-}
 
-.carousel-control-next {
-  right: -60px; /* afasta a seta da direita para fora do container */
-
-}
-/* Controles do carrossel */
-.carousel-control-prev-icon,
-.carousel-control-next-icon {
-  filter: invert(1); /* ícones brancos */
-  
-  width: 10px;
-  height: 20px;
-}
-/* Redes sociais nos cards da equipe */
 .item .social {
   display: flex;
   justify-content: center;
@@ -176,6 +171,65 @@
 }
 
 .item .social a:hover {
-  color: #4f46e5; /* cor ao passar o mouse */
+  color: #4f46e5;
   transform: translateY(-2px);
+}
+
+/* Botões do carousel */
+.carousel-btn {
+  background-color: #4e46e500;
+  color: #4f46e5;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+
+.carousel-btn.prev {
+  left: 0;
+}
+
+.carousel-btn.next {
+  right: 0;
+}
+
+/* Responsividade */
+@media (max-width: 4000px) {
+  .col-card {
+    width: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .col-card {
+    width: 80%;
+  }
+
+  .sobre-missao {
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .col-card {
+    width: 90%;
+  }
+
+  .sobre-hero h1 {
+    font-size: 2rem;
+  }
+
+  .sobre-hero p {
+    font-size: 1rem;
+  }
 }

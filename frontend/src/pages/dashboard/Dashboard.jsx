@@ -1,49 +1,103 @@
 import { useState, useEffect } from "react";
 import "./Dashboard.css";
+import { toast } from "react-toastify";
+import api from "../../api";
 
 function Dashboard() {
-  const tarefasIniciais = [
-    { titulo: "Reunião de equipe", horario: "09:00", prioridade: "Alta" },
-    { titulo: "Responder e-mails", horario: "11:00", prioridade: "Normal" },
-    { titulo: "Planejar sprints", horario: "14:00", prioridade: "Alta" },
-  ];
-
   const [tarefas, setTarefas] = useState([]);
-  const [form, setForm] = useState({ titulo: "", horario: "", prioridade: "Normal" });
+  const [form, setForm] = useState({ titulo: "", horario: "", prioridade: "Normal", descricao: "" });
   const [editIndex, setEditIndex] = useState(null);
 
+  // listar as tarefas
   useEffect(() => {
-    const saved = localStorage.getItem("tarefas");
-    if (saved) setTarefas(JSON.parse(saved));
-    else setTarefas(tarefasIniciais);
+    const fetchTarefas = async () => {
+      try {
+        const response = await api.get("/tarefas");
+        setTarefas(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar tarefas:", error);
+        toast.error("Erro ao buscar tarefas.");
+      }
+    };
+    fetchTarefas();
   }, []);
-
-  useEffect(() => {
-    localStorage.setItem("tarefas", JSON.stringify(tarefas));
-  }, [tarefas]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  // criar ou editar tarefa
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.titulo) return;
-    if (editIndex !== null) {
-      const updated = [...tarefas];
-      updated[editIndex] = form;
-      setTarefas(updated);
+
+    try {
+      const statusMap = {
+        Baixa: "pendente",
+        Normal: "em andamento",
+        Alta: "concluida",
+      };
+
+      const prioridadeMap = {
+        Baixa: "Baixa",
+        Normal: "Normal",
+        Alta: "Alta",
+      };
+
+      const tarefaParaBackend = {
+        nome_tarefa: form.titulo,
+        horario: form.horario || null,
+        descricao_tarefa: form.descricao || "",
+        data_criacao: new Date().toISOString().split('T')[0],
+        status_tarefa: statusMap[form.prioridade] || "pendente",
+        prioridade: prioridadeMap[form.prioridade] || "Normal",
+        id_usuario: 1,
+      };
+
+      if (editIndex !== null) {
+        await api.put(`/tarefas/${tarefas[editIndex].id}`, tarefaParaBackend);
+        toast.success("Tarefa atualizada com sucesso!");
+      } else {
+        await api.post("/tarefas", tarefaParaBackend);
+        toast.success("Tarefa adicionada com sucesso!");
+      }
+
+      const response = await api.get("/tarefas");
+      setTarefas(response.data);
+
+      setForm({ titulo: "", horario: "", prioridade: "Normal", descricao: "" });
       setEditIndex(null);
-    } else {
-      setTarefas([...tarefas, form]);
+    } catch (error) {
+      console.error("Erro ao salvar tarefa:", error);
+      toast.error("Erro ao salvar tarefa.");
     }
-    setForm({ titulo: "", horario: "", prioridade: "Normal" });
   };
 
-  const handleEdit = (i) => setForm(tarefas[i]) || setEditIndex(i);
+  const handleEdit = (i) => {
+    const tarefa = tarefas[i];
+    setForm({
+      titulo: tarefa.titulo || tarefa.nome_tarefa,
+      horario: tarefa.horario || "",
+      prioridade: tarefa.prioridade || (tarefa.status_tarefa === "concluida" ? "Alta" : tarefa.status_tarefa === "em andamento" ? "Normal" : "Baixa"),
+      descricao: tarefa.descricao_tarefa || "",
+    });
+    setEditIndex(i);
+  };
 
-  const handleDelete = (i) => setTarefas(tarefas.filter((_, index) => index !== i));
+  // deletar tarefa
+  const handleDelete = async (i) => {
+    try {
+      const tarefaId = tarefas[i].id;
+      await api.delete(`/tarefas/${tarefaId}`);
+      toast.success("Tarefa deletada com sucesso!");
+      const response = await api.get("/tarefas");
+      setTarefas(response.data);
+    } catch (error) {
+      console.error("Erro ao deletar tarefa:", error);
+      toast.error("Erro ao deletar tarefa.");
+    }
+  };
 
   const prioridadeClass = (prio) => {
     if (prio === "Alta") return "high";
@@ -63,11 +117,9 @@ function Dashboard() {
           <li>Configurações</li>
         </ul>
       </aside>
-
       {/* CONTEÚDO PRINCIPAL */}
       <main className="dashboard-content">
         <h1>Meu Painel de Tarefas</h1>
-
         {/* Formulário */}
         <div className="task-form">
           <input
@@ -83,6 +135,13 @@ function Dashboard() {
             value={form.horario}
             onChange={handleChange}
           />
+          <input
+            type="text"
+            placeholder="Descrição"
+            name="descricao"
+            value={form.descricao}
+            onChange={handleChange}
+          />
           <select name="prioridade" value={form.prioridade} onChange={handleChange}>
             <option value="Baixa">Baixa</option>
             <option value="Normal">Normal</option>
@@ -92,15 +151,15 @@ function Dashboard() {
             {editIndex !== null ? "Atualizar" : "Adicionar"}
           </button>
         </div>
-
         {/* Lista de tarefas */}
         <div className="tasks-grid">
           {tarefas.length === 0 && <p className="empty">Nenhuma tarefa cadastrada.</p>}
           {tarefas.map((t, i) => (
-            <div key={i} className={`task-card ${prioridadeClass(t.prioridade)}`}>
+            <div key={i} className={`task-card ${prioridadeClass(t.prioridade || (t.status_tarefa === "concluida" ? "Alta" : t.status_tarefa === "em andamento" ? "Normal" : "Baixa"))}`}>
               <div className="task-info">
-                <h3>{t.titulo}</h3>
+                <h3>{t.titulo || t.nome_tarefa}</h3>
                 <span>{t.horario || "--:--"}</span>
+                <p>{t.descricao_tarefa || ""}</p>
               </div>
               <div className="task-actions">
                 <button className="edit" onClick={() => handleEdit(i)}>✏️</button>
