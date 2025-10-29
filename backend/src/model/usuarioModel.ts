@@ -95,18 +95,19 @@ const deleteUsuario = async (id: number) => {
 };
 
 // autenticar usuário usando o compare
-const authenticateUser = async (email:string, password:string) => {
-    const [result]: any = await connectionModel.execute('SELECT * FROM user WHERE email = ?', [email]);
-    if (result.length === 0) {
-        throw new Error('Usuário não encontrado');
-    }
-    const user = result[0];
-    const isPasswordValid = await compare(password, user.senha_usuario);
-    if (!isPasswordValid) {
-        throw new Error('Senha inválida');
-    }
-    delete user.senha_usuario;
-    return user;
+const compareSenha = async (email:string, password:string) => {
+  // Buscar pelo campo email_usuario na tabela usuarios
+  const [result]: any = await connectionModel.execute('SELECT * FROM usuarios WHERE email_usuario = ?', [email]);
+  if (!result || result.length === 0) {
+    throw new Error('Usuário não encontrado');
+  }
+  const user = result[0];
+  const isPasswordValid = await compare(password, user.senha_usuario);
+  if (!isPasswordValid) {
+    throw new Error('Senha inválida');
+  }
+  delete user.senha_usuario;
+  return user;
 }
 
 export default {
@@ -116,5 +117,5 @@ export default {
   updateUsuario,
   updateUsuarioPartial,
   deleteUsuario,
-  authenticateUser
+  compareSenha
 };
