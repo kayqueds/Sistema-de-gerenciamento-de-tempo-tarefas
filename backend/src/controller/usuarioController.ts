@@ -61,6 +61,21 @@ const deleteUsuario = async (req: Request, res: Response) => {
   }
 };
 
+const compareUsuarioSenha = async (req: Request, res: Response) => {
+  const { email_usuario, senha_usuario } = req.body;
+
+  if (!email_usuario || !senha_usuario) {
+    return res.status(400).json({ mensagem: "Email e senha são obrigatórios." });
+  }
+
+  try {
+    const resultado = await usuarioModel.compareSenha(email_usuario, senha_usuario);
+    return res.status(200).json(resultado);
+  } catch (error) {
+    return res.status(401).json({ mensagem: (error as Error).message });
+  }
+};
+
 // Exportando as funções
 export default {
   getUsuariosAll,
@@ -68,4 +83,5 @@ export default {
   createNewUsuario,
   updateUsuario,
   deleteUsuario,
+  compareUsuarioSenha,
 };
