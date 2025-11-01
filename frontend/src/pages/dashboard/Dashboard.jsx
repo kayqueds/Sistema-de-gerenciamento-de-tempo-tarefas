@@ -2,11 +2,14 @@ import { useState, useEffect } from "react";
 import "./Dashboard.css";
 import { toast } from "react-toastify";
 import api from "../../api";
+import useSweetAlert from "../../Hooks/SweetAlert";
 
 function Dashboard() {
   const [tarefas, setTarefas] = useState([]);
   const [form, setForm] = useState({ titulo: "", horario: "", prioridade: "Normal", descricao: "" });
   const [editIndex, setEditIndex] = useState(null);
+  const { showConfirmation } = useSweetAlert();
+
 
   // listar as tarefas
   useEffect(() => {
@@ -30,8 +33,10 @@ function Dashboard() {
   // criar ou editar tarefa
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.titulo) return;
-
+    if (!form.titulo || !form.descricao || !form.prioridade || !form.horario) {
+      toast.error("Todos os campos são obrigatórios!!");
+      return;
+    }
     try {
       const statusMap = {
         Baixa: "pendente",
@@ -54,8 +59,10 @@ function Dashboard() {
         prioridade: prioridadeMap[form.prioridade] || "Normal",
         id_usuario: 1,
       };
-
+      
       if (editIndex !== null) {
+    const confirmar = await showConfirmation("Deseja editar sua tarefa?", "Editar");
+    if (!confirmar) return;
         await api.put(`/tarefas/${tarefas[editIndex].id}`, tarefaParaBackend);
         toast.success("Tarefa atualizada com sucesso!");
       } else {
@@ -87,7 +94,10 @@ function Dashboard() {
 
   // deletar tarefa
   const handleDelete = async (i) => {
+    
     try {
+      const confirmar = await showConfirmation("Esta ação não pode ser desfeita.", "Deletar");
+      if (!confirmar) return;
       const tarefaId = tarefas[i].id;
       await api.delete(`/tarefas/${tarefaId}`);
       toast.success("Tarefa deletada com sucesso!");
@@ -105,7 +115,7 @@ function Dashboard() {
     return "low";
   };
 
-  return (
+   return (
     <div className="dashboard-layout">
       {/* SIDEBAR */}
       <aside className="sidebar">
@@ -174,3 +184,6 @@ function Dashboard() {
 }
 
 export default Dashboard;
+
+
+
