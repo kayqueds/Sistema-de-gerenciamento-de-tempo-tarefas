@@ -5,7 +5,7 @@ import Cadastro from "../pages/cadastro/Cadastro";
 import Sobre from "../pages/sobre/Sobre";
 import Dashboard from "../pages/dashboard/Dashboard";
 import Error404 from "../pages/error404/Error404";
-import Calendario from "../pages/Calendario/Calendario";
+import Calendario from "../pages/calendario/Calendario";
 
 
 // rotas do site
