@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import "./Dashboard.css";
 import { toast } from "react-toastify";
 import api from "../../api";
-import useSweetAlert from "../../hooks/SweetAlert";
+import useSweetAlert from "../../hooks/SweetAlert.jsx";
 import Sound from "../../hooks/Sound";
 
 function Dashboard() {
