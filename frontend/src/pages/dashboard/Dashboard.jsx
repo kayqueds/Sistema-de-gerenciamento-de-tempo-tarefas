@@ -2,15 +2,21 @@ import { useState, useEffect } from "react";
 import "./Dashboard.css";
 import { toast } from "react-toastify";
 import api from "../../api";
-import useSweetAlert from "../../Hooks/SweetAlert";
+import useSweetAlert from "../../hooks/SweetAlert";
+import Sound from "../../hooks/Sound";
 
 function Dashboard() {
   const [tarefas, setTarefas] = useState([]);
-  const [form, setForm] = useState({ titulo: "", horario: "", prioridade: "Normal", descricao: "" });
+  const [form, setForm] = useState({
+    titulo: "",
+    horario: "",
+    prioridade: "Normal",
+    descricao: "",
+  });
   const [editIndex, setEditIndex] = useState(null);
   const { showConfirmation } = useSweetAlert();
 
-
+  const { playSound, listSound } = Sound();
   // listar as tarefas
   useEffect(() => {
     const fetchTarefas = async () => {
@@ -35,8 +41,11 @@ function Dashboard() {
     e.preventDefault();
     if (!form.titulo || !form.descricao || !form.prioridade || !form.horario) {
       toast.error("Todos os campos são obrigatórios!!");
+      playSound(listSound[0]);
+
       return;
     }
+
     try {
       const statusMap = {
         Baixa: "pendente",
@@ -54,20 +63,27 @@ function Dashboard() {
         nome_tarefa: form.titulo,
         horario: form.horario || null,
         descricao_tarefa: form.descricao || "",
-        data_criacao: new Date().toISOString().split('T')[0],
+        data_criacao: new Date().toISOString().split("T")[0],
         status_tarefa: statusMap[form.prioridade] || "pendente",
         prioridade: prioridadeMap[form.prioridade] || "Normal",
         id_usuario: 1,
       };
-      
+
       if (editIndex !== null) {
-    const confirmar = await showConfirmation("Deseja editar sua tarefa?", "Editar");
-    if (!confirmar) return;
+        playSound(listSound[3]);
+        const confirmar = await showConfirmation(
+          "Deseja editar sua tarefa?",
+          "Editar"
+        );
+
+        if (!confirmar) return;
         await api.put(`/tarefas/${tarefas[editIndex].id}`, tarefaParaBackend);
         toast.success("Tarefa atualizada com sucesso!");
+        playSound(listSound[1]);
       } else {
         await api.post("/tarefas", tarefaParaBackend);
         toast.success("Tarefa adicionada com sucesso!");
+        playSound(listSound[1]);
       }
 
       const response = await api.get("/tarefas");
@@ -78,6 +94,7 @@ function Dashboard() {
     } catch (error) {
       console.error("Erro ao salvar tarefa:", error);
       toast.error("Erro ao salvar tarefa.");
+      playSound(listSound[2]);
     }
   };
 
@@ -86,7 +103,13 @@ function Dashboard() {
     setForm({
       titulo: tarefa.titulo || tarefa.nome_tarefa,
       horario: tarefa.horario || "",
-      prioridade: tarefa.prioridade || (tarefa.status_tarefa === "concluida" ? "Alta" : tarefa.status_tarefa === "em andamento" ? "Normal" : "Baixa"),
+      prioridade:
+        tarefa.prioridade ||
+        (tarefa.status_tarefa === "concluida"
+          ? "Alta"
+          : tarefa.status_tarefa === "em andamento"
+          ? "Normal"
+          : "Baixa"),
       descricao: tarefa.descricao_tarefa || "",
     });
     setEditIndex(i);
@@ -94,18 +117,23 @@ function Dashboard() {
 
   // deletar tarefa
   const handleDelete = async (i) => {
-    
     try {
-      const confirmar = await showConfirmation("Esta ação não pode ser desfeita.", "Deletar");
+      playSound(listSound[3]);
+      const confirmar = await showConfirmation(
+        "Esta ação não pode ser desfeita.",
+        "Deletar"
+      );
       if (!confirmar) return;
       const tarefaId = tarefas[i].id;
       await api.delete(`/tarefas/${tarefaId}`);
       toast.success("Tarefa deletada com sucesso!");
+      playSound(listSound[1]);
       const response = await api.get("/tarefas");
       setTarefas(response.data);
     } catch (error) {
       console.error("Erro ao deletar tarefa:", error);
       toast.error("Erro ao deletar tarefa.");
+      playSound(listSound[2]);
     }
   };
 
@@ -115,7 +143,7 @@ function Dashboard() {
     return "low";
   };
 
-   return (
+  return (
     <div className="dashboard-layout">
       {/* SIDEBAR */}
       <aside className="sidebar">
@@ -152,7 +180,11 @@ function Dashboard() {
             value={form.descricao}
             onChange={handleChange}
           />
-          <select name="prioridade" value={form.prioridade} onChange={handleChange}>
+          <select
+            name="prioridade"
+            value={form.prioridade}
+            onChange={handleChange}
+          >
             <option value="Baixa">Baixa</option>
             <option value="Normal">Normal</option>
             <option value="Alta">Alta</option>
@@ -163,17 +195,33 @@ function Dashboard() {
         </div>
         {/* Lista de tarefas */}
         <div className="tasks-grid">
-          {tarefas.length === 0 && <p className="empty">Nenhuma tarefa cadastrada.</p>}
+          {tarefas.length === 0 && (
+            <p className="empty">Nenhuma tarefa cadastrada.</p>
+          )}
           {tarefas.map((t, i) => (
-            <div key={i} className={`task-card ${prioridadeClass(t.prioridade || (t.status_tarefa === "concluida" ? "Alta" : t.status_tarefa === "em andamento" ? "Normal" : "Baixa"))}`}>
+            <div
+              key={i}
+              className={`task-card ${prioridadeClass(
+                t.prioridade ||
+                  (t.status_tarefa === "concluida"
+                    ? "Alta"
+                    : t.status_tarefa === "em andamento"
+                    ? "Normal"
+                    : "Baixa")
+              )}`}
+            >
               <div className="task-info">
                 <h3>{t.titulo || t.nome_tarefa}</h3>
                 <span>{t.horario || "--:--"}</span>
                 <p>{t.descricao_tarefa || ""}</p>
               </div>
               <div className="task-actions">
-                <button className="edit" onClick={() => handleEdit(i)}>✏️</button>
-                <button className="delete" onClick={() => handleDelete(i)}>🗑️</button>
+                <button className="edit" onClick={() => handleEdit(i)}>
+                  ✏️
+                </button>
+                <button className="delete" onClick={() => handleDelete(i)}>
+                  🗑️
+                </button>
               </div>
             </div>
           ))}
@@ -184,6 +232,3 @@ function Dashboard() {
 }
 
 export default Dashboard;
-
-
-
