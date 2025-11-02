@@ -47,9 +47,9 @@ function Sobre() {
           transition={{ duration: 0.8 }}
           className="sobre-hero-content"
         >
-          <h1>Sobre o TaskFlow</h1>
+          <h1>Sobre o Organix</h1>
           <p>
-            O <strong>TaskFlow</strong> é um sistema de gerenciamento de tempo e tarefas desenvolvido para otimizar sua rotina, melhorar a produtividade e simplificar o controle de seus compromissos.
+            O <strong>Organix</strong> é um sistema de gerenciamento de tempo e tarefas desenvolvido para otimizar sua rotina, melhorar a produtividade e simplificar o controle de seus compromissos.
           </p>
         </motion.div>
       </section>
