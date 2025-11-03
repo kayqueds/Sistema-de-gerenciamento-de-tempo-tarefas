@@ -33,7 +33,7 @@ const createTarefa = async (body: Tarefa) => {
   const {
     nome_tarefa,
     descricao_tarefa,
-    data_criacao,
+    data_tarefa,
     status_tarefa,
     id_usuario,
     horario,
@@ -42,7 +42,7 @@ const createTarefa = async (body: Tarefa) => {
   if (
     !nome_tarefa ||
     !descricao_tarefa ||
-    !data_criacao ||
+    !data_tarefa ||
     !status_tarefa ||
     !id_usuario
   ) {
@@ -50,11 +50,11 @@ const createTarefa = async (body: Tarefa) => {
   }
   try {
     const query =
-      "INSERT INTO tarefas(nome_tarefa, descricao_tarefa, data_criacao, status_tarefa, id_usuario, horario, prioridade) VALUES(?, ?, ?, ?, ?, ?, ?)";
+      "INSERT INTO tarefas(nome_tarefa, descricao_tarefa, data_tarefa, status_tarefa, id_usuario, horario, prioridade) VALUES(?, ?, ?, ?, ?, ?, ?)";
     const [result] = await connectionModel.execute(query, [
       nome_tarefa,
       descricao_tarefa,
-      data_criacao,
+      data_tarefa,
       status_tarefa,
       id_usuario,
       horario || null,
@@ -71,7 +71,7 @@ const updateTarefa = async (id: number, body: Tarefa) => {
   const {
     nome_tarefa,
     descricao_tarefa,
-    data_criacao,
+    data_tarefa,
     status_tarefa,
     id_usuario,
     horario,
@@ -81,24 +81,24 @@ const updateTarefa = async (id: number, body: Tarefa) => {
   if (
     !nome_tarefa ||
     !descricao_tarefa ||
-    !data_criacao ||
+    !data_tarefa ||
     !status_tarefa ||
     !id_usuario ||
     !horario ||
     !prioridade
   ) {
     throw new Error(
-      "Os campos 'nome_tarefa', 'descricao_tarefa', 'data_criacao', 'status_tarefa', 'id_usuario', 'horario' e 'prioridade' são obrigatórios!"
+      "Os campos 'nome_tarefa', 'descricao_tarefa', 'data_tarefa', 'status_tarefa', 'id_usuario', 'horario' e 'prioridade' são obrigatórios!"
     );
   }
 
   try {
     const query =
-      "UPDATE tarefas SET nome_tarefa=?, descricao_tarefa=?, data_criacao=?, status_tarefa=?, id_usuario=?, horario=?, prioridade=? WHERE id = ?";
+      "UPDATE tarefas SET nome_tarefa=?, descricao_tarefa=?, data_tarefa=?, status_tarefa=?, id_usuario=?, horario=?, prioridade=? WHERE id = ?";
     const [result] = await connectionModel.execute(query, [
       nome_tarefa,
       descricao_tarefa,
-      data_criacao,
+      data_tarefa,
       status_tarefa,
       id_usuario,
       horario || null,

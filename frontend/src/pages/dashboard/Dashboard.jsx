@@ -127,6 +127,13 @@ function Dashboard() {
     return "low";
   };
 
+// Formatar data para formato brasileiro
+const formatarData = (dataISO) => {
+  const data = new Date(dataISO);
+  return data.toLocaleDateString("pt-BR");
+};
+
+
   return (
     <div className="dashboard-layout">
       {/* SIDEBAR desktop */}
@@ -199,7 +206,7 @@ function Dashboard() {
                 <h3>{t.titulo || t.nome_tarefa}</h3>
                 <span>{t.horario || "--:--"}</span>
                 <p>{t.descricao_tarefa || ""}</p>
-                {t.data_tarefa && <small>📅 {t.data_tarefa}</small>}
+                {t.data_tarefa && <small>📅 {formatarData(t.data_tarefa)}</small>}
               </div>
               <div className="task-actions">
                 <button className="edit" onClick={() => handleEdit(i)}>✏️</button>

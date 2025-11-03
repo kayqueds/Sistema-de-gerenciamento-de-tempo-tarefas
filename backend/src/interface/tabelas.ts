@@ -11,7 +11,7 @@ export interface Tarefa {
     id: string;
     nome_tarefa: string;
     descricao_tarefa: string;
-    data_criacao: Date;
+    data_tarefa: Date;
     status_tarefa: 'pendente' | 'em andamento' | 'concluida';
     id_usuario: string;
     horario?: string | null;
