@@ -4,8 +4,8 @@ import {hash, compare} from "bcrypt";
 
 const getUsuariosAll = async () => {
   try {
-    const [listUsuarios] = await connectionModel.execute("SELECT * FROM usuarios");
-    return listUsuarios;
+    const listUsuarios = await connectionModel.query("SELECT * FROM usuarios");
+    return listUsuarios.rows;
   } catch (erro) {
     console.error("Erro ao buscar todos os usuários:", erro);
     throw erro;
@@ -14,8 +14,8 @@ const getUsuariosAll = async () => {
 
 const getUsuarioById = async (id: number) => {
   try {
-    const [usuario] = await connectionModel.execute("SELECT * FROM usuarios WHERE id = ?", [id]);
-    return usuario;
+    const usuario = await connectionModel.query("SELECT * FROM usuarios WHERE id = $1", [id]);
+    return usuario.rows;
   } catch (erro) {
     console.error(`Erro ao buscar usuário com ID ${id}:`, erro);
     throw erro;
@@ -31,8 +31,8 @@ const createUsuario = async (body: Usuario) => {
 
   try {
     const hashedPassword = await hash(senha_usuario, 10);
-    const query = "INSERT INTO usuarios(nome_usuario, email_usuario, senha_usuario) VALUES(?, ?, ?)";
-    const [result] = await connectionModel.execute(query, [nome_usuario, email_usuario, hashedPassword]);
+    const query = "INSERT INTO usuarios(nome_usuario, email_usuario, senha_usuario) VALUES($1, $2, $3)";
+    const result = await connectionModel.query(query, [nome_usuario, email_usuario, hashedPassword]);
     return result;
   } catch (erro) {
     console.error("Erro ao criar usuário:", erro);
@@ -49,8 +49,8 @@ const updateUsuario = async (id: number, body: Usuario) => {
 
   try {
     const hashedPassword = await hash(senha_usuario, 10);
-    const query = "UPDATE usuarios SET nome_usuario=?, email_usuario=?, senha_usuario=? WHERE id = ?";
-    const [result] = await connectionModel.execute(query, [nome_usuario, email_usuario, hashedPassword, id]);
+    const query = "UPDATE usuarios SET nome_usuario=$1, email_usuario=$2, senha_usuario=$3 WHERE id = $4";
+    const result = await connectionModel.query(query, [nome_usuario, email_usuario, hashedPassword, id]);
     return result;
   } catch (erro) {
     console.error(`Erro ao atualizar usuário com ID ${id}:`, erro);
@@ -74,9 +74,9 @@ const updateUsuarioPartial = async (id: number, updates: Partial<Usuario>) => {
       throw new Error("Nenhum campo foi fornecido para atualização parcial.");
     }
 
-    const setClause = fields.map((f) => `${f} = ?`).join(", ");
-    const query = `UPDATE usuarios SET ${setClause} WHERE id = ?`;
-    const [result] = await connectionModel.execute(query, [...values, id]);
+    const setClause = fields.map((f, i) => `${f} = $${i + 1}`).join(", ");
+    const query = `UPDATE usuarios SET ${setClause} WHERE id = $${fields.length + 1}`;
+    const result = await connectionModel.query(query, [...values, id]);
     return result;
   } catch (erro) {
     console.error(`Erro ao atualizar parcialmente o usuário com ID ${id}:`, erro);
@@ -86,7 +86,7 @@ const updateUsuarioPartial = async (id: number, updates: Partial<Usuario>) => {
 
 const deleteUsuario = async (id: number) => {
   try {
-    const [result] = await connectionModel.execute("DELETE FROM usuarios WHERE id = ?", [id]);
+    const result = await connectionModel.query("DELETE FROM usuarios WHERE id = $1", [id]);
     return result;
   } catch (erro) {
     console.error(`Erro ao deletar usuário com ID ${id}:`, erro);
@@ -97,7 +97,7 @@ const deleteUsuario = async (id: number) => {
 // autenticar usuário usando o compare
 const compareSenha = async (email:string, password:string) => {
   // Buscar pelo campo email_usuario na tabela usuarios
-  const [result]: any = await connectionModel.execute('SELECT * FROM usuarios WHERE email_usuario = ?', [email]);
+  const [result]: any = await connectionModel.query('SELECT * FROM usuarios WHERE email_usuario = $1', [email]);
   if (!result || result.length === 0) {
     throw new Error('Usuário não encontrado');
   }

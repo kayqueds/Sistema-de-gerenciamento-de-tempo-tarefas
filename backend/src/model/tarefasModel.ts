@@ -5,10 +5,10 @@ import type { Tarefa } from "../interface/tabelas";
 
 const getTarefasAll = async () => {
   try {
-    const [listTarefas] = await connectionModel.execute(
+    const listTarefas = await connectionModel.query(
       "SELECT * FROM tarefas"
     );
-    return listTarefas;
+    return listTarefas.rows;
   } catch (erro) {
     console.error("Erro ao buscar todos as tarefas:", erro);
 
@@ -18,11 +18,11 @@ const getTarefasAll = async () => {
 
 const getTarefaById = async (id: number) => {
   try {
-    const [tarefa] = await connectionModel.execute(
-      "SELECT * FROM tarefas WHERE id = ?",
+    const tarefa = await connectionModel.query(
+      "SELECT * FROM tarefas WHERE id = $1",
       [id]
     );
-    return tarefa;
+    return tarefa.rows;
   } catch (erro) {
     console.error(`Erro ao buscar tarefa com ID ${id}:`, erro);
     throw erro;
@@ -50,8 +50,8 @@ const createTarefa = async (body: Tarefa) => {
   }
   try {
     const query =
-      "INSERT INTO tarefas(nome_tarefa, descricao_tarefa, data_criacao, status_tarefa, id_usuario, horario, prioridade) VALUES(?, ?, ?, ?, ?, ?, ?)";
-    const [result] = await connectionModel.execute(query, [
+      "INSERT INTO tarefas(nome_tarefa, descricao_tarefa, data_criacao, status_tarefa, id_usuario, horario, prioridade) VALUES($1, $2, $3, $4, $5, $6, $7)";
+    const result = await connectionModel.query(query, [
       nome_tarefa,
       descricao_tarefa,
       data_criacao,
@@ -94,8 +94,8 @@ const updateTarefa = async (id: number, body: Tarefa) => {
 
   try {
     const query =
-      "UPDATE tarefas SET nome_tarefa=?, descricao_tarefa=?, data_criacao=?, status_tarefa=?, id_usuario=?, horario=?, prioridade=? WHERE id = ?";
-    const [result] = await connectionModel.execute(query, [
+      "UPDATE tarefas SET nome_tarefa=$1, descricao_tarefa=$2, data_criacao=$3, status_tarefa=$4, id_usuario=$5, horario=$6, prioridade=$7 WHERE id = $8";
+    const result = await connectionModel.query(query, [
       nome_tarefa,
       descricao_tarefa,
       data_criacao,
@@ -121,9 +121,9 @@ const updateTarefaPartial = async (id: number, updates: Partial<Tarefa>) => {
       throw new Error("Nenhum campo foi fornecido para atualização parcial.");
     }
 
-    const setClause = fields.map((f) => `${f} = ?`).join(", ");
-    const query = `UPDATE tarefas SET ${setClause} WHERE id = ?`;
-    const [result] = await connectionModel.execute(query, [...values, id]);
+    const setClause = fields.map((f, i) => `${f} = $${i + 1}`).join(", ");
+    const query = `UPDATE tarefas SET ${setClause} WHERE id = $${fields.length + 1}`;
+    const result = await connectionModel.query(query, [...values, id]);
     return result;
   } catch (erro) {
     console.error(
@@ -136,8 +136,8 @@ const updateTarefaPartial = async (id: number, updates: Partial<Tarefa>) => {
 
 const deleteTarefa = async (id: number) => {
   try {
-    const [result] = await connectionModel.execute(
-      "DELETE FROM tarefas WHERE id = ?",
+    const result = await connectionModel.query(
+      "DELETE FROM tarefas WHERE id = $1",
       [id]
     );
     return result;

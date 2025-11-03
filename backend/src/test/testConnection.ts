@@ -3,7 +3,7 @@ import { connectionModel } from "../model/connectionModel";
 
 (async () => {
   try {
-    const conn = await connectionModel.getConnection();
+    const conn = await connectionModel.connect();
     console.log("✅ Conexão com o banco de dados estabelecida com sucesso!");
     conn.release();
   } catch (erro) {
