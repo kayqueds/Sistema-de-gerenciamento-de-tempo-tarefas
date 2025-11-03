@@ -97,11 +97,11 @@ const deleteUsuario = async (id: number) => {
 // autenticar usuário usando o compare
 const compareSenha = async (email:string, password:string) => {
   // Buscar pelo campo email_usuario na tabela usuarios
-  const [result]: any = await connectionModel.query('SELECT * FROM usuarios WHERE email_usuario = $1', [email]);
-  if (!result || result.length === 0) {
+  const result = await connectionModel.query('SELECT * FROM usuarios WHERE email_usuario = $1', [email]);
+  if (!result.rows || result.rows.length === 0) {
     throw new Error('Usuário não encontrado');
   }
-  const user = result[0];
+  const user = result.rows[0];
   const isPasswordValid = await compare(password, user.senha_usuario);
   if (!isPasswordValid) {
     throw new Error('Senha inválida');
