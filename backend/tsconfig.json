@@ -1,33 +1,30 @@
+// tsconfig para exportar para o render backend
 {
   "compilerOptions": {
-    /* Diretórios */
-    "rootDir": "./src",
     "outDir": "./build",
+    "rootDir": "./src",
 
-    /* Ambiente Node */
     "module": "nodenext",
     "target": "esnext",
-    "moduleResolution": "nodenext",
-    "lib": ["esnext"],
     "types": ["node"],
-
-    /* Compatibilidade e Importação */
+    "moduleResolution": "nodenext",
     "esModuleInterop": true,
-    "skipLibCheck": true,
-    "isolatedModules": true,
-    "verbatimModuleSyntax": false,
-    "moduleDetection": "force",
 
-    /* Mapas e Declarações */
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
 
-    /* Verificações */
     "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true
-  },
-  "include": ["src"],
-  "exclude": ["node_modules"]
+    "skipLibCheck": true,
+
+   
+    "isolatedModules": false,
+    "noUncheckedSideEffectImports": false,
+    "verbatimModuleSyntax": false,
+    "moduleDetection": "auto",
+
+
+    "noImplicitAny": false,
+    "exactOptionalPropertyTypes": false
+  }
 }
