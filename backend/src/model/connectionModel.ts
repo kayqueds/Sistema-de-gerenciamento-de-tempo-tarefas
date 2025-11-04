@@ -5,9 +5,12 @@ config();
 
 const { Pool } = pg;
 
-export const connectionModel = new Pool({
+const poolConfig: any = {
   connectionString: process.env.DATABASE_URL,
+  family: 4, // Aqui o TypeScript não reclama
   ssl: {
     rejectUnauthorized: false,
   },
-});
+};
+
+export const connectionModel = new Pool(poolConfig);
