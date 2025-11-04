@@ -6,7 +6,7 @@
 
     "module": "nodenext",
     "target": "esnext",
-    "types": ["node"],
+   "typeRoots": ["./node_modules/@types"],
     "moduleResolution": "nodenext",
     "esModuleInterop": true,
 
