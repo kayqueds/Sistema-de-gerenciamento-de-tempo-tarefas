@@ -17,13 +17,13 @@
     "dotenv": "^16.4.5",
     "express": "^5.1.0",
     "mysql2": "^3.15.2",
-    "pg": "^8.16.3"
+    "pg": "^8.16.3",
+    "@types/node": "^20.19.24"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
-    "@types/node": "^20.19.24",
     "@types/pg": "^8.15.6",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
