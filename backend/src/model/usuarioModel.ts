@@ -71,7 +71,7 @@ const createUsuario = async (body: Usuario) => {
     throw erro;
   }
 };
-
+// atualiazar usuarios
 const updateUsuario = async (id: number, body: Usuario) => {
   const { nome_usuario, email_usuario, senha_usuario } = body;
 
