@@ -2,6 +2,32 @@ import { connectionModel } from "./connectionModel";
 import type { Usuario } from "../interface/tabelas";
 import {hash, compare} from "bcrypt";
 
+// Função para validar a complexidade da senha
+const validarSenha = (senha: string): { valido: boolean; erros: string[] } => {
+  const erros: string[] = [];
+
+  if (senha.length < 8) {
+    erros.push("A senha deve conter no mínimo 8 caracteres");
+  }
+
+  if (!/[A-Z]/.test(senha)) {
+    erros.push("A senha deve conter pelo menos uma letra maiúscula");
+  }
+
+  if (!/[0-9]/.test(senha)) {
+    erros.push("A senha deve conter pelo menos um número");
+  }
+
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(senha)) {
+    erros.push("A senha deve conter pelo menos um caractere especial");
+  }
+
+  return {
+    valido: erros.length === 0,
+    erros
+  };
+};
+
 const getUsuariosAll = async () => {
   try {
     const [listUsuarios] = await connectionModel.execute("SELECT * FROM usuarios");
@@ -29,6 +55,12 @@ const createUsuario = async (body: Usuario) => {
     throw new Error("Os campos 'nome_usuario', 'email_usuario' e 'senha_usuario' são obrigatórios!");
   }
 
+  // Validar complexidade da senha
+  const validacao = validarSenha(senha_usuario);
+  if (!validacao.valido) {
+    throw new Error(validacao.erros.join("; "));
+  }
+
   try {
     const hashedPassword = await hash(senha_usuario, 10);
     const query = "INSERT INTO usuarios(nome_usuario, email_usuario, senha_usuario) VALUES(?, ?, ?)";
@@ -39,12 +71,18 @@ const createUsuario = async (body: Usuario) => {
     throw erro;
   }
 };
-
+// atualiazar usuarios
 const updateUsuario = async (id: number, body: Usuario) => {
   const { nome_usuario, email_usuario, senha_usuario } = body;
 
   if (!nome_usuario || !email_usuario || !senha_usuario) {
     throw new Error("Os campos 'nome_usuario', 'email_usuario' e 'senha_usuario' são obrigatórios!");
+  }
+
+  // Validar complexidade da senha
+  const validacao = validarSenha(senha_usuario);
+  if (!validacao.valido) {
+    throw new Error(validacao.erros.join("; "));
   }
 
   try {
@@ -60,6 +98,14 @@ const updateUsuario = async (id: number, body: Usuario) => {
 
 const updateUsuarioPartial = async (id: number, updates: Partial<Usuario>) => {
   try {
+    // Se estiver atualizando senha, validar complexidade
+    if (updates.senha_usuario) {
+      const validacao = validarSenha(updates.senha_usuario);
+      if (!validacao.valido) {
+        throw new Error(validacao.erros.join("; "));
+      }
+    }
+
     const fields = Object.keys(updates);
     const values = await Promise.all(
       fields.map(async (field) => {
@@ -117,5 +163,6 @@ export default {
   updateUsuario,
   updateUsuarioPartial,
   deleteUsuario,
-  compareSenha
+  compareSenha,
+  validarSenha
 };

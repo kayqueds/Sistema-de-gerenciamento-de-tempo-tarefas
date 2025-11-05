@@ -76,6 +76,22 @@ const compareUsuarioSenha = async (req: Request, res: Response) => {
   }
 };
 
+// Validar força da senha
+const validarSenhaComplexidade = async (req: Request, res: Response) => {
+  const { senha } = req.body;
+
+  if (!senha) {
+    return res.status(400).json({ mensagem: "Senha é obrigatória." });
+  }
+
+  try {
+    const resultado = usuarioModel.validarSenha(senha);
+    return res.status(200).json(resultado);
+  } catch (error) {
+    return res.status(500).json({ mensagem: "Erro ao validar senha." });
+  }
+};
+
 // Exportando as funções
 export default {
   getUsuariosAll,
@@ -84,4 +100,5 @@ export default {
   updateUsuario,
   deleteUsuario,
   compareUsuarioSenha,
+  validarSenhaComplexidade,
 };
