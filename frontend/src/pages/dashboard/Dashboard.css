@@ -1,19 +1,13 @@
-body {
-  background: #f4f5f7;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  margin: 0;
-}
-
 /* LAYOUT PRINCIPAL */
 .dashboard-layout {
   display: flex;
   min-height: 100vh;
 }
 
-/* SIDEBAR */
+/* SIDEBAR desktop */
 .sidebar {
   width: 220px;
-  background-color: #616771;
+  background-color: #222730;
   color: #fff;
   padding: 2rem 1rem;
   display: flex;
@@ -30,6 +24,7 @@ body {
 .sidebar ul {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .sidebar li {
@@ -43,6 +38,18 @@ body {
 .sidebar li.active {
   background-color: #646cff;
   color: #fff;
+}
+
+/* Links sidebar */
+.sidebar-link {
+  color: inherit;
+  text-decoration: none;
+  display: block;
+  width: 100%;
+}
+
+.sidebar-link:hover {
+  border-radius: 4px;
 }
 
 /* CONTEÚDO */
@@ -62,11 +69,13 @@ body {
 /* FORMULÁRIO */
 .task-form {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
   margin-bottom: 2rem;
-  flex-wrap: wrap;
+  align-items: center; /* botão na mesma linha */
 }
 
+/* Inputs e select do formulário */
 .task-form input,
 .task-form select {
   padding: 0.6rem 1rem;
@@ -83,7 +92,8 @@ body {
   box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.2);
 }
 
-.task-form button {
+/* Botão do formulário */
+.btn-formulario {
   background-color: #646cff;
   color: #fff;
   border: none;
@@ -93,14 +103,14 @@ body {
   transition: all 0.2s ease;
 }
 
-.task-form button:hover {
+.btn-formulario:hover {
   background-color: #535bf2;
 }
 
 /* GRID DE TAREFAS */
 .tasks-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
 }
 
@@ -109,16 +119,16 @@ body {
   background: #fff;
   padding: 1rem;
   border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   transition: all 0.2s ease;
 }
 
 .task-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
 }
 
 .task-info h3 {
@@ -131,20 +141,27 @@ body {
   color: #666;
 }
 
+.task-info p {
+  margin: 0.25rem 0;
+}
+
+.task-info small {
+  font-size: 0.8rem;
+  color: #555;
+}
+
 /* PRIORIDADE */
-.task-card.high {
-  border-left: 5px solid #dc3545;
-}
-
-.task-card.normal {
-  border-left: 5px solid #ffc107;
-}
-
-.task-card.low {
-  border-left: 5px solid #198754;
-}
+.task-card.high { border-left: 5px solid #dc3545; }
+.task-card.normal { border-left: 5px solid #ffc107; }
+.task-card.low { border-left: 5px solid #198754; }
 
 /* BOTÕES DE AÇÃO */
+.task-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
 .task-actions button {
   background: none;
   border: none;
@@ -154,13 +171,8 @@ body {
   transition: all 0.2s ease;
 }
 
-.task-actions .edit:hover {
-  color: #646cff;
-}
-
-.task-actions .delete:hover {
-  color: #dc3545;
-}
+.task-actions .edit:hover { color: #646cff; }
+.task-actions .delete:hover { color: #dc3545; }
 
 /* MENSAGEM DE TAREFAS VAZIAS */
 .empty {
@@ -169,26 +181,53 @@ body {
   font-style: italic;
 }
 
+/* OFFCANVAS MOBILE */
+.offcanvas {
+  width: 220px;
+}
+
+.offcanvas .sidebar-link {
+  padding: 0.5rem 0;
+  display: block;
+}
+
 /* RESPONSIVIDADE */
 @media (max-width: 768px) {
   .dashboard-layout {
     flex-direction: column;
   }
 
-  .sidebar {
+  /* Botão para abrir sidebar mobile */
+  .btn-offcanvas {
+    display: block;
+    margin: 1rem;
+  }
+
+  /* Formulário mobile em coluna */
+  .task-form {
+    flex-direction: column;
+  }
+  .offcanvas-header{
+    background-color: #535bf2;
+  }
+
+  .task-form input,
+  .task-form select,
+  .btn-formulario {
     width: 100%;
-    flex-direction: row;
-    overflow-x: auto;
-    gap: 0.5rem;
-    padding: 1rem;
   }
 
-  .sidebar ul {
-    display: flex;
-    gap: 0.5rem;
+  /* Cards ocupam 100% da largura no mobile */
+  .tasks-grid {
+    flex-direction: column;
   }
 
-  .sidebar li {
-    flex: none;
+  .task-card {
+    width: 100%;
+  }
+
+  /* Sidebar desktop escondida */
+  .sidebar.d-none.d-md-flex {
+    display: none !important;
   }
 }

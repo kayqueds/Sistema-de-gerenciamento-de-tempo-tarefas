@@ -5,6 +5,8 @@ import Cadastro from "../pages/cadastro/Cadastro";
 import Sobre from "../pages/sobre/Sobre";
 import Dashboard from "../pages/dashboard/Dashboard";
 import Error404 from "../pages/error404/Error404";
+import Calendario from "../pages/calendario/Calendario";
+
 
 // rotas do site
 function RotasSite() {
@@ -15,6 +17,7 @@ function RotasSite() {
       <Route path="/cadastro" element={<Cadastro />} />
       <Route path="/sobre" element={<Sobre />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/calendario" element={<Calendario />} />
       <Route path="*" element={< Error404/>} />
     </Routes>
   );
