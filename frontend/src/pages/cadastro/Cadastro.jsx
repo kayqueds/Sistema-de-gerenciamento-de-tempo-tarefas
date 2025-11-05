@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
 import { toast } from "react-toastify";
+import api from "../../api";
 import PasswordStrength from "../../components/common/PasswordStrength/PasswordStrength";
 import "./Cadastro.css";
 // usar toastify no alert
@@ -49,7 +49,7 @@ function Cadastro() {
     }
 
     try {
-      const response = await axios.post("http://localhost:3000/usuarios", {
+      const response = await api.post("usuarios", {
         nome_usuario,
         email_usuario,
         senha_usuario,
