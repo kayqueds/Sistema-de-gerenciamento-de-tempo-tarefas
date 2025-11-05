@@ -2,10 +2,36 @@ import { connectionModel } from "./connectionModel";
 import type { Usuario } from "../interface/tabelas";
 import {hash, compare} from "bcrypt";
 
+// Função para validar a complexidade da senha
+const validarSenha = (senha: string): { valido: boolean; erros: string[] } => {
+  const erros: string[] = [];
+
+  if (senha.length < 8) {
+    erros.push("A senha deve conter no mínimo 8 caracteres");
+  }
+
+  if (!/[A-Z]/.test(senha)) {
+    erros.push("A senha deve conter pelo menos uma letra maiúscula");
+  }
+
+  if (!/[0-9]/.test(senha)) {
+    erros.push("A senha deve conter pelo menos um número");
+  }
+
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(senha)) {
+    erros.push("A senha deve conter pelo menos um caractere especial");
+  }
+
+  return {
+    valido: erros.length === 0,
+    erros
+  };
+};
+
 const getUsuariosAll = async () => {
   try {
-    const [listUsuarios] = await connectionModel.execute("SELECT * FROM usuarios");
-    return listUsuarios;
+    const listUsuarios = await connectionModel.query("SELECT * FROM usuarios");
+    return listUsuarios.rows;
   } catch (erro) {
     console.error("Erro ao buscar todos os usuários:", erro);
     throw erro;
@@ -14,8 +40,8 @@ const getUsuariosAll = async () => {
 
 const getUsuarioById = async (id: number) => {
   try {
-    const [usuario] = await connectionModel.execute("SELECT * FROM usuarios WHERE id = ?", [id]);
-    return usuario;
+    const usuario = await connectionModel.query("SELECT * FROM usuarios WHERE id = $1", [id]);
+    return usuario.rows;
   } catch (erro) {
     console.error(`Erro ao buscar usuário com ID ${id}:`, erro);
     throw erro;
@@ -29,17 +55,23 @@ const createUsuario = async (body: Usuario) => {
     throw new Error("Os campos 'nome_usuario', 'email_usuario' e 'senha_usuario' são obrigatórios!");
   }
 
+  // Validar complexidade da senha
+  const validacao = validarSenha(senha_usuario);
+  if (!validacao.valido) {
+    throw new Error(validacao.erros.join("; "));
+  }
+
   try {
     const hashedPassword = await hash(senha_usuario, 10);
-    const query = "INSERT INTO usuarios(nome_usuario, email_usuario, senha_usuario) VALUES(?, ?, ?)";
-    const [result] = await connectionModel.execute(query, [nome_usuario, email_usuario, hashedPassword]);
+    const query = "INSERT INTO usuarios(nome_usuario, email_usuario, senha_usuario) VALUES($1, $2, $3)";
+    const result = await connectionModel.query(query, [nome_usuario, email_usuario, hashedPassword]);
     return result;
   } catch (erro) {
     console.error("Erro ao criar usuário:", erro);
     throw erro;
   }
 };
-
+// atualiazar usuarios
 const updateUsuario = async (id: number, body: Usuario) => {
   const { nome_usuario, email_usuario, senha_usuario } = body;
 
@@ -47,10 +79,16 @@ const updateUsuario = async (id: number, body: Usuario) => {
     throw new Error("Os campos 'nome_usuario', 'email_usuario' e 'senha_usuario' são obrigatórios!");
   }
 
+  // Validar complexidade da senha
+  const validacao = validarSenha(senha_usuario);
+  if (!validacao.valido) {
+    throw new Error(validacao.erros.join("; "));
+  }
+
   try {
     const hashedPassword = await hash(senha_usuario, 10);
-    const query = "UPDATE usuarios SET nome_usuario=?, email_usuario=?, senha_usuario=? WHERE id = ?";
-    const [result] = await connectionModel.execute(query, [nome_usuario, email_usuario, hashedPassword, id]);
+    const query = "UPDATE usuarios SET nome_usuario=$1, email_usuario=$2, senha_usuario=$3 WHERE id = $4";
+    const result = await connectionModel.query(query, [nome_usuario, email_usuario, hashedPassword, id]);
     return result;
   } catch (erro) {
     console.error(`Erro ao atualizar usuário com ID ${id}:`, erro);
@@ -60,6 +98,14 @@ const updateUsuario = async (id: number, body: Usuario) => {
 
 const updateUsuarioPartial = async (id: number, updates: Partial<Usuario>) => {
   try {
+    // Se estiver atualizando senha, validar complexidade
+    if (updates.senha_usuario) {
+      const validacao = validarSenha(updates.senha_usuario);
+      if (!validacao.valido) {
+        throw new Error(validacao.erros.join("; "));
+      }
+    }
+
     const fields = Object.keys(updates);
     const values = await Promise.all(
       fields.map(async (field) => {
@@ -74,9 +120,9 @@ const updateUsuarioPartial = async (id: number, updates: Partial<Usuario>) => {
       throw new Error("Nenhum campo foi fornecido para atualização parcial.");
     }
 
-    const setClause = fields.map((f) => `${f} = ?`).join(", ");
-    const query = `UPDATE usuarios SET ${setClause} WHERE id = ?`;
-    const [result] = await connectionModel.execute(query, [...values, id]);
+    const setClause = fields.map((f, i) => `${f} = $${i + 1}`).join(", ");
+    const query = `UPDATE usuarios SET ${setClause} WHERE id = $${fields.length + 1}`;
+    const result = await connectionModel.query(query, [...values, id]);
     return result;
   } catch (erro) {
     console.error(`Erro ao atualizar parcialmente o usuário com ID ${id}:`, erro);
@@ -86,7 +132,7 @@ const updateUsuarioPartial = async (id: number, updates: Partial<Usuario>) => {
 
 const deleteUsuario = async (id: number) => {
   try {
-    const [result] = await connectionModel.execute("DELETE FROM usuarios WHERE id = ?", [id]);
+    const result = await connectionModel.query("DELETE FROM usuarios WHERE id = $1", [id]);
     return result;
   } catch (erro) {
     console.error(`Erro ao deletar usuário com ID ${id}:`, erro);
@@ -97,11 +143,11 @@ const deleteUsuario = async (id: number) => {
 // autenticar usuário usando o compare
 const compareSenha = async (email:string, password:string) => {
   // Buscar pelo campo email_usuario na tabela usuarios
-  const [result]: any = await connectionModel.execute('SELECT * FROM usuarios WHERE email_usuario = ?', [email]);
-  if (!result || result.length === 0) {
+  const result = await connectionModel.query('SELECT * FROM usuarios WHERE email_usuario = $1', [email]);
+  if (!result.rows || result.rows.length === 0) {
     throw new Error('Usuário não encontrado');
   }
-  const user = result[0];
+  const user = result.rows[0];
   const isPasswordValid = await compare(password, user.senha_usuario);
   if (!isPasswordValid) {
     throw new Error('Senha inválida');
@@ -117,5 +163,6 @@ export default {
   updateUsuario,
   updateUsuarioPartial,
   deleteUsuario,
-  compareSenha
+  compareSenha,
+  validarSenha
 };

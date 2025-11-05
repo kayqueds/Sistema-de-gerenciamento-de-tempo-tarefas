@@ -42,7 +42,8 @@ function Dashboard() {
     e.preventDefault();
     if (!form.titulo || !form.descricao || !form.prioridade || !form.horario || !form.data) {
       toast.error("Todos os campos são obrigatórios!!");
-      playSound(listSound[0]);
+      playSound(listSound[2]);
+
       return;
     }
 

@@ -15,5 +15,6 @@ rota.post('/usuarios', usuarioController.createNewUsuario);
 rota.put('/usuarios/:id', usuarioController.updateUsuario);
 rota.delete('/usuarios/:id', usuarioController.deleteUsuario);
 rota.post('/usuarios/login', usuarioController.compareUsuarioSenha);
+rota.post('/usuarios/validar-senha', usuarioController.validarSenhaComplexidade);
 
 export default rota;

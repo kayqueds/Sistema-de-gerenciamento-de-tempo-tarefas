@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
 import { toast } from "react-toastify";
+import api from "../../api";
+import PasswordStrength from "../../components/common/PasswordStrength/PasswordStrength";
 import "./Cadastro.css";
 // usar toastify no alert
 
@@ -40,8 +41,15 @@ function Cadastro() {
     const email_usuario = e.target[1].value;
     const senha_usuario = e.target[2].value;
 
+    // Validação da senha antes de enviar
+    const validacaoSenha = validarSenha(senha_usuario);
+    if (!validacaoSenha.valido) {
+      toast.error(validacaoSenha.erros[0]); // Mostra o primeiro erro
+      return;
+    }
+
     try {
-      const response = await axios.post("http://localhost:3000/usuarios", {
+      const response = await api.post("usuarios", {
         nome_usuario,
         email_usuario,
         senha_usuario,
@@ -53,8 +61,36 @@ function Cadastro() {
       }, 2000);
     } catch (error) {
       console.error("❌ Erro ao cadastrar:", error);
-      toast.error("Erro ao cadastrar. Tente novamente.");
+      // Exibir mensagem de erro específica do backend
+      const mensagemErro = error.response?.data?.erro || error.response?.data?.mensagem || "Erro ao cadastrar. Tente novamente.";
+      toast.error(mensagemErro);
     }
+  };
+
+  // Função para validar senha localmente (mesma lógica do backend)
+  const validarSenha = (senha) => {
+    const erros = [];
+
+    if (senha.length < 8) {
+      erros.push("A senha deve conter no mínimo 8 caracteres");
+    }
+
+    if (!/[A-Z]/.test(senha)) {
+      erros.push("A senha deve conter pelo menos uma letra maiúscula");
+    }
+
+    if (!/[0-9]/.test(senha)) {
+      erros.push("A senha deve conter pelo menos um número");
+    }
+
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(senha)) {
+      erros.push("A senha deve conter pelo menos um caractere especial");
+    }
+
+    return {
+      valido: erros.length === 0,
+      erros
+    };
   };
 
   return (
@@ -93,6 +129,9 @@ function Cadastro() {
                 onChange={(e) => setSenha(e.target.value)}
                 required
               />
+
+              {/* Componente de validação de força da senha */}
+              <PasswordStrength password={senha} />
 
               <div className="form-check mb-3">
                 <input

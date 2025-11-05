@@ -1,11 +1,13 @@
-import mysql from "mysql2/promise";
+// importação do pg do postgree e das variáveis de ambiente
+import pg from "pg";
 import { config } from "dotenv";
 config();
 
-export const connectionModel = mysql.createPool({
-  host: process.env.HOST || "",
-  user: process.env.USER || "",
-  password: process.env.PASSWORD || "",
-  database: process.env.DATABASE || "",
-});
+const { Pool } = pg;
 
+export const connectionModel = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+});
