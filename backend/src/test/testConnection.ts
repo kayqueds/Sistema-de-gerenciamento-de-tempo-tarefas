@@ -1,5 +1,5 @@
 // backend/src/test/testConnection.ts
-import { connectionModel } from "../model/connectionModel";
+import { connectionModel} from "../model/connectionModel";
 
 (async () => {
   try {
