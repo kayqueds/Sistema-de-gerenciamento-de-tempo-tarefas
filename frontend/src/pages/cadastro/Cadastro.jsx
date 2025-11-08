@@ -4,17 +4,13 @@ import { toast } from "react-toastify";
 import api from "../../api";
 import PasswordStrength from "../../components/common/PasswordStrength/PasswordStrength";
 import "./Cadastro.css";
+import Sound from "../../hooks/Sound";
 // usar toastify no alert
 
 function Cadastro() {
   const navigate = useNavigate();
-/*
-  // testar aleta com toastify
-  useEffect(() => {
-  toast.info("Teste de toast!");
-}, []);
-*/
 
+  const { playSound, listSound } = Sound();
   const imagens = [
     "https://blogprodutivamente.files.wordpress.com/2022/07/post-como-fazer-lista-de-tarefas-2.jpg?w=1024",
     "https://isoflex.com.br/wp-content/uploads/2022/12/matriz-de-gerenciamento-do-tempo.jpg",
@@ -56,6 +52,7 @@ function Cadastro() {
       });
       console.log(response.data);
       toast.success("Cadastro realizado com sucesso!");
+      playSound(listSound[1]);
       setTimeout(() => {
         navigate("/login");
       }, 2000);

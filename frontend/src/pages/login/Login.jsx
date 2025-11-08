@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
 import api from "../../api";
 import { toast } from "react-toastify";
-import Banner from "../../components/common/banner/Banner";
+import Sound from "../../hooks/Sound";
+
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -18,6 +19,9 @@ function Login() {
     "https://isoflex.com.br/wp-content/uploads/2022/12/matriz-de-gerenciamento-do-tempo.jpg",
     "https://mir-s3-cdn-cf.behance.net/project_modules/1400_webp/2ee12c73344287.5c06973b51d22.jpg",
   ];
+
+  // importando sons
+  const { playSound, listSound } = Sound();
 
   useEffect(() => {
     const intervalo = setTimeout(() => {
@@ -37,11 +41,13 @@ function Login() {
 
       console.log("Login bem-sucedido:", response.data);
       toast.success(`Login bem-sucedido! Bem-vindo de volta ${response.data.nome_usuario}.`);
+      playSound(listSound[1]);
       navigate("/dashboard");
       // caso de erro
     } catch (error) {
       console.error("Erro no login:", error);
       toast.error("Falha no login. Verifique suas credenciais.");
+      playSound(listSound[2]);
     }
   };
 

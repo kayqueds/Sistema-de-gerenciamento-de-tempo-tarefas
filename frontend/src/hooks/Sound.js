@@ -9,6 +9,7 @@ const listSound = [
 function Sound() {
     const playSound = async (soundFile) => {
         const audio = new Audio(soundFile);
+        audio.volume = 0.5;
         await audio.play();
     }
     return { playSound, listSound };
