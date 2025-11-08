@@ -60,7 +60,7 @@ function Dashboard() {
         status_tarefa: statusMap[form.prioridade] || "pendente",
         prioridade: prioridadeMap[form.prioridade] || "Normal",
         id_usuario: 1,
-      };
+      };z
 
       if (editIndex !== null) {
         playSound(listSound[3]);
@@ -85,6 +85,14 @@ function Dashboard() {
       playSound(listSound[2]);
     }
   };
+
+const formatarData = (dataString) => {
+    const data = new Date(dataString);
+    const dia = String(data.getDate()).padStart(2, "0");
+    const mes = String(data.getMonth() + 1).padStart(2, "0");
+    const ano = data.getFullYear();
+    return `${dia}/${mes}/${ano}`;
+};
 
   const handleEdit = (i) => {
     const tarefa = tarefas[i];
