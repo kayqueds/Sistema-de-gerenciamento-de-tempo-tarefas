@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
+import api from "../../api";
+import { toast } from "react-toastify";
 import Banner from "../../components/common/banner/Banner";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const [index, setIndex] = useState(0);
 
@@ -23,9 +26,23 @@ function Login() {
     return () => clearTimeout(intervalo);
   }, [imagens.length]);
 
-  const enviarFormulario = (e) => {
+  const enviarFormulario = async (e) => {
     e.preventDefault();
-    console.log("Login feito:", { email, password });
+    try {
+      // Chamar a API para fazer login
+      const response = await api.post("/usuarios/login", {
+      email_usuario: email,
+      senha_usuario: password,
+});
+
+      console.log("Login bem-sucedido:", response.data);
+      toast.success(`Login bem-sucedido! Bem-vindo de volta ${response.data.nome_usuario}.`);
+      navigate("/dashboard");
+      // caso de erro
+    } catch (error) {
+      console.error("Erro no login:", error);
+      toast.error("Falha no login. Verifique suas credenciais.");
+    }
   };
 
   const loginGoogle = () => {
@@ -63,14 +80,13 @@ function Login() {
                 <Link to="/cadastro">Cadastre-se</Link>
               </div>
 
-              <button type="submit" className="btn-login">
+              <button onClick={enviarFormulario} type="submit" className="btn-login">
                 Login
               </button>
 
               <div className="divider">ou</div>
 
-              <button
-                type="button"
+              <button type="button"
                 className="btn-login-google"
                 onClick={loginGoogle}
               >
