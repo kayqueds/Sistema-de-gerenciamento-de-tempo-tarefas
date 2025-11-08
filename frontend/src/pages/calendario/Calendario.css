@@ -1,0 +1,140 @@
+.calendar-container {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  max-width: 1000px;
+  margin: 40px auto;
+  font-family: 'Inter', sans-serif;
+  overflow-y: hidden;
+}
+
+.calendar-title {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #01010b;
+  
+}
+
+/* FullCalendar base */
+.fc {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Botões principais (desktop intacto) */
+.fc-button {
+  background-color: #4f46e5 !important;
+  border: none !important;
+  color: #fff !important;
+  border-radius: 10px !important;
+  transition: 0.3s;
+  margin: 0 6px !important;
+  padding: 6px 14px !important;
+}
+
+.fc-button:hover {
+  background-color: #060ae7 !important;
+}
+
+/* Dias */
+.fc-daygrid-day {
+  transition: background-color 0.3s;
+}
+
+.fc-daygrid-day:hover {
+  background-color: #e9e9f8 !important;
+  cursor: pointer;
+}
+
+/* Evento visual */
+.fc-event {
+  background-color: #c3c4ed !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-size: 14px;
+  padding: 3px 6px !important;
+}
+
+/* Botões agrupados */
+.fc-toolbar-chunk .fc-button-group {
+  gap: 10px !important;
+}
+
+/* =========================
+   📱 Responsividade tablet e mobile
+   ========================= */
+
+/* Tablets (<= 1024px) */
+@media (max-width: 1024px) {
+  .calendar-container {
+    max-width: 85%;
+    padding: 20px;
+
+  }
+
+  .calendar-title {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+  }
+
+  /* Empilha botões verticalmente */
+  .fc-toolbar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+
+  .fc-toolbar-chunk {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+
+  .fc-button {
+    font-size: 13px !important;
+    padding: 12px 12px !important;
+    margin: 0 !important;
+    border-radius: 20px !important;
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+
+/* Celulares (<= 800px) */
+@media (max-width: 800px) {
+  .calendar-container {
+    max-width: 95%;
+    padding: 20px;
+
+  }
+
+  .calendar-title {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+  }
+
+  /* Empilha botões verticalmente */
+  .fc-toolbar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+
+  .fc-toolbar-chunk {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+
+  .fc-button {
+    font-size: 13px !important;
+    padding: 10px 12px !important;
+    margin: 0 !important;
+    border-radius: 8px !important;
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+}
