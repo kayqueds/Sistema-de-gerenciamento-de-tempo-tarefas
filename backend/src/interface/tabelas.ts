@@ -8,7 +8,7 @@ export interface Usuario {
     updatedAt: Date;
 }
 export interface Tarefa {
-    id: string;
+    id_tarefa: number;
     nome_tarefa: string;
     descricao_tarefa: string;
     data_tarefa: Date;

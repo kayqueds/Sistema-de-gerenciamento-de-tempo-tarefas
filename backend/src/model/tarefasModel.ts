@@ -19,7 +19,7 @@ const getTarefasAll = async () => {
 const getTarefaById = async (id: number) => {
   try {
     const tarefa = await connectionModel.query(
-      "SELECT * FROM tarefas WHERE id = $1",
+      "SELECT * FROM tarefas WHERE id_tarefa = $1",
       [id]
     );
     return tarefa.rows;
@@ -50,7 +50,7 @@ const createTarefa = async (body: Tarefa) => {
   }
   try {
     const query =
-      "INSERT INTO tarefas(nome_tarefa, descricao_tarefa, data_criacao, status_tarefa, id_usuario, horario, prioridade) VALUES($1, $2, $3, $4, $5, $6, $7)";
+      "INSERT INTO tarefas(nome_tarefa, descricao_tarefa, data_tarefa, status_tarefa, id_usuario, horario, prioridade) VALUES($1, $2, $3, $4, $5, $6, $7)";
     const result = await connectionModel.query(query, [
       nome_tarefa,
       descricao_tarefa,
@@ -94,7 +94,7 @@ const updateTarefa = async (id: number, body: Tarefa) => {
 
   try {
     const query =
-      "UPDATE tarefas SET nome_tarefa=$1, descricao_tarefa=$2, data_criacao=$3, status_tarefa=$4, id_usuario=$5, horario=$6, prioridade=$7 WHERE id = $8";
+      "UPDATE tarefas SET nome_tarefa=$1, descricao_tarefa=$2, data_tarefa=$3, status_tarefa=$4, id_usuario=$5, horario=$6, prioridade=$7 WHERE id_tarefa = $8";
     const result = await connectionModel.query(query, [
       nome_tarefa,
       descricao_tarefa,
@@ -122,7 +122,7 @@ const updateTarefaPartial = async (id: number, updates: Partial<Tarefa>) => {
     }
 
     const setClause = fields.map((f, i) => `${f} = $${i + 1}`).join(", ");
-    const query = `UPDATE tarefas SET ${setClause} WHERE id = $${fields.length + 1}`;
+    const query = `UPDATE tarefas SET ${setClause} WHERE id_tarefa = $${fields.length + 1}`;
     const result = await connectionModel.query(query, [...values, id]);
     return result;
   } catch (erro) {
@@ -137,7 +137,7 @@ const updateTarefaPartial = async (id: number, updates: Partial<Tarefa>) => {
 const deleteTarefa = async (id: number) => {
   try {
     const result = await connectionModel.query(
-      "DELETE FROM tarefas WHERE id = $1",
+      "DELETE FROM tarefas WHERE id_tarefa = $1",
       [id]
     );
     return result;
