@@ -1,43 +1,59 @@
-# 🎬 Sistema de Gerenciamento de Tempo/Tarefas
+# 🎬 Organix
+<br>
 
-**Descrição:** Projeto para gerenciar tarefas e proporcionar facilidade ao realizar quaisquer atividades
+ > ### Sistema de gerenciamento de tempo e tarefas desenvolvido para otimizar sua rotina, melhorar a produtividade e simplificar o controle de seus compromissos.
 
 
-[salão/restaurante/clínica].
+## 🔗 Acesse o projeto
 
----
+🌍 **Site (Frontend):** https://organix-sistema.netlify.app/
 
-## 🛠 Tecnologias
-- **Frontend:** React
-- **Backend:** Node.js + TypeScript
-- **Banco de Dados:** PostgreSQL
+⚙️ **API (Backend):**  https://sistema-de-gerenciamento-de-tempo-tarefas.onrender.com/tarefas 
+
+## 👥 Nome dos Integrantes 
+
+**Andre de Queiroz Cenaque RA: 86717**
+
+**Gabriel Lopes Slovak RA: 110696**
+
+**Kayque Estevão de Queiroga RA: 89632**
+
+**Luís Henrique do Carmo RA: 7722**
+
+**Marina Duarte Cabral RA: 94306**
+
+
+## 🛠 Tecnologias Usadas
+
+- **Typescript**
+
+- **Node.js**
+
+- **React**
+
+- **Supabase**
+
+- **Netfily**
+
+- **PostgreSQL**
+
+- **Tailwind**
+
+- **HTML**
+
+- **CSS**
+
 
 ---
 
 ## 🚀 Como Rodar o Projeto
 
-### FrontendJ
-```bash
-cd frontend
-npm install
-npm start
-# 🎬 Sistema de Reserva de [Segmento]
-
-**Descrição:** Projeto para gerenciar reservas de [salão/restaurante/clínica].
-
----
-
-## 🛠 Tecnologias
-- **Frontend:** React
-- **Backend:** Node.js + TypeScript
-- **Banco de Dados:** PostgreSQL
-
----
-
-## 🚀 Como Rodar o Projeto
+### 🖥 OBS: Para rodar a aplicação é necessário criar um arquivo .env
 
 ### Frontend
 ```bash
 cd frontend
 npm install
 npm run dev
+# 🎬 Sistema de Reserva de [Segmento]
+
