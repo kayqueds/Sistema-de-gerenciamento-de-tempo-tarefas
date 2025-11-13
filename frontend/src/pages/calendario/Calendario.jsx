@@ -5,6 +5,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import ptBrLocale from "@fullcalendar/core/locales/pt-br";
 import "./Calendario.css";
+import Sidebar from "../../components/common/sidebar/Sidebar";
 
 function Calendario() {
   const [events, setEvents] = useState([
@@ -41,6 +42,8 @@ function Calendario() {
   };
 
   return (
+    <>
+    <Sidebar />
     <div className="calendar-container">
       <h2 className="calendar-title">Calendário de Tarefas</h2>
       <FullCalendar
@@ -60,6 +63,7 @@ function Calendario() {
           week: "Semana",
           day: "Dia",
         }}
+        
         events={events}
         dateClick={handleDateClick}
         editable={true}          // permite arrastar e redimensionar
@@ -69,7 +73,10 @@ function Calendario() {
         eventResize={handleEventResize}
         height="80vh"
       />
+      
     </div>
+
+    </>
   );
 }
 

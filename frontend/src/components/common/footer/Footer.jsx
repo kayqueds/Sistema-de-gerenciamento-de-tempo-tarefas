@@ -8,7 +8,7 @@ const year = data.getFullYear();
   return (
     <footer className={style.footer}>
       <div className={style.container}>
-        <p>&copy; {year} Organix. Todos os direitos reservados.</p>
+        <p>&copy; {year} Organix Todos os direitos reservados</p>
       </div>
     </footer>
   );
