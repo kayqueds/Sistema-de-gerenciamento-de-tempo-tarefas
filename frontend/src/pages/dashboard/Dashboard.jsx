@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import api from "../../api";
 import useSweetAlert from "../../hooks/SweetAlert";
 import Sound from "../../hooks/Sound";
+import Sidebar from "../../components/common/sidebar/Sidebar.jsx";
 
 function Dashboard() {
   const [tarefas, setTarefas] = useState([]);
@@ -172,15 +173,7 @@ function Dashboard() {
   return (
     <div className="dashboard-layout">
       {/* SIDEBAR */}
-      <aside className="sidebar">
-        <h2>TaskBoost</h2>
-        <ul>
-          <li className="active">Dashboard</li>
-          <li>Projetos</li>
-          <li>Calendário</li>
-          <li>Configurações</li>
-        </ul>
-      </aside>
+      <Sidebar />
 
       {/* CONTEÚDO PRINCIPAL */}
       <main className="dashboard-content">

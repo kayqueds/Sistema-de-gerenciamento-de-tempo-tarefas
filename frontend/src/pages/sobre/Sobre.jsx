@@ -14,10 +14,10 @@ import LuisImg from "../../assets/luis.jpeg";
 
 const developers = [
   { name: "Gabriel Lopes Slovak", role: "Frontend Developer", img: gabrielImg, instagram: "https://www.instagram.com/slovakgabriellopes/#", github: "https://github.com/gabriel-slovak", linkedin: "#" },
-  { name: "Kayque Estevão", role: "Backend Developer", img: KayqueImg, instagram: "https://www.instagram.com/kayqueestevao29/#", github: "https://github.com/kayqueds", linkedin: "http://linkedin.com/in/kayquequeiroga" },
-  { name: "André Cenaque", role: "Fullstack Developer", img: AndreImg, instagram: "#", github: "#", linkedin: "#" },
-  { name: "Marina Duarte", role: "DevOps Engineer", img: MarinaImg, instagram: "https://www.instagram.com/rinduart_?igsh=MXZ1dG43Z29yNjNyMg==", github: "https://github.com/MarinaDuarteC", linkedin: "#" },
-  { name: "Luis Henrique", role: "UI/UX Designer", img: LuisImg, instagram: "https://www.instagram.com/luis_riquescs/", github: "https://github.com/luishenriquecss", linkedin: "http://www.linkedin.com/in/lu%C3%ADs-henrique-santos-789139322" },
+  { name: "Kayque Estevão", role: "Full Stack Developer", img: KayqueImg, instagram: "https://www.instagram.com/kayqueestevao29/#", github: "https://github.com/kayqueds", linkedin: "http://linkedin.com/in/kayquequeiroga" },
+  { name: "André Cenaque", role: "Frontend Developer", img: AndreImg, instagram: "#", github: "#", linkedin: "#" },
+  { name: "Marina Duarte", role: "UI/UX Designer", img: MarinaImg, instagram: "https://www.instagram.com/rinduart_?igsh=MXZ1dG43Z29yNjNyMg==", github: "https://github.com/MarinaDuarteC", linkedin: "#" },
+  { name: "Luis Henrique", role: "Backend Developer", img: LuisImg, instagram: "https://www.instagram.com/luis_riquescs/", github: "https://github.com/luishenriquecss", linkedin: "http://www.linkedin.com/in/lu%C3%ADs-henrique-santos-789139322" },
 ];
 
 function Sobre() {
