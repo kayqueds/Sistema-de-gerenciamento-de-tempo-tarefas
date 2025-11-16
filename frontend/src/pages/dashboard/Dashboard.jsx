@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./Dashboard.css";
 import { toast } from "react-toastify";
 import api from "../../api";
@@ -19,7 +19,23 @@ function Dashboard() {
   const { showConfirmation } = useSweetAlert();
   const { playSound, listSound } = Sound();
 
-  // Listar tarefas
+  // ---------------------
+  //   POMODORO (C2)
+  // ---------------------
+  const [pomodoroOpen, setPomodoroOpen] = useState(false);
+  const [currentTask, setCurrentTask] = useState(null);
+
+  const [pomodoroTime, setPomodoroTime] = useState(25);
+  const [shortBreak, setShortBreak] = useState(5);
+  const [longBreak, setLongBreak] = useState(15);
+
+  const [timeLeft, setTimeLeft] = useState(25 * 60);
+  const [isRunning, setIsRunning] = useState(false);
+  const [cycle, setCycle] = useState(0);
+  const [history, setHistory] = useState([]);
+
+  const timerRef = useRef(null);
+
   useEffect(() => {
     const fetchTarefas = async () => {
       try {
@@ -33,229 +49,247 @@ function Dashboard() {
     fetchTarefas();
   }, []);
 
+  // CARREGAR ESTADO
+  useEffect(() => {
+    const saved = localStorage.getItem("pomodoroState");
+    if (saved) {
+      const s = JSON.parse(saved);
+      setTimeLeft(s.timeLeft);
+      setIsRunning(s.isRunning);
+      setCycle(s.cycle);
+      setCurrentTask(s.currentTask);
+      setHistory(s.history || []);
+      setPomodoroTime(s.pomodoroTime || 25);
+      setShortBreak(s.shortBreak || 5);
+      setLongBreak(s.longBreak || 15);
+    }
+  }, []);
+
+  // SALVAR ESTADO
+  useEffect(() => {
+    localStorage.setItem(
+      "pomodoroState",
+      JSON.stringify({
+        timeLeft,
+        isRunning,
+        cycle,
+        currentTask,
+        history,
+        pomodoroTime,
+        shortBreak,
+        longBreak,
+      })
+    );
+  }, [timeLeft, isRunning, cycle, currentTask, history, pomodoroTime, shortBreak, longBreak]);
+
+  // TIMER
+  useEffect(() => {
+    if (!isRunning) return;
+
+    timerRef.current = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current);
+
+          toast.success(`Pomodoro de "${currentTask?.titulo || currentTask?.nome_tarefa}" finalizado!`);
+          playSound(listSound[1]);
+
+          setHistory((h) => [
+            ...h,
+            { task: currentTask?.titulo || currentTask?.nome_tarefa, date: new Date() },
+          ]);
+
+          setCycle((c) => c + 1);
+
+          const next = (cycle + 1) % 4 === 0 ? longBreak * 60 : shortBreak * 60;
+          setTimeLeft(next);
+          setIsRunning(false);
+
+          return next;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timerRef.current);
+  }, [isRunning, currentTask, cycle, longBreak, shortBreak]);
+
+  const startTimer = () => {
+    if (!currentTask) return toast.error("Selecione uma tarefa primeiro!");
+    setIsRunning(true);
+  };
+
+  const pauseTimer = () => setIsRunning(false);
+
+  const resetTimer = () => {
+    setIsRunning(false);
+    setTimeLeft(pomodoroTime * 60);
+  };
+
+  const openPomodoro = (task) => {
+    setCurrentTask(task);
+    setTimeLeft(pomodoroTime * 60);
+    setPomodoroOpen(true);
+  };
+
+  // FORMATA TEMPO
+  const formatTime = (s) => {
+    const m = String(Math.floor(s / 60)).padStart(2, "0");
+    const sec = String(s % 60).padStart(2, "0");
+    return `${m}:${sec}`;
+  };
+
+  // FORM
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm((p) => ({ ...p, [name]: value }));
   };
 
-  // Criar ou editar tarefa
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (
-      !form.titulo ||
-      !form.descricao ||
-      !form.prioridade ||
-      !form.horario ||
-      !form.data
-    ) {
-      toast.error("Todos os campos são obrigatórios!!");
-      playSound(listSound[2]);
-      return;
+    if (!form.titulo || !form.horario || !form.descricao || !form.data) {
+      toast.error("Todos os campos são obrigatórios!");
+      return playSound(listSound[2]);
     }
 
     try {
-      const statusMap = {
-        Baixa: "pendente",
-        Normal: "em andamento",
-        Alta: "concluida",
-      };
-
-      const prioridadeMap = {
-        Baixa: "Baixa",
-        Normal: "Normal",
-        Alta: "Alta",
-      };
-
-      const tarefaParaBackend = {
+      const mapStatus = { Baixa: "pendente", Normal: "em andamento", Alta: "concluida" };
+      const tarefaBackend = {
         nome_tarefa: form.titulo,
-        horario: form.horario || null,
-        descricao_tarefa: form.descricao || "",
-        data_tarefa: new Date().toISOString().split("T")[0],
-        status_tarefa: statusMap[form.prioridade] || "pendente",
-        prioridade: prioridadeMap[form.prioridade] || "Normal",
+        horario: form.horario,
+        descricao_tarefa: form.descricao,
+        data_tarefa: form.data,
+        prioridade: form.prioridade,
+        status_tarefa: mapStatus[form.prioridade] || "pendente",
         id_usuario: 48,
       };
-      console.log("Tarefa para backend:", tarefaParaBackend);
 
       if (editIndex !== null) {
-        playSound(listSound[3]);
-        const confirmar = await showConfirmation(
-          "Deseja editar sua tarefa?",
-          "Editar"
-        );
-        if (!confirmar) return;
-        await api.put(
-          `/tarefas/${tarefas[editIndex].id_tarefa}`,
-          tarefaParaBackend
-        );
-        toast.success("Tarefa atualizada com sucesso!");
-        playSound(listSound[1]);
+        const ok = await showConfirmation("Deseja editar a tarefa?", "Editar");
+        if (!ok) return;
+        await api.put(`/tarefas/${tarefas[editIndex].id_tarefa}`, tarefaBackend);
       } else {
-        await api.post("/tarefas", tarefaParaBackend);
-        toast.success("Tarefa adicionada com sucesso!");
-        playSound(listSound[1]);
+        await api.post("/tarefas", tarefaBackend);
       }
 
-      const response = await api.get("/tarefas");
-      setTarefas(response.data);
-      setForm({
-        titulo: "",
-        horario: "",
-        data: "",
-        prioridade: "Normal",
-        descricao: "",
-      });
-      setEditIndex(null);
-    } catch (error) {
-      console.error("Erro ao salvar tarefa:", error);
-      toast.error("Erro ao salvar tarefa.");
-      playSound(listSound[2]);
-    }
-  };
-
-  const formatarData = (dataString) => {
-    const data = new Date(dataString);
-    const dia = String(data.getDate()).padStart(2, "0");
-    const mes = String(data.getMonth() + 1).padStart(2, "0");
-    const ano = data.getFullYear();
-    return `${dia}/${mes}/${ano}`;
-  };
-
-  const handleEdit = (i) => {
-    const tarefa = tarefas[i];
-    setForm({
-      titulo: tarefa.titulo || tarefa.nome_tarefa,
-      horario: tarefa.horario || "",
-      data: tarefa.data_tarefa ? tarefa.data_tarefa.split("T")[0] : "",
-      prioridade:
-        tarefa.prioridade ||
-        (tarefa.status_tarefa === "concluida"
-          ? "Alta"
-          : tarefa.status_tarefa === "em andamento"
-          ? "Normal"
-          : "Baixa"),
-      descricao: tarefa.descricao_tarefa || "",
-    });
-    setEditIndex(i);
-  };
-
-  // Deletar tarefa
-  const handleDelete = async (i) => {
-    try {
-      playSound(listSound[3]);
-      const confirmar = await showConfirmation(
-        "Esta ação não pode ser desfeita.",
-        "Deletar"
-      );
-      if (!confirmar) return;
-
-      const tarefaId = tarefas[i].id_tarefa;
-      await api.delete(`/tarefas/${tarefaId}`);
-      toast.success("Tarefa deletada com sucesso!");
+      toast.success("Tarefa salva!");
       playSound(listSound[1]);
 
       const response = await api.get("/tarefas");
       setTarefas(response.data);
+
+      setForm({ titulo: "", horario: "", data: "", prioridade: "Normal", descricao: "" });
+      setEditIndex(null);
     } catch (error) {
-      console.error("Erro ao deletar tarefa:", error);
-      toast.error("Erro ao deletar tarefa.");
+      console.error(error);
+      toast.error("Erro ao salvar.");
       playSound(listSound[2]);
     }
   };
 
-  const prioridadeClass = (prio) => {
-    if (prio === "Alta") return "high";
-    if (prio === "Normal") return "normal";
-    return "low";
+  const formatarData = (d) => {
+    const data = new Date(d);
+    return `${String(data.getDate()).padStart(2, "0")}/${String(
+      data.getMonth() + 1
+    ).padStart(2, "0")}/${data.getFullYear()}`;
   };
+
+  const prioridadeClass = (p) =>
+    p === "Alta" ? "high" : p === "Normal" ? "normal" : "low";
 
   return (
     <div className="dashboard-layout">
-      {/* SIDEBAR */}
       <Sidebar />
 
-      {/* CONTEÚDO PRINCIPAL */}
       <main className="dashboard-content">
         <h1>Meu Painel de Tarefas</h1>
 
-        {/* Formulário */}
+        {/* form */}
         <div className="task-form">
-          <input
-            type="text"
-            placeholder="Nova tarefa"
-            name="titulo"
-            value={form.titulo}
-            onChange={handleChange}
-          />
-          <input
-            type="time"
-            name="horario"
-            value={form.horario}
-            onChange={handleChange}
-          />
-          <input
-            type="date"
-            name="data"
-            value={form.data}
-            onChange={handleChange}
-          />
-          <input
-            type="text"
-            placeholder="Descrição"
-            name="descricao"
-            value={form.descricao}
-            onChange={handleChange}
-          />
-          <select
-            name="prioridade"
-            value={form.prioridade}
-            onChange={handleChange}
-          >
+          <input type="text" placeholder="Nova tarefa" name="titulo" value={form.titulo} onChange={handleChange} />
+          <input type="time" name="horario" value={form.horario} onChange={handleChange} />
+          <input type="date" name="data" value={form.data} onChange={handleChange} />
+          <input type="text" placeholder="Descrição" name="descricao" value={form.descricao} onChange={handleChange} />
+          <select name="prioridade" value={form.prioridade} onChange={handleChange}>
             <option value="Baixa">Baixa</option>
             <option value="Normal">Normal</option>
             <option value="Alta">Alta</option>
           </select>
-          <button onClick={handleSubmit}>
-            {editIndex !== null ? "Atualizar" : "Adicionar"}
-          </button>
+          <button onClick={handleSubmit}>{editIndex !== null ? "Atualizar" : "Adicionar"}</button>
         </div>
 
-        {/* Lista de tarefas */}
+        {/* Cards */}
         <div className="tasks-grid">
-          {tarefas.length === 0 && (
-            <p className="empty">Nenhuma tarefa cadastrada.</p>
-          )}
+          {tarefas.length === 0 && <p className="empty">Nenhuma tarefa cadastrada.</p>}
+
           {tarefas.map((t, i) => (
-            <div
-              key={i}
-              className={`task-card ${prioridadeClass(
-                t.prioridade ||
-                  (t.status_tarefa === "concluida"
-                    ? "Alta"
-                    : t.status_tarefa === "em andamento"
-                    ? "Normal"
-                    : "Baixa")
-              )}`}
-            >
+            <div key={i} className={`task-card ${prioridadeClass(t.prioridade)}`}>
               <div className="task-info">
-                <h3>{t.titulo || t.nome_tarefa}</h3>
-                <span>{t.horario || "--:--"}</span>
-                <p>{t.descricao_tarefa || ""}</p>
+                <h3>{t.nome_tarefa || t.titulo}</h3>
+                <span>{t.horario || "--"}</span>
+                <p>{t.descricao_tarefa}</p>
                 {t.data_tarefa && <p>📅 {formatarData(t.data_tarefa)}</p>}
               </div>
+
               <div className="task-actions">
-                <button className="edit" onClick={() => handleEdit(i)}>
-                  ✏️
-                </button>
-                <button className="delete" onClick={() => handleDelete(i)}>
-                  🗑️
-                </button>
+                <button className="edit" onClick={() => handleEdit(i)}>✏️</button>
+                <button className="delete" onClick={() => handleDelete(i)}>🗑️</button>
+                <button className="pomodoro" onClick={() => openPomodoro(t)}>⏱️</button>
               </div>
             </div>
           ))}
         </div>
       </main>
+
+      {/* ----------- MODAL C2 ----------- */}
+      {pomodoroOpen && (
+        <div className="pomodoro-modal-circle">
+          <div className="pomodoro-box">
+            <h2>Pomodoro</h2>
+            <h3>{currentTask?.nome_tarefa || currentTask?.titulo}</h3>
+
+            {/* Círculo */}
+            <div className="circle-timer">
+              {formatTime(timeLeft)}
+            </div>
+
+            {/* BOTÕES */}
+            <div className="pomodoro-buttons">
+              {!isRunning && <button onClick={startTimer}>Iniciar</button>}
+              {isRunning && <button onClick={pauseTimer}>Pausar</button>}
+              <button onClick={resetTimer}>Resetar</button>
+              <button onClick={() => setPomodoroOpen(false)}>Fechar</button>
+            </div>
+
+            {/* PERSONALIZAÇÃO */}
+            <div className="pomodoro-settings">
+              <label>Pomodoro:
+                <input
+                  type="number"
+                  value={pomodoroTime}
+                  onChange={(e) => setPomodoroTime(Number(e.target.value))}
+                />
+              </label>
+
+              <label>Pausa curta:
+                <input
+                  type="number"
+                  value={shortBreak}
+                  onChange={(e) => setShortBreak(Number(e.target.value))}
+                />
+              </label>
+
+              <label>Pausa longa:
+                <input
+                  type="number"
+                  value={longBreak}
+                  onChange={(e) => setLongBreak(Number(e.target.value))}
+                />
+              </label>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
