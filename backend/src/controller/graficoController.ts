@@ -2,7 +2,7 @@
 import { Request, Response } from "express";
 import { getTarefasConcluidas, saveModelo, getModelo, treinarModelo, preverDescanso } from "../model/graficoModel";
 
-const prever = async (req: Request, res: Response) => {
+export const prever = async (req: Request, res: Response) => {
   try {
     const { usuarioID, tempoTrabalho } = req.body;
     const modelo = await getModelo(usuarioID);
@@ -19,7 +19,7 @@ const prever = async (req: Request, res: Response) => {
   }
 };
 
-const retrain = async (req: Request, res: Response) => {
+export const retrain = async (req: Request, res: Response) => {
   try {
     const { usuarioID } = req.body;
     const tarefas = await getTarefasConcluidas(usuarioID);
@@ -40,7 +40,3 @@ const retrain = async (req: Request, res: Response) => {
   }
 };
 
-export default {
-  prever,
-  retrain,
-};
