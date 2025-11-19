@@ -19,7 +19,7 @@
   margin-bottom: 2rem;
 }
 
-/* === MODAL CENTRALIZADO SEM TRANSPARÊNCIA === */
+/* === MODAL CENTRALIZADO — FUNDO OPACO SÓLIDO === */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -30,6 +30,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
+
+  /* Fundo sólido, 100% opaco, preto */
+  background: #eeecec;  /* preto sólido, sem transparência */
+  /* removido qualquer blur ou rgba */
 }
 
 .modal-wrapper {

@@ -1,228 +1,182 @@
-/* === CONTEÚDO DO DASHBOARD === */
+/* Layout geral */
 .dashboard-layout {
   display: flex;
   min-height: 100vh;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f7fa;
+  color: #333;
 }
 
 .dashboard-content {
   flex: 1;
-  padding: 20px 30px;
-  background-color: #f8f8f8;
-  overflow-y: auto;
+  padding: 30px;
 }
 
-.dashboard-content h1 {
-  text-align: left;
-  font-weight: 500;
-  color: #333;
-  margin-bottom: 2rem;
-}
-
-/* === FORMULÁRIO DE TAREFAS === */
+/* Formulário de tarefas */
 .task-form {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 15px;
+  margin-bottom: 30px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .task-form input,
 .task-form select {
-  padding: 8px 10px;
+  padding: 10px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  outline: none;
   flex: 1;
-  min-width: 120px;
+  min-width: 150px;
 }
 
 .task-form button {
-  padding: 8px 14px;
-  background-color: #646cff;
+  padding: 10px 20px;
+  background: #4e73df;
   color: #fff;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  transition: 0.3s;
+  transition: background 0.2s;
 }
 
 .task-form button:hover {
-  background-color: #535bf2;
+  background: #2e59d9;
 }
 
-/* === GRID DE TAREFAS === */
-.tasks-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+/* ============================
+   TABELA DE TAREFAS
+============================ */
+.tasks-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* FORCE GRADIENTE NO THEAD */
+.tasks-table thead {
+  background: linear-gradient(120deg, #6a5af9, #7f30ff) !important;
+  color: #fff !important;
+}
+
+.tasks-table thead th {
+  padding: 12px;
+  font-weight: 600;
+  border: none !important;
+}
+
+.tasks-table th,
+.tasks-table td {
+  padding: 12px 15px;
+  text-align: left;
+  font-size: 14px;
+}
+
+.tasks-table tbody tr {
+  border-bottom: 1px solid #eee;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.tasks-table tbody tr:hover {
+  background: #f0f4ff;
+}
+
+/* Prioridades */
+.high { border-left: 5px solid #e74a3b; }
+.normal { border-left: 5px solid #f6c23e; }
+.low { border-left: 5px solid #1cc88a; }
+
+/* Botões */
+.task-actions button {
+  margin-right: 6px;
+  padding: 5px 8px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.task-actions button:hover {
+  transform: scale(1.1);
+}
+
+.task-actions .edit { background: #36b9cc; color: #fff; }
+.task-actions .delete { background: #e74a3b; color: #fff; }
+.task-actions .pomodoro { background: #f6c23e; color: #fff; }
+
+/* ============================
+   FILTROS – ALINHAMENTO FIXO
+============================ */
+.filters-row {
+  display: flex;
+  align-items: center;
   gap: 15px;
 }
 
-.task-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 15px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+.filters-row > * {
+  height: 45px !important;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.task-info h3 {
-  margin: 0 0 5px 0;
-  font-size: 16px;
-}
-
-.task-info p {
-  margin: 2px 0;
-  font-size: 14px;
-}
-
-.task-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 5px;
-  margin-top: 10px;
-}
-
-.task-actions button {
-  border: none;
-  background: none;
-  cursor: pointer;
-  font-size: 18px;
-  transition: 0.2s;
-}
-
-.task-actions button.edit:hover { color: #646cff; }
-.task-actions button.delete:hover { color: #ff4d4f; }
-.task-actions button.pomodoro:hover { color: #ffa500; }
-
-/* === PRIORIDADES === */
-.task-card.high { border-left: 4px solid #ff4d4f; }
-.task-card.normal { border-left: 4px solid #ffa500; }
-.task-card.low { border-left: 4px solid #2ecc71; }
-
-/* ======================================================
-   POMODORO C2 — MODAL CIRCULAR
-   NÃO AFETA CALENDÁRIO, SIDEBAR OU CARDS
-====================================================== */
-
-.pomodoro-modal-circle {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
   align-items: center;
-  background: none;           /* sem overlay */
-  z-index: 9999;
 }
 
-.pomodoro-box {
-  background: #ffffff;
-  padding: 25px;
-  border-radius: 20px;
-  width: 380px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.18);
-  text-align: center;
-  animation: fadeIn 0.25s ease;
-}
-
-.pomodoro-box h2 {
-  margin: 0;
-  font-size: 22px;
-}
-
-.pomodoro-box h3 {
-  margin: 5px 0 15px 0;
-  color: #444;
-  font-weight: 500;
-}
-
-/* CÍRCULO DO TIMER */
-.circle-timer {
-  width: 220px;
-  height: 220px;
-  border-radius: 50%;
-  border: 8px solid #646cff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 42px;
-  font-weight: bold;
-  margin: 10px auto 20px auto;
-  color: #333;
-}
-
-/* BOTÕES */
-.pomodoro-buttons {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin-bottom: 15px;
-}
-
-.pomodoro-buttons button {
-  flex: 1;
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-  background: #646cff;
-  color: white;
-  cursor: pointer;
-  font-size: 14px;
-  transition: 0.2s;
-}
-
-.pomodoro-buttons button:hover {
-  background: #535bf2;
-}
-
-/* PERSONALIZAÇÃO */
-.pomodoro-settings {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 10px;
-}
-
-.pomodoro-settings label {
-  font-size: 14px;
-  color: #555;
-}
-
-.pomodoro-settings input {
-  width: 80px;
-  padding: 4px;
-  margin-left: 5px;
-}
-
-/* ANIMAÇÃO */
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to   { opacity: 1; transform: scale(1); }
-}
-
-
-/* === RESPONSIVIDADE === */
-@media (max-width: 1024px) {
-  .dashboard-layout {
-    flex-direction: row;
-  }
-}
-
+/* ============================
+   MOBILE
+============================ */
 @media (max-width: 768px) {
-  .dashboard-layout {
+  .dashboard-content { padding: 15px; }
+
+  .filters-row {
     flex-direction: column;
+    gap: 10px;
   }
 
-  .modal-content {
-    width: 90%;
+  .filters-row > * {
+    width: 100% !important;
   }
 
-  .task-form {
-    flex-direction: column;
+  .tasks-table {
+    display: block;
+    border: none;
   }
+
+  .tasks-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .tasks-table tbody tr {
+    display: block;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #eee;
+  }
+
+  .tasks-table td {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+  }
+
+  .tasks-table td::before {
+    font-weight: bold;
+    color: #555;
+    width: 120px;
+    flex-shrink: 0;
+  }
+
+  .tasks-table td:nth-child(1)::before { content: "ID"; }
+  .tasks-table td:nth-child(2)::before { content: "Nome"; }
+  .tasks-table td:nth-child(3)::before { content: "Descrição"; }
+  .tasks-table td:nth-child(4)::before { content: "Horário"; }
+  .tasks-table td:nth-child(5)::before { content: "Data"; }
+  .tasks-table td:nth-child(6)::before { content: "Prioridade"; }
+  .tasks-table td:nth-child(7)::before { content: "Ações"; }
 }

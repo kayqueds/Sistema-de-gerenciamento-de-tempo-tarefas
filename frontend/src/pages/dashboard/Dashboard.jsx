@@ -8,6 +8,10 @@ import Sidebar from "../../components/common/sidebar/Sidebar.jsx";
 
 function Dashboard() {
   const [tarefas, setTarefas] = useState([]);
+  const [filteredTasks, setFilteredTasks] = useState([]);
+  const [search, setSearch] = useState("");
+  const [filterPriority, setFilterPriority] = useState("");
+
   const [form, setForm] = useState({
     titulo: "",
     horario: "",
@@ -15,41 +19,71 @@ function Dashboard() {
     prioridade: "Normal",
     descricao: "",
   });
+
   const [editIndex, setEditIndex] = useState(null);
   const { showConfirmation } = useSweetAlert();
   const { playSound, listSound } = Sound();
+  const [notified, setNotified] = useState([]);
 
-  // ---------------------
-  //   POMODORO (C2)
-  // ---------------------
+  // Pomodoro
   const [pomodoroOpen, setPomodoroOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
-
   const [pomodoroTime, setPomodoroTime] = useState(25);
   const [shortBreak, setShortBreak] = useState(5);
   const [longBreak, setLongBreak] = useState(15);
-
   const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [isRunning, setIsRunning] = useState(false);
   const [cycle, setCycle] = useState(0);
   const [history, setHistory] = useState([]);
-
   const timerRef = useRef(null);
 
+  // Buscar tarefas ao iniciar
   useEffect(() => {
     const fetchTarefas = async () => {
       try {
         const response = await api.get("/tarefas");
-        setTarefas(response.data);
+        const sorted = sortByPriority(response.data);
+        setTarefas(sorted);
+        setFilteredTasks(sorted);
       } catch (error) {
-        console.error("Erro ao buscar tarefas:", error);
         toast.error("Erro ao buscar tarefas.");
       }
     };
     fetchTarefas();
   }, []);
 
-  // CARREGAR ESTADO
+  // Ordenação por prioridade
+  const sortByPriority = (list) => {
+    const weight = { Alta: 1, Normal: 2, Baixa: 3 };
+    return [...list].sort((a, b) => weight[a.prioridade] - weight[b.prioridade]);
+  };
+
+  // Filtros
+  useEffect(() => {
+    let temp = [...tarefas];
+
+    if (search.trim() !== "") {
+      temp = temp.filter(
+        (t) =>
+          t.nome_tarefa.toLowerCase().includes(search.toLowerCase()) ||
+          t.descricao_tarefa.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    if (filterPriority !== "") {
+      temp = temp.filter((t) => t.prioridade === filterPriority);
+    }
+
+    setFilteredTasks(temp);
+  }, [search, filterPriority, tarefas]);
+
+  const clearFilters = () => {
+    setSearch("");
+    setFilterPriority("");
+    setFilteredTasks(tarefas);
+  };
+
+  // Pomodoro salvamento automático
   useEffect(() => {
     const saved = localStorage.getItem("pomodoroState");
     if (saved) {
@@ -65,7 +99,6 @@ function Dashboard() {
     }
   }, []);
 
-  // SALVAR ESTADO
   useEffect(() => {
     localStorage.setItem(
       "pomodoroState",
@@ -82,7 +115,7 @@ function Dashboard() {
     );
   }, [timeLeft, isRunning, cycle, currentTask, history, pomodoroTime, shortBreak, longBreak]);
 
-  // TIMER
+  // Pomodoro timer
   useEffect(() => {
     if (!isRunning) return;
 
@@ -90,21 +123,18 @@ function Dashboard() {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timerRef.current);
-
-          toast.success(`Pomodoro de "${currentTask?.titulo || currentTask?.nome_tarefa}" finalizado!`);
+          toast.success(
+            `Pomodoro de "${currentTask?.nome_tarefa}" finalizado!`
+          );
           playSound(listSound[1]);
-
-          setHistory((h) => [
-            ...h,
-            { task: currentTask?.titulo || currentTask?.nome_tarefa, date: new Date() },
-          ]);
-
+          setHistory((h) => [...h, { task: currentTask?.nome_tarefa, date: new Date() }]);
           setCycle((c) => c + 1);
 
-          const next = (cycle + 1) % 4 === 0 ? longBreak * 60 : shortBreak * 60;
+          const next =
+            (cycle + 1) % 4 === 0 ? longBreak * 60 : shortBreak * 60;
+
           setTimeLeft(next);
           setIsRunning(false);
-
           return next;
         }
         return prev - 1;
@@ -122,8 +152,8 @@ function Dashboard() {
   const pauseTimer = () => setIsRunning(false);
 
   const resetTimer = () => {
-    setIsRunning(false);
     setTimeLeft(pomodoroTime * 60);
+    setIsRunning(false);
   };
 
   const openPomodoro = (task) => {
@@ -132,14 +162,65 @@ function Dashboard() {
     setPomodoroOpen(true);
   };
 
-  // FORMATA TEMPO
   const formatTime = (s) => {
     const m = String(Math.floor(s / 60)).padStart(2, "0");
     const sec = String(s % 60).padStart(2, "0");
     return `${m}:${sec}`;
   };
 
-  // FORM
+  // Notificações
+  useEffect(() => {
+    if (!tarefas || tarefas.length === 0) return;
+
+    const interval = setInterval(() => {
+      const agora = new Date();
+
+      const horaAtual = `${String(agora.getHours()).padStart(2, "0")}:${String(
+        agora.getMinutes()
+      ).padStart(2, "0")}`;
+
+      const dataHoje = `${agora.getFullYear()}-${String(
+        agora.getMonth() + 1
+      ).padStart(2, "0")}-${String(agora.getDate()).padStart(2, "0")}`;
+
+      tarefas.forEach((t) => {
+        if (!t.horario || !t.data_tarefa) return;
+
+        const dataTarefa = new Date(t.data_tarefa);
+        const dataStr = `${dataTarefa.getFullYear()}-${String(
+          dataTarefa.getMonth() + 1
+        ).padStart(2, "0")}-${String(dataTarefa.getDate()).padStart(2, "0")}`;
+
+        if (dataHoje === dataStr && t.horario === horaAtual) {
+          if (notified.includes(t.id_tarefa)) return;
+
+          setNotified((prev) => [...prev, t.id_tarefa]);
+
+          try {
+            new Notification("🔔 Lembrete de tarefa", {
+              body: `${t.nome_tarefa}\n${t.descricao_tarefa}`,
+              icon: "/logo192.png",
+            });
+          } catch {}
+
+          showConfirmation(
+            `Está na hora da tarefa:\n${t.nome_tarefa}\n${t.descricao_tarefa}`,
+            "Ok"
+          );
+
+          toast.info(`Hora da tarefa: ${t.nome_tarefa}`);
+
+          try {
+            playSound(listSound[1]);
+          } catch {}
+        }
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [tarefas, notified]);
+
+  // Formulário
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((p) => ({ ...p, [name]: value }));
@@ -147,20 +228,26 @@ function Dashboard() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!form.titulo || !form.horario || !form.descricao || !form.data) {
       toast.error("Todos os campos são obrigatórios!");
-      return playSound(listSound[2]);
+      playSound(listSound[2]);
+      return;
     }
 
     try {
-      const mapStatus = { Baixa: "pendente", Normal: "em andamento", Alta: "concluida" };
       const tarefaBackend = {
         nome_tarefa: form.titulo,
         horario: form.horario,
         descricao_tarefa: form.descricao,
         data_tarefa: form.data,
         prioridade: form.prioridade,
-        status_tarefa: mapStatus[form.prioridade] || "pendente",
+        status_tarefa:
+          form.prioridade === "Alta"
+            ? "concluida"
+            : form.prioridade === "Normal"
+            ? "em andamento"
+            : "pendente",
         id_usuario: 48,
       };
 
@@ -176,12 +263,21 @@ function Dashboard() {
       playSound(listSound[1]);
 
       const response = await api.get("/tarefas");
-      setTarefas(response.data);
+      const sorted = sortByPriority(response.data);
 
-      setForm({ titulo: "", horario: "", data: "", prioridade: "Normal", descricao: "" });
+      setTarefas(sorted);
+      setFilteredTasks(sorted);
+
+      setForm({
+        titulo: "",
+        horario: "",
+        data: "",
+        prioridade: "Normal",
+        descricao: "",
+      });
+
       setEditIndex(null);
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
       toast.error("Erro ao salvar.");
       playSound(listSound[2]);
     }
@@ -202,58 +298,188 @@ function Dashboard() {
       <Sidebar />
 
       <main className="dashboard-content">
-        <h1>Meu Painel de Tarefas</h1>
 
-        {/* form */}
-        <div className="task-form">
-          <input type="text" placeholder="Nova tarefa" name="titulo" value={form.titulo} onChange={handleChange} />
-          <input type="time" name="horario" value={form.horario} onChange={handleChange} />
-          <input type="date" name="data" value={form.data} onChange={handleChange} />
-          <input type="text" placeholder="Descrição" name="descricao" value={form.descricao} onChange={handleChange} />
-          <select name="prioridade" value={form.prioridade} onChange={handleChange}>
+        <h1 className="mb-4">Meu Painel de Tarefas</h1>
+
+        {/* ============================
+           🔍 FILTROS BOOTSTRAP
+        ============================ */}
+        <div className="row g-2 mb-4 ">
+
+          <div className="col-md-4">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Pesquisar tarefa..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+
+          <div className="col-md-2">
+            <select
+              className="form-select"
+              value={filterPriority}
+              onChange={(e) => setFilterPriority(e.target.value)}
+            >
+              <option value="">Filtrar por prioridade</option>
+              <option value="Alta">Alta</option>
+              <option value="Normal">Normal</option>
+              <option value="Baixa">Baixa</option>
+            </select>
+          </div>
+
+          <div className="col-md-1">
+            <button
+              className="btn btn-secondary w-20 "
+              onClick={clearFilters}
+            >
+              Limpar
+            </button>
+          </div>
+
+        </div>
+
+        {/* ============================
+           FORMULÁRIO
+        ============================ */}
+        <form className="task-form" onSubmit={handleSubmit}>
+          <input
+            type="text"
+            name="titulo"
+            placeholder="Nova tarefa"
+            value={form.titulo}
+            onChange={handleChange}
+          />
+          <input
+            type="time"
+            name="horario"
+            value={form.horario}
+            onChange={handleChange}
+          />
+          <input
+            type="date"
+            name="data"
+            value={form.data}
+            onChange={handleChange}
+          />
+          <input
+            type="text"
+            name="descricao"
+            placeholder="Descrição"
+            value={form.descricao}
+            onChange={handleChange}
+          />
+
+          <select
+            name="prioridade"
+            value={form.prioridade}
+            onChange={handleChange}
+          >
             <option value="Baixa">Baixa</option>
             <option value="Normal">Normal</option>
             <option value="Alta">Alta</option>
           </select>
-          <button onClick={handleSubmit}>{editIndex !== null ? "Atualizar" : "Adicionar"}</button>
-        </div>
 
-        {/* Cards */}
-        <div className="tasks-grid">
-          {tarefas.length === 0 && <p className="empty">Nenhuma tarefa cadastrada.</p>}
+          <button type="submit">
+            {editIndex !== null ? "Atualizar" : "Adicionar"}
+          </button>
+        </form>
 
-          {tarefas.map((t, i) => (
-            <div key={i} className={`task-card ${prioridadeClass(t.prioridade)}`}>
-              <div className="task-info">
-                <h3>{t.nome_tarefa || t.titulo}</h3>
-                <span>{t.horario || "--"}</span>
-                <p>{t.descricao_tarefa}</p>
-                {t.data_tarefa && <p>📅 {formatarData(t.data_tarefa)}</p>}
-              </div>
+        {/* ============================
+           LISTA DE TAREFAS
+        ============================ */}
+        <div className="tasks-list mt-4">
+          {filteredTasks.length === 0 ? (
+            <p className="empty">Nenhuma tarefa encontrada.</p>
+          ) : (
+            <div className="table-responsive">
+              <table className="tasks-table table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Descrição</th>
+                    <th>Horário</th>
+                    <th>Data</th>
+                    <th>Prioridade</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
 
-              <div className="task-actions">
-                <button className="edit" onClick={() => handleEdit(i)}>✏️</button>
-                <button className="delete" onClick={() => handleDelete(i)}>🗑️</button>
-                <button className="pomodoro" onClick={() => openPomodoro(t)}>⏱️</button>
-              </div>
+                <tbody>
+                  {filteredTasks.map((t, i) => (
+                    <tr key={i} className={prioridadeClass(t.prioridade)}>
+                      <td>{t.id_tarefa}</td>
+                      <td>{t.nome_tarefa}</td>
+                      <td>{t.descricao_tarefa}</td>
+                      <td>{t.horario || "--"}</td>
+                      <td>{t.data_tarefa ? formatarData(t.data_tarefa) : "--"}</td>
+                      <td>{t.prioridade}</td>
+
+                      <td className="task-actions">
+                        <button
+                          className="edit"
+                          onClick={() => {
+                            setEditIndex(i);
+                            setForm({
+                              titulo: t.nome_tarefa,
+                              horario: t.horario,
+                              data: t.data_tarefa,
+                              descricao: t.descricao_tarefa,
+                              prioridade: t.prioridade,
+                            });
+                          }}
+                        >
+                          ✏️
+                        </button>
+
+                        <button
+                          className="delete"
+                          onClick={() => {
+                            showConfirmation("Deseja excluir?", "Excluir").then(
+                              async (ok) => {
+                                if (ok) {
+                                  await api.delete(`/tarefas/${t.id_tarefa}`);
+                                  const response = await api.get("/tarefas");
+                                  const sorted = sortByPriority(response.data);
+                                  setTarefas(sorted);
+                                  setFilteredTasks(sorted);
+                                }
+                              }
+                            );
+                          }}
+                        >
+                          🗑️
+                        </button>
+
+                        <button
+                          className="pomodoro"
+                          onClick={() => openPomodoro(t)}
+                        >
+                          ⏱️
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          ))}
+          )}
         </div>
       </main>
 
-      {/* ----------- MODAL C2 ----------- */}
+      {/* ============================
+         MODAL POMODORO
+      ============================ */}
       {pomodoroOpen && (
         <div className="pomodoro-modal-circle">
           <div className="pomodoro-box">
             <h2>Pomodoro</h2>
-            <h3>{currentTask?.nome_tarefa || currentTask?.titulo}</h3>
+            <h3>{currentTask?.nome_tarefa}</h3>
 
-            {/* Círculo */}
-            <div className="circle-timer">
-              {formatTime(timeLeft)}
-            </div>
+            <div className="circle-timer">{formatTime(timeLeft)}</div>
 
-            {/* BOTÕES */}
             <div className="pomodoro-buttons">
               {!isRunning && <button onClick={startTimer}>Iniciar</button>}
               {isRunning && <button onClick={pauseTimer}>Pausar</button>}
@@ -261,9 +487,9 @@ function Dashboard() {
               <button onClick={() => setPomodoroOpen(false)}>Fechar</button>
             </div>
 
-            {/* PERSONALIZAÇÃO */}
             <div className="pomodoro-settings">
-              <label>Pomodoro:
+              <label>
+                Pomodoro:
                 <input
                   type="number"
                   value={pomodoroTime}
@@ -271,7 +497,8 @@ function Dashboard() {
                 />
               </label>
 
-              <label>Pausa curta:
+              <label>
+                Pausa curta:
                 <input
                   type="number"
                   value={shortBreak}
@@ -279,7 +506,8 @@ function Dashboard() {
                 />
               </label>
 
-              <label>Pausa longa:
+              <label>
+                Pausa longa:
                 <input
                   type="number"
                   value={longBreak}
