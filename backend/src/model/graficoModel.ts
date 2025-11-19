@@ -13,13 +13,13 @@ export const getTarefasConcluidas = async (usuarioID: number) => {
 
 // Função para salvar o modelo treinado no banco de dados
 export const saveModelo = async (usuarioID: number, modelo: any) => {
-  const query = 'UPDATE usuarios SET modelo_ml = $1 WHERE id_usuario = $2';
+  const query = 'UPDATE usuarios SET modelo_ml = $1 WHERE id = $2';
   await connectionModel.query(query, [JSON.stringify(modelo), usuarioID]);
 };
 
 // Função para buscar o modelo treinado do usuário
 export const getModelo = async (usuarioID: number) => {
-  const query = 'SELECT modelo_ml FROM usuarios WHERE id_usuario = $1';
+  const query = 'SELECT modelo_ml FROM usuarios WHERE id = $1';
   const result = await connectionModel.query(query, [usuarioID]);
   return result.rows[0]?.modelo_ml;
 };
