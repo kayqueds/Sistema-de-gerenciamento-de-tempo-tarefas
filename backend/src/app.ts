@@ -1,6 +1,7 @@
 import express from "express";
 import usuarioRoutes from "./routes/usuarioRouter";
 import tarefaRouter from "./routes/tarefaRouter";
+import mlRouter from "./routes/mlRouter";
 
 // usar o cors se for necessário pro React acessar a API
 import cors from "cors";

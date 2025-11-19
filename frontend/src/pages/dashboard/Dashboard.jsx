@@ -59,7 +59,7 @@ function Dashboard() {
         data_criacao: new Date().toISOString().split("T")[0],
         status_tarefa: statusMap[form.prioridade] || "pendente",
         prioridade: prioridadeMap[form.prioridade] || "Normal",
-        id_usuario: 1,
+        id_usuario: 35,
       };
 
       if (editIndex !== null) {
@@ -139,12 +139,13 @@ const formatarData = (dataISO) => {
     <div className="dashboard-layout">
       {/* SIDEBAR desktop */}
       <aside className="sidebar d-none d-md-flex">
-        <h2>TaskBoost</h2>
+        <h2>Organix</h2>
         <ul>
           <li className="active"><Link to="/dashboard" className="sidebar-link">Dashboard</Link></li>
           <li><Link to="/projetos" className="sidebar-link">Projetos</Link></li>
           <li><Link to="/calendario" className="sidebar-link">Calendário</Link></li>
           <li><Link to="/configuracoes" className="sidebar-link">Configurações</Link></li>
+          <li><Link to="/grafico" className="sidebar-link">Ver gráfico</Link></li>
         </ul>
       </aside>
 
@@ -175,7 +176,7 @@ const formatarData = (dataISO) => {
             <li><Link to="/dashboard" className="sidebar-link" data-bs-dismiss="offcanvas">Dashboard</Link></li>
             <li><Link to="/projetos" className="sidebar-link" data-bs-dismiss="offcanvas">Projetos</Link></li>
             <li><Link to="/calendario" className="sidebar-link" data-bs-dismiss="offcanvas">Calendário</Link></li>
-            <li><Link to="/configuracoes" className="sidebar-link" data-bs-dismiss="offcanvas">Configurações</Link></li>
+            <li><Link to="/gtafico" className="sidebar-link" data-bs-dismiss="offcanvas">Gráfico</Link></li>
           </ul>
         </div>
       </div>

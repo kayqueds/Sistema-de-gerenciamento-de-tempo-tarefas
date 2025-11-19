@@ -6,6 +6,7 @@ import Sobre from "../pages/sobre/Sobre";
 import Dashboard from "../pages/dashboard/Dashboard";
 import Error404 from "../pages/error404/Error404";
 import Calendario from "../pages/calendario/Calendario";
+import PomodoroChart from "../pages/grafico/grafico.jsx";
 
 
 // rotas do site
@@ -19,6 +20,7 @@ function RotasSite() {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/calendario" element={<Calendario />} />
       <Route path="*" element={< Error404/>} />
+      <Route path="/grafico" element={<PomodoroChart />} />
     </Routes>
   );
 }

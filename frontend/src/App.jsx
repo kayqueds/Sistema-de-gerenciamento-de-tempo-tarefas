@@ -16,6 +16,10 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 import "bootstrap/dist/js/bootstrap.bundle.min.js"; // JS do Bootstrap (dropdown, collapse, etc)
 
+import React from 'react';
+import PomodoroChart from "./pages/grafico/grafico.jsx"; // Importando o componente grafico.jsx
+
+
 function App() {
   const [showLoading, setShowLoading] = useState(true);
 
@@ -38,6 +42,9 @@ function App() {
           <Footer />
         </div>
       </BrowserRouter>
+      <div style={{ padding: 20 }}>
+      <PomodoroChart />
+    </div>
     </>
   );
 }
