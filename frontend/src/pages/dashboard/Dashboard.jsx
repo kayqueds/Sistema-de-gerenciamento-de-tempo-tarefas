@@ -74,7 +74,7 @@ function Dashboard() {
         data_tarefa: new Date().toISOString().split("T")[0],
         status_tarefa: statusMap[form.prioridade] || "pendente",
         prioridade: prioridadeMap[form.prioridade] || "Normal",
-        id_usuario: 48,
+        id_usuario: 1,
       };
       console.log("Tarefa para backend:", tarefaParaBackend);
 
