@@ -5,6 +5,8 @@ import api from "../../api";
 import useSweetAlert from "../../hooks/SweetAlert";
 import Sound from "../../hooks/Sound";
 import Sidebar from "../../components/common/sidebar/Sidebar.jsx";
+import toastOnce from "../../utils/toastOnce";
+import Chat from "../../components/Chat/Chat";
 
 function Dashboard() {
   const [tarefas, setTarefas] = useState([]);
