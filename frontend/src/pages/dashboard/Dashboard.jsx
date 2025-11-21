@@ -6,7 +6,6 @@ import useSweetAlert from "../../hooks/SweetAlert";
 import Sound from "../../hooks/Sound";
 import Sidebar from "../../components/common/sidebar/Sidebar.jsx";
 import toastOnce from "../../utils/toastOnce";
-import Chat from "../../components/Chat/Chat";
 
 function Dashboard() {
   const [tarefas, setTarefas] = useState([]);
@@ -382,7 +381,7 @@ function Dashboard() {
 
   return (
     <div className="dashboard-layout">
-      <Sidebar tarefas={filteredTasks} />
+      <Sidebar tarefas={tarefas} />
 
 
       <main className="dashboard-content">

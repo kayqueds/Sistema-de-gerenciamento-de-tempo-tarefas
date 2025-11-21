@@ -81,7 +81,7 @@ function Sidebar() {
             : editForm.prioridade === "Normal"
             ? "em andamento"
             : "pendente",
-        id_usuario: 48,
+        id_usuario: 1,
       });
 
       const response = await api.get("/tarefas");
@@ -307,7 +307,13 @@ function Sidebar() {
 
           {/* ------------------- Restante do menu ------------------- */}
           <li>
-            <span className={`${linkBaseStyle} ${linkInactiveStyle}`}>Projetos</span>
+            <Link to="/grafico"
+              className={`${linkBaseStyle} ${
+                location.pathname === "/grafico" ? linkActiveStyle : linkInactiveStyle
+              }`}
+            >
+              Gráfico
+            </Link>
           </li>
 
           <li>
@@ -322,7 +328,14 @@ function Sidebar() {
           </li>
 
           <li>
-            <span className={`${linkBaseStyle} ${linkInactiveStyle}`}>Configurações</span>
+            <Link
+              to="/chat"
+              className={`${linkBaseStyle} ${
+                location.pathname === "/chat" ? linkActiveStyle : linkInactiveStyle
+              }`}
+            >
+              Chat
+            </Link>
           </li>
         </ul>
       </aside>
