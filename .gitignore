@@ -1,0 +1,21 @@
+# Node dependencies
+node_modules/
+
+# Python virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Environment files (may contain secrets)
+.env
+.env.local
+
+# Logs
+*.log
+
+# Editor / OS files
+.vscode/
+.DS_Store
+

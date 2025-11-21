@@ -5,6 +5,8 @@ import api from "../../api";
 import useSweetAlert from "../../hooks/SweetAlert";
 import Sound from "../../hooks/Sound";
 import Sidebar from "../../components/common/sidebar/Sidebar.jsx";
+import toastOnce from "../../utils/toastOnce";
+import Chat from "../../components/Chat/Chat";
 
 function Dashboard() {
   const [tarefas, setTarefas] = useState([]);
@@ -15,6 +17,8 @@ function Dashboard() {
     prioridade: "Normal",
     descricao: "",
   });
+  const [serverImage, setServerImage] = useState(null);
+  const [loadingImage, setLoadingImage] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
   const { showConfirmation } = useSweetAlert();
   const { playSound, listSound } = Sound();
@@ -32,6 +36,45 @@ function Dashboard() {
     };
     fetchTarefas();
   }, []);
+
+  useEffect(() => {
+    // liberar URL antigo quando trocar a imagem
+    return () => {
+      if (serverImage) {
+        URL.revokeObjectURL(serverImage);
+      }
+    };
+  }, [serverImage]);
+
+  const fetchServerChart = async () => {
+    if (!tarefas || tarefas.length === 0) {
+      toastOnce("erroSalvar", () => toast.error("Nenhuma tarefa disponível para gerar o gráfico."));
+      return;
+    }
+    setLoadingImage(true);
+    try {
+      const res = await fetch("http://localhost:5001/grafico/image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tarefas }),
+      });
+      if (!res.ok) {
+        let msg = `Erro ${res.status}`;
+        try { const j = await res.json(); msg = j.mensagem || j.error || JSON.stringify(j); } catch(e){}
+        toastOnce("erroSalvar", () => toast.error(msg));
+        setLoadingImage(false);
+        return;
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      setServerImage(url);
+    } catch (error) {
+      console.error("Erro ao buscar imagem do servidor:", error);
+      toastOnce("erroSalvar", () => toast.error("Erro ao gerar gráfico no servidor."));
+    } finally {
+      setLoadingImage(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -219,6 +262,39 @@ function Dashboard() {
           <button onClick={handleSubmit}>
             {editIndex !== null ? "Atualizar" : "Adicionar"}
           </button>
+        </div>
+
+        {/* Seção do gráfico (servidor) + Chat */}
+        <div style={{ display: 'flex', gap: 16, marginTop: 20, alignItems: 'flex-start' }}>
+          <div style={{ flex: 1 }}>
+            <div className="server-chart-section">
+              <h2>Gráfico de Prioridades</h2>
+              <div className="chart-controls" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <button onClick={fetchServerChart} disabled={loadingImage}>
+                  {loadingImage ? 'Gerando...' : 'Gerar gráfico (server)'}
+                </button>
+                {serverImage && (
+                  <a href={serverImage} download="grafico.png" className="download-btn">
+                    Baixar PNG
+                  </a>
+                )}
+              </div>
+
+              {serverImage && (
+                <div className="server-chart-preview" style={{ marginTop: 12 }}>
+                  <img
+                    src={serverImage}
+                    alt="Gráfico de prioridades"
+                    style={{ maxWidth: '100%', height: 'auto', borderRadius: 8 }}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div style={{ width: 340 }}>
+            <Chat />
+          </div>
         </div>
 
         {/* Lista de tarefas */}
