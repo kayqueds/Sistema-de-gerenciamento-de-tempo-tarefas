@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./Dashboard.css";
 import { toast } from "react-toastify";
 import api from "../../api";
@@ -10,6 +10,10 @@ import Chat from "../../components/Chat/Chat";
 
 function Dashboard() {
   const [tarefas, setTarefas] = useState([]);
+  const [filteredTasks, setFilteredTasks] = useState([]);
+  const [search, setSearch] = useState("");
+  const [filterPriority, setFilterPriority] = useState("");
+
   const [form, setForm] = useState({
     titulo: "",
     horario: "",
@@ -17,131 +21,340 @@ function Dashboard() {
     prioridade: "Normal",
     descricao: "",
   });
-  const [serverImage, setServerImage] = useState(null);
-  const [loadingImage, setLoadingImage] = useState(false);
+
   const [editIndex, setEditIndex] = useState(null);
   const { showConfirmation } = useSweetAlert();
   const { playSound, listSound } = Sound();
+  const [notified, setNotified] = useState([]);
 
-  // Listar tarefas
+  // ---------------------------
+  // 🔥 POMODORO
+  // ---------------------------
+  const [pomodoroOpen, setPomodoroOpen] = useState(false);
+  const [currentTask, setCurrentTask] = useState(null);
+
+  const [pomodoroTime, setPomodoroTime] = useState(25);
+  const [shortBreak, setShortBreak] = useState(5);
+  const [longBreak, setLongBreak] = useState(15);
+
+  const [timeLeft, setTimeLeft] = useState(25 * 60);
+  const [isRunning, setIsRunning] = useState(false);
+
+  const [cycle, setCycle] = useState(0); // 0 → 3 ciclos curtos → pausa longa
+  const [history, setHistory] = useState([]);
+
+  const timerRef = useRef(null);
+
+  // ---------------------------------------
+  // 🔎 Buscar tarefas ao carregar
+  // ---------------------------------------
   useEffect(() => {
     const fetchTarefas = async () => {
       try {
         const response = await api.get("/tarefas");
-        setTarefas(response.data);
+        const sorted = sortByPriority(response.data);
+        setTarefas(sorted);
+        setFilteredTasks(sorted);
       } catch (error) {
-        console.error("Erro ao buscar tarefas:", error);
         toast.error("Erro ao buscar tarefas.");
       }
     };
     fetchTarefas();
   }, []);
 
-  useEffect(() => {
-    // liberar URL antigo quando trocar a imagem
-    return () => {
-      if (serverImage) {
-        URL.revokeObjectURL(serverImage);
-      }
-    };
-  }, [serverImage]);
+  // ---------------------------------------
+  // 🔥 Ordenação por prioridade
+  // ---------------------------------------
+  const sortByPriority = (list) => {
+    const weight = { Alta: 1, Normal: 2, Baixa: 3 };
+    return [...list].sort((a, b) => weight[a.prioridade] - weight[b.prioridade]);
+  };
 
-  const fetchServerChart = async () => {
-    if (!tarefas || tarefas.length === 0) {
-      toastOnce("erroSalvar", () => toast.error("Nenhuma tarefa disponível para gerar o gráfico."));
+  // ---------------------------------------
+  // 🔍 Filtros
+  // ---------------------------------------
+  useEffect(() => {
+    let temp = [...tarefas];
+
+    if (search.trim() !== "") {
+      temp = temp.filter(
+        (t) =>
+          t.nome_tarefa.toLowerCase().includes(search.toLowerCase()) ||
+          t.descricao_tarefa.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    if (filterPriority !== "") {
+      temp = temp.filter((t) => t.prioridade === filterPriority);
+    }
+
+    setFilteredTasks(temp);
+  }, [search, filterPriority, tarefas]);
+
+  const clearFilters = () => {
+    setSearch("");
+    setFilterPriority("");
+    setFilteredTasks(tarefas);
+  };
+
+  // ---------------------------------------
+  // 💾 Carregar Pomodoro do LocalStorage
+  // ---------------------------------------
+  useEffect(() => {
+    const saved = localStorage.getItem("pomodoroState");
+    if (saved) {
+      const s = JSON.parse(saved);
+      setTimeLeft(s.timeLeft);
+      setIsRunning(s.isRunning);
+      setCycle(s.cycle);
+      setCurrentTask(s.currentTask);
+      setHistory(s.history || []);
+      setPomodoroTime(s.pomodoroTime || 25);
+      setShortBreak(s.shortBreak || 5);
+      setLongBreak(s.longBreak || 15);
+    }
+  }, []);
+
+  // ---------------------------------------
+  // 💾 Salvar Pomodoro no LocalStorage
+  // ---------------------------------------
+  useEffect(() => {
+    localStorage.setItem(
+      "pomodoroState",
+      JSON.stringify({
+        timeLeft,
+        isRunning,
+        cycle,
+        currentTask,
+        history,
+        pomodoroTime,
+        shortBreak,
+        longBreak,
+      })
+    );
+  }, [timeLeft, isRunning, cycle, currentTask, history, pomodoroTime, shortBreak, longBreak]);
+
+  // -----------------------------------------------------
+  // 🧠 Lógica do TIMER (pomodoro, pausa curta, pausa longa)
+  // -----------------------------------------------------
+  useEffect(() => {
+    if (!isRunning) return;
+
+    timerRef.current = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current);
+          setIsRunning(false);
+
+          // Registrar no histórico
+          setHistory((h) => [
+            ...h,
+            {
+              type: "pomodoro",
+              task: currentTask?.nome_tarefa,
+              date: new Date().toISOString(),
+            },
+          ]);
+
+          playSound(listSound[1]);
+
+          // ----------------------
+          // 🎉 Ciclo completo!
+          // ----------------------
+          const newCycle = cycle + 1;
+          setCycle(newCycle);
+
+          if (newCycle % 4 === 0) {
+            toast.success("4 ciclos concluídos! Pausa longa iniciando...");
+            setHistory((h) => [
+              ...h,
+              {
+                type: "long_break",
+                date: new Date().toISOString(),
+              },
+            ]);
+
+            setTimeLeft(longBreak * 60);
+
+            // reset do ciclo
+            setCycle(0);
+            return longBreak * 60;
+          }
+
+          toast.info("Pomodoro concluído! Pausa curta iniciando...");
+          setHistory((h) => [
+            ...h,
+            {
+              type: "short_break",
+              date: new Date().toISOString(),
+            },
+          ]);
+
+          const nextShort = shortBreak * 60;
+          setTimeLeft(nextShort);
+
+          return nextShort;
+        }
+
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timerRef.current);
+  }, [isRunning, currentTask, cycle, longBreak, shortBreak]);
+
+  // ---------------------------
+  // ▶️ CONTROLES DO POMODORO
+  // ---------------------------
+  const startTimer = () => {
+    if (!currentTask) {
+      toast.error("Selecione uma tarefa para iniciar o Pomodoro!");
       return;
     }
-    setLoadingImage(true);
-    try {
-      const res = await fetch("http://localhost:5001/grafico/image", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tarefas }),
-      });
-      if (!res.ok) {
-        let msg = `Erro ${res.status}`;
-        try { const j = await res.json(); msg = j.mensagem || j.error || JSON.stringify(j); } catch(e){}
-        toastOnce("erroSalvar", () => toast.error(msg));
-        setLoadingImage(false);
-        return;
-      }
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      setServerImage(url);
-    } catch (error) {
-      console.error("Erro ao buscar imagem do servidor:", error);
-      toastOnce("erroSalvar", () => toast.error("Erro ao gerar gráfico no servidor."));
-    } finally {
-      setLoadingImage(false);
-    }
+    setIsRunning(true);
   };
 
+  const pauseTimer = () => {
+    setIsRunning(false);
+  };
+
+  const resetTimer = () => {
+    setIsRunning(false);
+    setTimeLeft(pomodoroTime * 60);
+  };
+
+  // Finalizar imediatamente o ciclo
+  const finishNow = () => {
+    setIsRunning(false);
+    setTimeLeft(0);
+  };
+
+  // Pular pausa e ir direto ao próximo Pomodoro
+  const skipBreak = () => {
+    setIsRunning(false);
+    setTimeLeft(pomodoroTime * 60);
+    toast.info("Pausa pulada! Novo ciclo iniciado.");
+  };
+
+  // Abrir modal
+  const openPomodoro = (task) => {
+    setCurrentTask(task);
+    setTimeLeft(pomodoroTime * 60);
+    setPomodoroOpen(true);
+  };
+
+ const formatTime = (s) => {
+    const m = String(Math.floor(s / 60)).padStart(2, "0");
+    const sec = String(s % 60).padStart(2, "0");
+    return `${m}:${sec}`;
+  };
+
+
+  // ---------------------------
+  // 🔔 Notificações automáticas
+  // ---------------------------
+  useEffect(() => {
+    if (!tarefas || tarefas.length === 0) return;
+
+    const interval = setInterval(() => {
+      const agora = new Date();
+
+      const horaAtual = `${String(agora.getHours()).padStart(2, "0")}:${String(
+        agora.getMinutes()
+      ).padStart(2, "0")}`;
+
+      const dataHoje = `${agora.getFullYear()}-${String(
+        agora.getMonth() + 1
+      ).padStart(2, "0")}-${String(agora.getDate()).padStart(2, "0")}`;
+
+      tarefas.forEach((t) => {
+        if (!t.horario || !t.data_tarefa) return;
+
+        const dataTarefa = new Date(t.data_tarefa);
+        const dataStr = `${dataTarefa.getFullYear()}-${String(
+          dataTarefa.getMonth() + 1
+        ).padStart(2, "0")}-${String(dataTarefa.getDate()).padStart(2, "0")}`;
+
+        if (dataHoje === dataStr && t.horario === horaAtual) {
+          if (notified.includes(t.id_tarefa)) return;
+
+          setNotified((prev) => [...prev, t.id_tarefa]);
+
+          // Notificação nativa
+          try {
+            new Notification("🔔 Lembrete de tarefa", {
+              body: `${t.nome_tarefa}\n${t.descricao_tarefa}`,
+              icon: "/logo192.png",
+            });
+          } catch {}
+
+          showConfirmation(
+            `Está na hora da tarefa:\n${t.nome_tarefa}\n${t.descricao_tarefa}`,
+            "Ok"
+          );
+
+          toast.info(`Hora da tarefa: ${t.nome_tarefa}`);
+
+          try {
+            playSound(listSound[1]);
+          } catch {}
+        }
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [tarefas, notified]);
+
+  // ---------------------------
+  // 📝 FORMULÁRIO
+  // ---------------------------
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm((p) => ({ ...p, [name]: value }));
   };
 
-  // Criar ou editar tarefa
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (
-      !form.titulo ||
-      !form.descricao ||
-      !form.prioridade ||
-      !form.horario ||
-      !form.data
-    ) {
-      toast.error("Todos os campos são obrigatórios!!");
+    if (!form.titulo || !form.horario || !form.descricao || !form.data) {
+      toast.error("Todos os campos são obrigatórios!");
       playSound(listSound[2]);
       return;
     }
 
     try {
-      const statusMap = {
-        Baixa: "pendente",
-        Normal: "em andamento",
-        Alta: "concluida",
-      };
-
-      const prioridadeMap = {
-        Baixa: "Baixa",
-        Normal: "Normal",
-        Alta: "Alta",
-      };
-
-      const tarefaParaBackend = {
+      const tarefaBackend = {
         nome_tarefa: form.titulo,
-        horario: form.horario || null,
-        descricao_tarefa: form.descricao || "",
-        data_tarefa: new Date().toISOString().split("T")[0],
-        status_tarefa: statusMap[form.prioridade] || "pendente",
-        prioridade: prioridadeMap[form.prioridade] || "Normal",
+        horario: form.horario,
+        descricao_tarefa: form.descricao,
+        data_tarefa: form.data,
+        prioridade: form.prioridade,
+        status_tarefa:
+          form.prioridade === "Alta"
+            ? "concluida"
+            : form.prioridade === "Normal"
+            ? "em andamento"
+            : "pendente",
         id_usuario: 1,
       };
-      console.log("Tarefa para backend:", tarefaParaBackend);
 
       if (editIndex !== null) {
-        playSound(listSound[3]);
-        const confirmar = await showConfirmation(
-          "Deseja editar sua tarefa?",
-          "Editar"
-        );
-        if (!confirmar) return;
-        await api.put(
-          `/tarefas/${tarefas[editIndex].id_tarefa}`,
-          tarefaParaBackend
-        );
-        toast.success("Tarefa atualizada com sucesso!");
-        playSound(listSound[1]);
+        const ok = await showConfirmation("Deseja editar a tarefa?", "Editar");
+        if (!ok) return;
+        await api.put(`/tarefas/${tarefas[editIndex].id_tarefa}`, tarefaBackend);
       } else {
-        await api.post("/tarefas", tarefaParaBackend);
-        toast.success("Tarefa adicionada com sucesso!");
-        playSound(listSound[1]);
+        await api.post("/tarefas", tarefaBackend);
       }
 
+      toast.success("Tarefa salva!");
+      playSound(listSound[1]);
+
       const response = await api.get("/tarefas");
-      setTarefas(response.data);
+      const sorted = sortByPriority(response.data);
+
+      setTarefas(sorted);
+      setFilteredTasks(sorted);
+
       setForm({
         titulo: "",
         horario: "",
@@ -149,85 +362,73 @@ function Dashboard() {
         prioridade: "Normal",
         descricao: "",
       });
+
       setEditIndex(null);
-    } catch (error) {
-      console.error("Erro ao salvar tarefa:", error);
-      toast.error("Erro ao salvar tarefa.");
+    } catch (err) {
+      toast.error("Erro ao salvar.");
       playSound(listSound[2]);
     }
   };
 
-  const formatarData = (dataString) => {
-    const data = new Date(dataString);
-    const dia = String(data.getDate()).padStart(2, "0");
-    const mes = String(data.getMonth() + 1).padStart(2, "0");
-    const ano = data.getFullYear();
-    return `${dia}/${mes}/${ano}`;
+  const formatarData = (d) => {
+    const data = new Date(d);
+    return `${String(data.getDate()).padStart(2, "0")}/${String(
+      data.getMonth() + 1
+    ).padStart(2, "0")}/${data.getFullYear()}`;
   };
 
-  const handleEdit = (i) => {
-    const tarefa = tarefas[i];
-    setForm({
-      titulo: tarefa.titulo || tarefa.nome_tarefa,
-      horario: tarefa.horario || "",
-      data: tarefa.data_tarefa ? tarefa.data_tarefa.split("T")[0] : "",
-      prioridade:
-        tarefa.prioridade ||
-        (tarefa.status_tarefa === "concluida"
-          ? "Alta"
-          : tarefa.status_tarefa === "em andamento"
-          ? "Normal"
-          : "Baixa"),
-      descricao: tarefa.descricao_tarefa || "",
-    });
-    setEditIndex(i);
-  };
-
-  // Deletar tarefa
-  const handleDelete = async (i) => {
-    try {
-      playSound(listSound[3]);
-      const confirmar = await showConfirmation(
-        "Esta ação não pode ser desfeita.",
-        "Deletar"
-      );
-      if (!confirmar) return;
-
-      const tarefaId = tarefas[i].id_tarefa;
-      await api.delete(`/tarefas/${tarefaId}`);
-      toast.success("Tarefa deletada com sucesso!");
-      playSound(listSound[1]);
-
-      const response = await api.get("/tarefas");
-      setTarefas(response.data);
-    } catch (error) {
-      console.error("Erro ao deletar tarefa:", error);
-      toast.error("Erro ao deletar tarefa.");
-      playSound(listSound[2]);
-    }
-  };
-
-  const prioridadeClass = (prio) => {
-    if (prio === "Alta") return "high";
-    if (prio === "Normal") return "normal";
-    return "low";
-  };
+  const prioridadeClass = (p) =>
+    p === "Alta" ? "high" : p === "Normal" ? "normal" : "low";
 
   return (
     <div className="dashboard-layout">
-      {/* SIDEBAR */}
-      <Sidebar />
+      <Sidebar tarefas={filteredTasks} />
 
-      {/* CONTEÚDO PRINCIPAL */}
+
       <main className="dashboard-content">
-        <h1>Meu Painel de Tarefas</h1>
+        <h1 className="mb-4">Meu Painel de Tarefas</h1>
+        {/* ============================
+           🔍 FILTROS
+        ============================ */}
+        <div className="row g-2 mb-4">
+          <div className="col-md-4">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Pesquisar tarefa..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
 
-        {/* Formulário */}
-        <div className="task-form">
+          <div className="col-md-2">
+            <select
+              className="form-select"
+              value={filterPriority}
+              onChange={(e) => setFilterPriority(e.target.value)}
+            >
+              <option value="">Filtrar por prioridade</option>
+              <option value="Alta">Alta</option>
+              <option value="Normal">Normal</option>
+              <option value="Baixa">Baixa</option>
+            </select>
+          </div>
+
+          <div className="col-md-1">
+            <button className="btn btn-secondary w-20" onClick={clearFilters}>
+              Limpar
+            </button>
+          </div>
+        </div>
+
+        {/* ============================
+           📝 FORMULÁRIO
+        ============================ */}
+        <form className="task-form" onSubmit={handleSubmit}>
           <input
             type="text"
-            placeholder="Nova tarefa"
             name="titulo"
+            placeholder="Nova tarefa"
             value={form.titulo}
             onChange={handleChange}
           />
@@ -245,93 +446,196 @@ function Dashboard() {
           />
           <input
             type="text"
-            placeholder="Descrição"
             name="descricao"
+            placeholder="Descrição"
             value={form.descricao}
             onChange={handleChange}
           />
-          <select
-            name="prioridade"
-            value={form.prioridade}
-            onChange={handleChange}
-          >
+
+          <select name="prioridade" value={form.prioridade} onChange={handleChange}>
             <option value="Baixa">Baixa</option>
             <option value="Normal">Normal</option>
             <option value="Alta">Alta</option>
           </select>
-          <button onClick={handleSubmit}>
+
+          <button type="submit">
             {editIndex !== null ? "Atualizar" : "Adicionar"}
           </button>
-        </div>
+        </form>
 
-        {/* Seção do gráfico (servidor) + Chat */}
-        <div style={{ display: 'flex', gap: 16, marginTop: 20, alignItems: 'flex-start' }}>
-          <div style={{ flex: 1 }}>
-            <div className="server-chart-section">
-              <h2>Gráfico de Prioridades</h2>
-              <div className="chart-controls" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                <button onClick={fetchServerChart} disabled={loadingImage}>
-                  {loadingImage ? 'Gerando...' : 'Gerar gráfico (server)'}
-                </button>
-                {serverImage && (
-                  <a href={serverImage} download="grafico.png" className="download-btn">
-                    Baixar PNG
-                  </a>
-                )}
-              </div>
+        {/* ============================
+           📋 LISTA DE TAREFAS
+        ============================ */}
+        <div className="tasks-list mt-4">
+          {filteredTasks.length === 0 ? (
+            <p className="empty">Nenhuma tarefa encontrada.</p>
+          ) : (
+            <div className="table-responsive">
+              <table className="tasks-table table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Descrição</th>
+                    <th>Horário</th>
+                    <th>Data</th>
+                    <th>Prioridade</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
 
-              {serverImage && (
-                <div className="server-chart-preview" style={{ marginTop: 12 }}>
-                  <img
-                    src={serverImage}
-                    alt="Gráfico de prioridades"
-                    style={{ maxWidth: '100%', height: 'auto', borderRadius: 8 }}
-                  />
-                </div>
-              )}
+                <tbody>
+                  {filteredTasks.map((t, i) => (
+                    <tr key={i} className={prioridadeClass(t.prioridade)}>
+                      <td>{t.id_tarefa}</td>
+                      <td>{t.nome_tarefa}</td>
+                      <td>{t.descricao_tarefa}</td>
+                      <td>{t.horario || "--"}</td>
+                      <td>{t.data_tarefa ? formatarData(t.data_tarefa) : "--"}</td>
+                      <td>{t.prioridade}</td>
+
+                      <td className="task-actions">
+                        <button
+                          className="edit"
+                          onClick={() => {
+                            setEditIndex(i);
+                            setForm({
+                              titulo: t.nome_tarefa,
+                              horario: t.horario,
+                              data: t.data_tarefa,
+                              descricao: t.descricao_tarefa,
+                              prioridade: t.prioridade,
+                            });
+                          }}
+                        >
+                          ✏️
+                        </button>
+
+                        <button
+                          className="delete"
+                          onClick={() => {
+                            showConfirmation("Deseja excluir?", "Excluir").then(
+                              async (ok) => {
+                                if (ok) {
+                                  await api.delete(`/tarefas/${t.id_tarefa}`);
+                                  const response = await api.get("/tarefas");
+                                  const sorted = sortByPriority(response.data);
+                                  setTarefas(sorted);
+                                  setFilteredTasks(sorted);
+                                }
+                              }
+                            );
+                          }}
+                        >
+                          🗑️
+                        </button>
+
+                        <button
+                          className="pomodoro"
+                          onClick={() => openPomodoro(t)}
+                        >
+                          ⏱️
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </div>
-
-          <div style={{ width: 340 }}>
-            <Chat />
-          </div>
-        </div>
-
-        {/* Lista de tarefas */}
-        <div className="tasks-grid">
-          {tarefas.length === 0 && (
-            <p className="empty">Nenhuma tarefa cadastrada.</p>
           )}
-          {tarefas.map((t, i) => (
-            <div
-              key={i}
-              className={`task-card ${prioridadeClass(
-                t.prioridade ||
-                  (t.status_tarefa === "concluida"
-                    ? "Alta"
-                    : t.status_tarefa === "em andamento"
-                    ? "Normal"
-                    : "Baixa")
-              )}`}
-            >
-              <div className="task-info">
-                <h3>{t.titulo || t.nome_tarefa}</h3>
-                <span>{t.horario || "--:--"}</span>
-                <p>{t.descricao_tarefa || ""}</p>
-                {t.data_tarefa && <p>📅 {formatarData(t.data_tarefa)}</p>}
-              </div>
-              <div className="task-actions">
-                <button className="edit" onClick={() => handleEdit(i)}>
-                  ✏️
-                </button>
-                <button className="delete" onClick={() => handleDelete(i)}>
-                  🗑️
-                </button>
-              </div>
-            </div>
-          ))}
         </div>
       </main>
+
+      {/* ============================
+         ⏱ MODAL POMODORO
+      ============================ */}
+      {pomodoroOpen && (
+        <div className="pomodoro-modal-circle">
+          <div className="pomodoro-box">
+            <h2>Pomodoro</h2>
+            <h3>{currentTask?.nome_tarefa}</h3>
+
+            {/* Contador visual de ciclos */}
+            <p className="cycle-counter">
+              Ciclo atual: <strong>{cycle} / 4</strong>
+            </p>
+
+            {/* Círculo animado */}
+            <div
+              className="circle-timer"
+              style={{
+                background: `conic-gradient(#6a5af9 ${
+                  360 - (timeLeft / (pomodoroTime * 60)) * 360
+                }deg, #ddd 0deg)`,
+              }}
+            >
+              <div className="circle-timer-inner">{formatTime(timeLeft)}</div>
+            </div>
+
+            {/* BOTÕES PRINCIPAIS */}
+            <div className="pomodoro-buttons">
+              {!isRunning && <button onClick={startTimer}>Iniciar</button>}
+              {isRunning && <button onClick={pauseTimer}>Pausar</button>}
+              <button onClick={resetTimer}>Resetar</button>
+              <button onClick={finishNow}>Finalizar agora</button>
+              <button onClick={skipBreak}>Pular pausa</button>
+              <button onClick={() => setPomodoroOpen(false)}>Fechar</button>
+            </div>
+
+            {/* CONFIGURAÇÕES */}
+            <div className="pomodoro-settings">
+              <label>
+                Pomodoro:
+                <input
+                  type="number"
+                  value={pomodoroTime}
+                  onChange={(e) => setPomodoroTime(Number(e.target.value))}
+                />
+              </label>
+
+              <label>
+                Pausa curta:
+                <input
+                  type="number"
+                  value={shortBreak}
+                  onChange={(e) => setShortBreak(Number(e.target.value))}
+                />
+              </label>
+
+              <label>
+                Pausa longa:
+                <input
+                  type="number"
+                  value={longBreak}
+                  onChange={(e) => setLongBreak(Number(e.target.value))}
+                />
+              </label>
+            </div>
+
+            {/* HISTÓRICO */}
+            <div className="pomodoro-history">
+              <h4>Histórico</h4>
+              <div className="history-list">
+                {history.length === 0 && <p>Nenhum registro ainda.</p>}
+                {history.map((h, i) => (
+                  <div key={i} className="history-item">
+                    <strong>
+                      {h.type === "pomodoro"
+                        ? "Pomodoro"
+                        : h.type === "short_break"
+                        ? "Pausa curta"
+                        : "Pausa longa"}
+                    </strong>
+                    {h.task && <span> — {h.task}</span>}
+                    <br />
+                    <small>{new Date(h.date).toLocaleString()}</small>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

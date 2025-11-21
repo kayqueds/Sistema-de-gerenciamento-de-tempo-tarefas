@@ -1,184 +1,283 @@
-/* LAYOUT PRINCIPAL */
+/* Layout geral */
 .dashboard-layout {
   display: flex;
   min-height: 100vh;
-} 
-/* CONTEÚDO */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f7fa;
+  color: #333;
+}
+
 .dashboard-content {
   flex: 1;
-  padding: 2rem;
+  padding: 30px;
 }
 
-/* TÍTULO */
-.dashboard-content h1 {
-  text-align: left;
-  font-weight: 500;
-  color: #333;
-  margin-bottom: 2rem;
-}
-
-/* FORMULÁRIO */
+/* Formulário de tarefas */
 .task-form {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 2rem;
-  align-items: center; /* botão na mesma linha */
+  gap: 15px;
+  margin-bottom: 30px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-/* Inputs e select do formulário */
 .task-form input,
 .task-form select {
-  padding: 0.6rem 1rem;
-  border-radius: 8px;
+  padding: 10px;
+  border-radius: 6px;
   border: 1px solid #ccc;
   flex: 1;
-  min-width: 120px;
-  outline: none;
+  min-width: 150px;
 }
 
-.task-form input:focus,
-.task-form select:focus {
-  border-color: #646cff;
-  box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.2);
-}
-
-/* Botão do formulário */
-.btn-formulario {
-  background-color: #646cff;
+.task-form button {
+  padding: 10px 20px;
+  background: #4e73df;
   color: #fff;
   border: none;
-  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.task-form button:hover {
+  background: #2e59d9;
+}
+
+/* ============================
+   TABELA DE TAREFAS
+============================ */
+.tasks-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.tasks-table thead {
+  background: linear-gradient(120deg, #6a5af9, #7f30ff) !important;
+  color: #fff !important;
+}
+
+.tasks-table thead th {
+  padding: 12px;
+  font-weight: 600;
+  border: none !important;
+}
+
+.tasks-table th,
+.tasks-table td {
+  padding: 12px 15px;
+  text-align: left;
+  font-size: 14px;
+}
+
+.tasks-table tbody tr {
+  border-bottom: 1px solid #eee;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.tasks-table tbody tr:hover {
+  background: #f0f4ff;
+}
+
+.high { border-left: 5px solid #e74a3b; }
+.normal { border-left: 5px solid #f6c23e; }
+.low { border-left: 5px solid #1cc88a; }
+
+/* Botões da tabela */
+.task-actions button {
+  margin-right: 6px;
+  padding: 5px 8px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.task-actions button:hover {
+  transform: scale(1.1);
+}
+
+.task-actions .edit { background: #36b9cc; color: #fff; }
+.task-actions .delete { background: #e74a3b; color: #fff; }
+.task-actions .pomodoro { background: #f6c23e; color: #fff; }
+
+/* ============================
+   MODAL POMODORO
+============================ */
+.pomodoro-modal-circle {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.pomodoro-box {
+  width: 420px;
+  background: #fff;
+  padding: 25px;
+  border-radius: 15px;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* CÍRCULO ANIMADO */
+.circle-timer {
+  width: 180px;
+  height: 180px;
+  margin: 20px auto;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-size: cover;
+  transition: background 0.2s linear;
+}
+
+.circle-timer-inner {
+  background: #fff;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 32px;
+  font-weight: bold;
+  border: 2px solid #ddd;
+}
+
+/* BOTÕES DO MODAL */
+.pomodoro-buttons button {
+  margin: 6px;
+  padding: 8px 14px;
+  border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  background: #6a5af9;
+  color: white;
+  transition: 0.2s;
 }
 
-.btn-formulario:hover {
-  background-color: #535bf2;
+.pomodoro-buttons button:hover {
+  background: #7f30ff;
+  transform: scale(1.05);
 }
 
-/* GRID DE TAREFAS */
-.tasks-grid {
+/* CONFIGURAÇÕES */
+.pomodoro-settings {
+  margin-top: 15px;
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
+  justify-content: space-around;
+  gap: 10px;
 }
 
-/* CARD DE TAREFA */
-.task-card {
-  background: #fff;
-  padding: 1rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+.pomodoro-settings label {
   display: flex;
-  justify-content: space-between;
   flex-direction: column;
-  transition: all 0.2s ease;
+  font-size: 14px;
+  font-weight: 600;
 }
 
-.task-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+.pomodoro-settings input {
+  width: 70px;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
 }
 
-.task-info h3 {
-  margin: 0;
-  font-size: 1.1rem;
+/* HISTÓRICO */
+.pomodoro-history {
+  margin-top: 20px;
+  text-align: left;
 }
 
-.task-info span {
-  font-size: 0.85rem;
-  color: #666;
+.pomodoro-history h4 {
+  margin-bottom: 10px;
+  font-weight: bold;
 }
 
-.task-info p {
-  margin: 0.25rem 0;
+.history-list {
+  max-height: 150px;
+  overflow-y: auto;
+  padding-right: 5px;
 }
 
-.task-info small {
-  font-size: 0.8rem;
-  color: #555;
+.history-item {
+  background: #f5f3ff;
+  padding: 8px;
+  margin-bottom: 6px;
+  border-radius: 6px;
+  font-size: 13px;
 }
 
-/* PRIORIDADE */
-.task-card.high { border-left: 5px solid #dc3545; }
-.task-card.normal { border-left: 5px solid #ffc107; }
-.task-card.low { border-left: 5px solid #198754; }
-
-/* BOTÕES DE AÇÃO */
-.task-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 0.5rem;
+.history-item strong {
+  color: #7f30ff;
 }
 
-.task-actions button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1.1rem;
-  margin-left: 0.5rem;
-  transition: all 0.2s ease;
+/* CONTADOR DE CICLO */
+.cycle-counter {
+  margin: 8px 0;
+  font-size: 15px;
+  font-weight: bold;
 }
 
-.task-actions .edit:hover { color: #646cff; }
-.task-actions .delete:hover { color: #dc3545; }
-
-/* MENSAGEM DE TAREFAS VAZIAS */
-.empty {
-  text-align: center;
-  color: #888;
-  font-style: italic;
-}
-
-/* OFFCANVAS MOBILE */
-.offcanvas {
-  width: 220px;
-}
-
-.offcanvas .sidebar-link {
-  padding: 0.5rem 0;
-  display: block;
-}
-
-/* RESPONSIVIDADE */
 @media (max-width: 768px) {
-  .dashboard-layout {
-    flex-direction: column;
+
+  .dashboard-content { padding: 15px; }
+
+  /* Remove scroll e desativa largura fixa da tabela */
+  .tasks-table {
+    width: 100% !important;
+    display: table !important;
+    overflow-x: hidden !important;
   }
 
-  /* Botão para abrir sidebar mobile */
-  .btn-offcanvas {
+  .table-responsive {
+    overflow-x: hidden !important;
+  }
+
+  /* Cada linha vira card */
+  .tasks-table tbody tr {
     display: block;
-    margin: 1rem;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    background: #fff;
   }
 
-  /* Formulário mobile em coluna */
-  .task-form {
-    flex-direction: column;
-  }
-  .offcanvas-header{
-    background-color: #535bf2;
-  }
-
-  .task-form input,
-  .task-form select,
-  .btn-formulario {
-    width: 100%;
+  /* Campos alinhados */
+  .tasks-table td {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
   }
 
-  /* Cards ocupam 100% da largura no mobile */
-  .tasks-grid {
-    flex-direction: column;
-  }
-
-  .task-card {
-    width: 100%;
-  }
-
-  /* Sidebar desktop escondida */
-  .sidebar.d-none.d-md-flex {
-    display: none !important;
+  .tasks-table td::before {
+    font-weight: 700;
+    color: #444;
+    width: 120px;
+    flex-shrink: 0;
   }
 }
+
