@@ -25,19 +25,27 @@ function Dashboard() {
   const { playSound, listSound } = Sound();
   const [notified, setNotified] = useState([]);
 
-  // Pomodoro
+  // ---------------------------
+  // 🔥 POMODORO
+  // ---------------------------
   const [pomodoroOpen, setPomodoroOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
+
   const [pomodoroTime, setPomodoroTime] = useState(25);
   const [shortBreak, setShortBreak] = useState(5);
   const [longBreak, setLongBreak] = useState(15);
+
   const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [isRunning, setIsRunning] = useState(false);
-  const [cycle, setCycle] = useState(0);
+
+  const [cycle, setCycle] = useState(0); // 0 → 3 ciclos curtos → pausa longa
   const [history, setHistory] = useState([]);
+
   const timerRef = useRef(null);
 
-  // Buscar tarefas ao iniciar
+  // ---------------------------------------
+  // 🔎 Buscar tarefas ao carregar
+  // ---------------------------------------
   useEffect(() => {
     const fetchTarefas = async () => {
       try {
@@ -52,13 +60,17 @@ function Dashboard() {
     fetchTarefas();
   }, []);
 
-  // Ordenação por prioridade
+  // ---------------------------------------
+  // 🔥 Ordenação por prioridade
+  // ---------------------------------------
   const sortByPriority = (list) => {
     const weight = { Alta: 1, Normal: 2, Baixa: 3 };
     return [...list].sort((a, b) => weight[a.prioridade] - weight[b.prioridade]);
   };
 
-  // Filtros
+  // ---------------------------------------
+  // 🔍 Filtros
+  // ---------------------------------------
   useEffect(() => {
     let temp = [...tarefas];
 
@@ -83,7 +95,9 @@ function Dashboard() {
     setFilteredTasks(tarefas);
   };
 
-  // Pomodoro salvamento automático
+  // ---------------------------------------
+  // 💾 Carregar Pomodoro do LocalStorage
+  // ---------------------------------------
   useEffect(() => {
     const saved = localStorage.getItem("pomodoroState");
     if (saved) {
@@ -99,6 +113,9 @@ function Dashboard() {
     }
   }, []);
 
+  // ---------------------------------------
+  // 💾 Salvar Pomodoro no LocalStorage
+  // ---------------------------------------
   useEffect(() => {
     localStorage.setItem(
       "pomodoroState",
@@ -115,7 +132,9 @@ function Dashboard() {
     );
   }, [timeLeft, isRunning, cycle, currentTask, history, pomodoroTime, shortBreak, longBreak]);
 
-  // Pomodoro timer
+  // -----------------------------------------------------
+  // 🧠 Lógica do TIMER (pomodoro, pausa curta, pausa longa)
+  // -----------------------------------------------------
   useEffect(() => {
     if (!isRunning) return;
 
@@ -123,20 +142,58 @@ function Dashboard() {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timerRef.current);
-          toast.success(
-            `Pomodoro de "${currentTask?.nome_tarefa}" finalizado!`
-          );
-          playSound(listSound[1]);
-          setHistory((h) => [...h, { task: currentTask?.nome_tarefa, date: new Date() }]);
-          setCycle((c) => c + 1);
-
-          const next =
-            (cycle + 1) % 4 === 0 ? longBreak * 60 : shortBreak * 60;
-
-          setTimeLeft(next);
           setIsRunning(false);
-          return next;
+
+          // Registrar no histórico
+          setHistory((h) => [
+            ...h,
+            {
+              type: "pomodoro",
+              task: currentTask?.nome_tarefa,
+              date: new Date().toISOString(),
+            },
+          ]);
+
+          playSound(listSound[1]);
+
+          // ----------------------
+          // 🎉 Ciclo completo!
+          // ----------------------
+          const newCycle = cycle + 1;
+          setCycle(newCycle);
+
+          if (newCycle % 4 === 0) {
+            toast.success("4 ciclos concluídos! Pausa longa iniciando...");
+            setHistory((h) => [
+              ...h,
+              {
+                type: "long_break",
+                date: new Date().toISOString(),
+              },
+            ]);
+
+            setTimeLeft(longBreak * 60);
+
+            // reset do ciclo
+            setCycle(0);
+            return longBreak * 60;
+          }
+
+          toast.info("Pomodoro concluído! Pausa curta iniciando...");
+          setHistory((h) => [
+            ...h,
+            {
+              type: "short_break",
+              date: new Date().toISOString(),
+            },
+          ]);
+
+          const nextShort = shortBreak * 60;
+          setTimeLeft(nextShort);
+
+          return nextShort;
         }
+
         return prev - 1;
       });
     }, 1000);
@@ -144,31 +201,56 @@ function Dashboard() {
     return () => clearInterval(timerRef.current);
   }, [isRunning, currentTask, cycle, longBreak, shortBreak]);
 
+  // ---------------------------
+  // ▶️ CONTROLES DO POMODORO
+  // ---------------------------
   const startTimer = () => {
-    if (!currentTask) return toast.error("Selecione uma tarefa primeiro!");
+    if (!currentTask) {
+      toast.error("Selecione uma tarefa para iniciar o Pomodoro!");
+      return;
+    }
     setIsRunning(true);
   };
 
-  const pauseTimer = () => setIsRunning(false);
-
-  const resetTimer = () => {
-    setTimeLeft(pomodoroTime * 60);
+  const pauseTimer = () => {
     setIsRunning(false);
   };
 
+  const resetTimer = () => {
+    setIsRunning(false);
+    setTimeLeft(pomodoroTime * 60);
+  };
+
+  // Finalizar imediatamente o ciclo
+  const finishNow = () => {
+    setIsRunning(false);
+    setTimeLeft(0);
+  };
+
+  // Pular pausa e ir direto ao próximo Pomodoro
+  const skipBreak = () => {
+    setIsRunning(false);
+    setTimeLeft(pomodoroTime * 60);
+    toast.info("Pausa pulada! Novo ciclo iniciado.");
+  };
+
+  // Abrir modal
   const openPomodoro = (task) => {
     setCurrentTask(task);
     setTimeLeft(pomodoroTime * 60);
     setPomodoroOpen(true);
   };
 
-  const formatTime = (s) => {
+ const formatTime = (s) => {
     const m = String(Math.floor(s / 60)).padStart(2, "0");
     const sec = String(s % 60).padStart(2, "0");
     return `${m}:${sec}`;
   };
 
-  // Notificações
+
+  // ---------------------------
+  // 🔔 Notificações automáticas
+  // ---------------------------
   useEffect(() => {
     if (!tarefas || tarefas.length === 0) return;
 
@@ -196,6 +278,7 @@ function Dashboard() {
 
           setNotified((prev) => [...prev, t.id_tarefa]);
 
+          // Notificação nativa
           try {
             new Notification("🔔 Lembrete de tarefa", {
               body: `${t.nome_tarefa}\n${t.descricao_tarefa}`,
@@ -220,7 +303,9 @@ function Dashboard() {
     return () => clearInterval(interval);
   }, [tarefas, notified]);
 
-  // Formulário
+  // ---------------------------
+  // 📝 FORMULÁRIO
+  // ---------------------------
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((p) => ({ ...p, [name]: value }));
@@ -248,7 +333,7 @@ function Dashboard() {
             : form.prioridade === "Normal"
             ? "em andamento"
             : "pendente",
-        id_usuario: 48,
+        id_usuario: 1,
       };
 
       if (editIndex !== null) {
@@ -295,17 +380,15 @@ function Dashboard() {
 
   return (
     <div className="dashboard-layout">
-      <Sidebar />
+      <Sidebar tarefas={filteredTasks} />
+
 
       <main className="dashboard-content">
-
         <h1 className="mb-4">Meu Painel de Tarefas</h1>
-
         {/* ============================
-           🔍 FILTROS BOOTSTRAP
+           🔍 FILTROS
         ============================ */}
-        <div className="row g-2 mb-4 ">
-
+        <div className="row g-2 mb-4">
           <div className="col-md-4">
             <input
               type="text"
@@ -330,18 +413,14 @@ function Dashboard() {
           </div>
 
           <div className="col-md-1">
-            <button
-              className="btn btn-secondary w-20 "
-              onClick={clearFilters}
-            >
+            <button className="btn btn-secondary w-20" onClick={clearFilters}>
               Limpar
             </button>
           </div>
-
         </div>
 
         {/* ============================
-           FORMULÁRIO
+           📝 FORMULÁRIO
         ============================ */}
         <form className="task-form" onSubmit={handleSubmit}>
           <input
@@ -371,11 +450,7 @@ function Dashboard() {
             onChange={handleChange}
           />
 
-          <select
-            name="prioridade"
-            value={form.prioridade}
-            onChange={handleChange}
-          >
+          <select name="prioridade" value={form.prioridade} onChange={handleChange}>
             <option value="Baixa">Baixa</option>
             <option value="Normal">Normal</option>
             <option value="Alta">Alta</option>
@@ -387,7 +462,7 @@ function Dashboard() {
         </form>
 
         {/* ============================
-           LISTA DE TAREFAS
+           📋 LISTA DE TAREFAS
         ============================ */}
         <div className="tasks-list mt-4">
           {filteredTasks.length === 0 ? (
@@ -470,7 +545,7 @@ function Dashboard() {
       </main>
 
       {/* ============================
-         MODAL POMODORO
+         ⏱ MODAL POMODORO
       ============================ */}
       {pomodoroOpen && (
         <div className="pomodoro-modal-circle">
@@ -478,15 +553,34 @@ function Dashboard() {
             <h2>Pomodoro</h2>
             <h3>{currentTask?.nome_tarefa}</h3>
 
-            <div className="circle-timer">{formatTime(timeLeft)}</div>
+            {/* Contador visual de ciclos */}
+            <p className="cycle-counter">
+              Ciclo atual: <strong>{cycle} / 4</strong>
+            </p>
 
+            {/* Círculo animado */}
+            <div
+              className="circle-timer"
+              style={{
+                background: `conic-gradient(#6a5af9 ${
+                  360 - (timeLeft / (pomodoroTime * 60)) * 360
+                }deg, #ddd 0deg)`,
+              }}
+            >
+              <div className="circle-timer-inner">{formatTime(timeLeft)}</div>
+            </div>
+
+            {/* BOTÕES PRINCIPAIS */}
             <div className="pomodoro-buttons">
               {!isRunning && <button onClick={startTimer}>Iniciar</button>}
               {isRunning && <button onClick={pauseTimer}>Pausar</button>}
               <button onClick={resetTimer}>Resetar</button>
+              <button onClick={finishNow}>Finalizar agora</button>
+              <button onClick={skipBreak}>Pular pausa</button>
               <button onClick={() => setPomodoroOpen(false)}>Fechar</button>
             </div>
 
+            {/* CONFIGURAÇÕES */}
             <div className="pomodoro-settings">
               <label>
                 Pomodoro:
@@ -514,6 +608,28 @@ function Dashboard() {
                   onChange={(e) => setLongBreak(Number(e.target.value))}
                 />
               </label>
+            </div>
+
+            {/* HISTÓRICO */}
+            <div className="pomodoro-history">
+              <h4>Histórico</h4>
+              <div className="history-list">
+                {history.length === 0 && <p>Nenhum registro ainda.</p>}
+                {history.map((h, i) => (
+                  <div key={i} className="history-item">
+                    <strong>
+                      {h.type === "pomodoro"
+                        ? "Pomodoro"
+                        : h.type === "short_break"
+                        ? "Pausa curta"
+                        : "Pausa longa"}
+                    </strong>
+                    {h.task && <span> — {h.task}</span>}
+                    <br />
+                    <small>{new Date(h.date).toLocaleString()}</small>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
