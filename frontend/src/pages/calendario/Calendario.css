@@ -1,122 +1,215 @@
-/* === LAYOUT PRINCIPAL === */
-.dashboard-layout {
-  display: flex;
-  height: 100vh;
-  background-color: #f5f5f5;
-  overflow: hidden;
-}
-
-.dashboard-content {
-  flex: 1;
-  padding: 30px;
-  overflow-y: auto;
-}
-
-.dashboard-content h1 {
-  text-align: left;
-  font-weight: 500;
+/* ===========================
+   FULLCALENDAR — TEMA LIGHT
+=========================== */
+.fc {
+  background: #fff;
   color: #333;
-  margin-bottom: 2rem;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
 }
 
-/* === MODAL CENTRALIZADO — FUNDO OPACO SÓLIDO === */
+/* Toolbar */
+.fc .fc-toolbar {
+  margin-bottom: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.fc-toolbar-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+/* Botões */
+.fc .fc-button {
+  justify-content: center;
+  background: #646cff !important;
+  border: none !important;
+  color: #fff !important;
+  padding: 7px 12px !important;
+  font-weight: 600 !important;
+  border-radius: 10px !important;
+}
+
+.fc .fc-button:hover {
+  background: #535bf2 !important;
+}
+
+/* Dias da semana */
+.fc-daygrid-day-number {
+  font-weight: 600;
+  color: #646cff;
+}
+
+/* Hover */
+.fc-daygrid-day:hover {
+  background-color: #e1e1ff !important;
+}
+
+/* Hoje */
+.fc-day-today {
+  background: #646cff30 !important;
+  border: 2px solid #646cff !important;
+}
+
+/* Evento */
+.fc-event {
+  background: #646cff !important;
+  border: none !important;
+  color: white !important;
+  padding: 3px 6px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* ===========================
+   FULLCALENDAR — TEMA DARK
+=========================== */
+body.dark .fc {
+  background: #1f1f1f !important;
+  color: #f5f5f5 !important;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.5) !important;
+}
+
+body.dark .fc-toolbar-title {
+  color: #7a63ff !important;
+}
+
+body.dark .fc .fc-button {
+  background: #7a63ff !important;
+  color: #fff;
+}
+
+body.dark .fc .fc-button:hover {
+  background: #8c7aff !important;
+}
+
+body.dark .fc-daygrid-day-number {
+  color: #fbfbfb !important;
+}
+
+body.dark .fc-daygrid-day:hover {
+  background: #45407b !important;
+}
+
+body.dark .fc-day-today {
+  background: #9690bb40 !important;
+  border: 2px solid #a091f5 !important;
+}
+
+body.dark .fc-event {
+  background: #695bcc63 !important;
+}
+
+/* ===========================
+   FULLCALENDAR MODAL
+=========================== */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1000;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.55);
   display: flex;
   justify-content: center;
   align-items: center;
-
-  /* Fundo sólido, 100% opaco, preto */
-  background: #eeecec;  /* preto sólido, sem transparência */
-  /* removido qualquer blur ou rgba */
+  z-index: 9999;
 }
 
 .modal-wrapper {
-  position: relative;
-  z-index: 1001;
-}
-
-.modal-content {
   background: #fff;
-  padding: 30px 25px;
-  border-radius: 16px;
-  max-width: 400px;
-  width: 100%;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  font-family: 'Arial', sans-serif;
+  padding: 25px;
+  border-radius: 15px;
+  width: 420px;
+  max-width: 90%;
+  animation: fadeIn .3s ease;
 }
 
-.modal-content h2 {
-  font-size: 24px;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 10px;
+body.dark .modal-wrapper {
+  background: #222;
+  color: #fff;
 }
 
 .modal-content label {
-  font-size: 13px;
-  color: #555;
+  font-weight: 600;
   margin-top: 10px;
-  margin-bottom: 3px;
 }
 
 .modal-content input,
 .modal-content textarea,
 .modal-content select {
-  padding: 8px 12px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
   width: 100%;
-  font-size: 14px;
-  outline: none;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-top: 6px;
 }
 
-.modal-content input:focus,
-.modal-content textarea:focus,
-.modal-content select:focus {
-  border-color: #646cff;
+body.dark .modal-content input,
+body.dark .modal-content textarea,
+body.dark .modal-content select {
+  background: #444;
+  border-color: #666;
+  color: white;
 }
 
 .modal-buttons {
   display: flex;
-  gap: 10px;
-  margin-top: 15px;
+  justify-content: space-between;
+  margin-top: 20px;
 }
 
 .modal-buttons button {
-  flex: 1;
-  padding: 10px 0;
+  padding: 8px 16px;
   border-radius: 8px;
   border: none;
   cursor: pointer;
-  font-weight: 500;
-  font-size: 14px;
-  transition: 0.2s;
-  background-color: #646cff;
-  color: #fff;
+  font-weight: 600;
+  background: #646cff;
+  color: white;
 }
 
 .modal-buttons button:hover {
-  background-color: #535bf2;
+  background: #535bf2;
 }
 
-/* === RESPONSIVIDADE === */
-@media (max-width: 480px) {
-  .modal-content {
-    width: 90%;
-    padding: 20px 15px;
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* =======================
+   FULLCALENDAR MOBILE
+======================= */
+@media (max-width: 768px) {
+  .fc-header-toolbar {
+    flex-direction: column;
+    align-items: center;
   }
 
-  .modal-buttons button {
-    font-size: 13px;
-    padding: 8px 0;
+  .fc-header-toolbar > div {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .fc-header-toolbar .fc-toolbar-title {
+    width: 100%;
+    text-align: center;
+    font-size: 1.2rem !important;
+    margin-bottom: 6px;
+  }
+
+  .fc .fc-button {
+    min-width: 90px;
+    padding: 8px 10px !important;
+    font-size: 0.9rem !important;
   }
 }

@@ -1,4 +1,49 @@
-/* Banner Component - Estilos padronizados para reutilização */
+/* =======================
+   TEMA LIGHT / DARK
+======================= */
+
+/* --- LIGHT MODE (original, quase igual ao seu design) --- */
+body.light .hero {
+background: linear-gradient(120deg, #7479db, #4047d1);  color: white;
+}
+
+body.light .hero .btn-hero {
+  background-color: #1a1a1a;
+  color: white;
+}
+
+body.light .hero .btn-hero:hover {
+
+  background-color: #646cff;
+  box-shadow: 0 4px 15px rgba(100, 108, 255, 0.3);
+}
+
+/* --- DARK MODE --- */
+body.dark .hero {
+  background: linear-gradient(120deg, #535bf2, #1a1a1a);
+
+  color: #eee;
+}
+
+body.dark .hero h1,
+body.dark .hero p {
+  color: #f5f5f5;
+}
+
+body.dark .hero .btn-hero {
+  background-color: #535bf2;
+  color: white;
+}
+
+body.dark .hero .btn-hero:hover {
+  background-color: #6a63ff;
+  box-shadow: 0px 4px 12px rgba(106, 99, 255, 0.4);
+}
+
+/* =======================
+   HERO ORIGINAL (não alterado)
+======================= */
+
 .hero {
   padding: 130px 150px 100px 150px;
   text-align: center;

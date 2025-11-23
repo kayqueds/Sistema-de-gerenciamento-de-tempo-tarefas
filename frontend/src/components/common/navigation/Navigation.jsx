@@ -1,20 +1,26 @@
 import { Link, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import "./Navigation.css";
+import ThemeToggle from "../ThemeToggle/ThemeToggle.jsx";
+import { ThemeContext } from "../theme/Theme.jsx";
 
 function Navigation() {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { theme } = useContext(ThemeContext); // pegando o tema
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
   const closeMenu = () => setMenuOpen(false);
 
   return (
-    <nav className="navigation-component">
+    <nav className="navigation-component" data-theme={theme}>
       <div className="navigation-container">
         <Link className="navigation-brand" to="/">
           Organix
         </Link>
+
+        {/* Botão de alternar tema */}
+        <ThemeToggle />
 
         {/* Botão hamburguer */}
         <button className="navigation-toggle" onClick={toggleMenu}>

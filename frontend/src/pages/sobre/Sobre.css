@@ -1,21 +1,42 @@
 /* Container principal */
 .sobre-container {
   font-family: "Inter", system-ui, sans-serif;
-  color: #2c2c2c;
-  background: #f7f8fa;
   display: flex;
   flex-direction: column;
   align-items: center;
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Tema Light */
+body.light .sobre-container {
+  color: #2c2c2c;
+  background: #f7f8fa;
+}
+
+/* Tema Dark */
+body.dark .sobre-container {
+  color: #f8f9fa;
+  background: #242424;
 }
 
 /* Hero section */
 .sobre-hero {
   width: 100%;
-  background: linear-gradient(135deg, #4f46e5, #6366f1);
-  color: #fff;
   text-align: center;
   padding: 80px 20px;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Hero Light/Dark */
+body.light .sobre-hero {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: #fff;
+}
+
+body.dark .sobre-hero {
+  background: linear-gradient(120deg, #535bf2, #1a1a1a);
+  color: #f8f9fa;
 }
 
 .sobre-hero h1 {
@@ -39,7 +60,6 @@
 }
 
 .sobre-card {
-  background: #fff;
   padding: 30px;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -47,25 +67,46 @@
   flex-direction: column;
   justify-content: space-between;
   min-height: 250px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light/Dark cards */
+body.light .sobre-card {
+  background: #fff;
+  color: #2c2c2c;
+}
+
+body.dark .sobre-card {
+  background: #333;
+  color: #f8f9fa;
 }
 
 .sobre-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
 }
 
 .sobre-card h2 {
-  color: #4f46e5;
+  color: #8883ea;
   margin-bottom: 10px;
 }
 
 /* Funcionalidades */
 .sobre-funcionalidades {
-  background: #eef0f6;
   width: 100%;
   text-align: center;
   padding: 60px 20px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.light .sobre-funcionalidades {
+  background: #eef0f6;
+  color: #2c2c2c;
+}
+
+body.dark .sobre-funcionalidades {
+  background: #2b2b2b;
+  color: #f8f9fa;
 }
 
 .sobre-funcionalidades h2 {
@@ -82,10 +123,19 @@
 
 /* Equipe / Carousel */
 .sobre-equipe {
-  color: #313437;
-  background-color: #eef4f7;
   padding: 50px 20px;
   width: 100%;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.light .sobre-equipe {
+  color: #313437;
+  background-color: #eef4f7;
+}
+
+body.dark .sobre-equipe {
+  color: #f8f9fa;
+  background-color: #2b2b2b;
 }
 
 .sobre-equipe h2 {
@@ -104,7 +154,7 @@
 .carousel-container {
   display: flex;
   gap: 15px;
-  overflow-x: hidden; /* oculta scroll */
+  overflow-x: hidden;
   scroll-behavior: smooth;
   padding: 10px 0;
 }
@@ -112,20 +162,29 @@
 /* Cards da equipe */
 .col-card {
   flex: 0 0 auto;
-  width: 300px; /* tamanho base do card */
+  width: 300px;
 }
 
 .item.box {
   width: 100%;
-  background-color: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 40px 20px;
   min-height: 300px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light/Dark cards equipe */
+body.light .item.box {
+  background-color: #fff;
+  color: #2c2c2c;
+}
+
+body.dark .item.box {
+  background-color: #333;
+  color: #f8f9fa;
 }
 
 .item.box:hover {
@@ -151,11 +210,15 @@
 .item .title {
   text-transform: uppercase;
   font-weight: bold;
-  color: #d0d0d0;
   letter-spacing: 2px;
   font-size: 0.85rem;
   text-align: center;
+  transition: color 0.3s ease;
 }
+
+/* Light/Dark título */
+body.light .item .title { color: #d0d0d0; }
+body.dark .item .title { color: #aaa; }
 
 .item .social {
   display: flex;
@@ -170,6 +233,10 @@
   transition: color 0.3s ease, transform 0.3s ease;
 }
 
+body.dark .item .social a {
+  color: #cfcfff;
+}
+
 .item .social a:hover {
   color: #4f46e5;
   transform: translateY(-2px);
@@ -177,7 +244,7 @@
 
 /* Botões do carousel */
 .carousel-btn {
-  background-color: #4e46e500;
+  background-color: transparent;
   color: #4f46e5;
   border: none;
   border-radius: 50%;
@@ -194,42 +261,18 @@
   z-index: 10;
 }
 
-.carousel-btn.prev {
-  left: 0;
-}
-
-.carousel-btn.next {
-  right: 0;
-}
-
 /* Responsividade */
 @media (max-width: 4000px) {
-  .col-card {
-    width: 400px;
-  }
+  .col-card { width: 400px; }
 }
 
 @media (max-width: 768px) {
-  .col-card {
-    width: 80%;
-  }
-
-  .sobre-missao {
-    flex-direction: column;
-    gap: 20px;
-  }
+  .col-card { width: 80%; }
+  .sobre-missao { flex-direction: column; gap: 20px; }
 }
 
 @media (max-width: 480px) {
-  .col-card {
-    width: 90%;
-  }
-
-  .sobre-hero h1 {
-    font-size: 2rem;
-  }
-
-  .sobre-hero p {
-    font-size: 1rem;
-  }
+  .col-card { width: 90%; }
+  .sobre-hero h1 { font-size: 2rem; }
+  .sobre-hero p { font-size: 1rem; }
 }

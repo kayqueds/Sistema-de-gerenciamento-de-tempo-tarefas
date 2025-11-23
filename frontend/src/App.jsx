@@ -13,8 +13,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 // Import do Bootstrap JS
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
-
-import "bootstrap/dist/js/bootstrap.bundle.min.js"; // JS do Bootstrap (dropdown, collapse, etc)
+// Import do ThemeProvider
+import { ThemeProvider } from "./components/common/theme/Theme.jsx";
+import ThemeToggle from "./components/common/ThemeToggle/ThemeToggle.jsx";
 
 function App() {
   const [showLoading, setShowLoading] = useState(true);
@@ -24,13 +25,15 @@ function App() {
   };
 
   return (
-    <>
+    <ThemeProvider>
       {showLoading && (
         <Loading duration={1500} onLoadingComplete={handleLoadingComplete} />
       )}
       <BrowserRouter>
         <div className="app">
           <Navigation />
+          {/* Coloque o ThemeToggle em um local visível, ex.: no Navigation */}
+          <ThemeToggle />
           <main className="main-content">
             <RotasSite />
             <ToastContainer position="top-right" />
@@ -38,7 +41,7 @@ function App() {
           <Footer />
         </div>
       </BrowserRouter>
-    </>
+    </ThemeProvider>
   );
 }
 
