@@ -1,4 +1,138 @@
-/* Layout geral */
+/* =======================
+   TEMA LIGHT / DARK
+======================= */
+
+/* Light */
+body.light .dashboard-layout {
+  background-color: #f8f8f8;
+  color: #213547;
+}
+
+body.light .task-form,
+body.light .tasks-table,
+body.light .pomodoro-box,
+body.light .history-item {
+  background-color: #ffffff;
+  color: #213547;
+}
+
+/* Dark */
+body.dark .dashboard-layout {
+  background-color: #1a1a1a;
+  color: rgba(255,255,255,0.87);
+}
+body.dark .dashboard-content .h1{
+  color: white;
+}
+
+body.dark .task-form,
+body.dark .tasks-table,
+body.dark .pomodoro-box {
+  background-color: #2a2a2a;
+  color: #fff;
+  border-color: #444;
+}
+
+body.dark .history-item {
+  background-color: #333;
+  color: #fff;
+}
+
+/* Inputs no tema */
+body.light input,
+body.light select {
+  background: rgba(255,255,255,0.8);
+  color: #000;
+  border-color: #ccc;
+}
+
+body.dark input,
+body.dark select {
+  background: rgb(67, 66, 66);
+  color: #fff;
+  border-color: #555;
+}
+
+/* Botões */
+body.light .task-form button {
+  background: #6929cf;
+  color: #fff;
+}
+
+body.dark .task-form button {
+  background: #6929cf;
+  color: #fff;
+}
+
+body.light .task-form button:hover {
+  background: #3753c7;
+}
+
+body.dark .task-form button:hover {
+  background: #7a7fff;
+}
+
+/* Tabela: header */
+body.light .tasks-table thead {
+  background: linear-gradient(120deg, #6a5af9, #7f30ff);
+  color: #fff;
+}
+
+body.dark .tasks-table thead {
+  background: linear-gradient(120deg, #7f30ff, #23063e);
+  color: #fff;
+}
+
+/* Hover linhas */
+body.light .tasks-table tbody tr:hover {
+  background: #f0f4ff;
+}
+
+body.dark .tasks-table tbody tr:hover {
+  background: #2f2f2f !important;
+}
+
+/* ============================
+   CORREÇÃO: TASK TABLE TEMA
+============================ */
+
+body.light .tasks-table {
+  background: #ffffff !important;
+}
+
+body.light .tasks-table tbody tr {
+  background: #ffffff !important;
+  color: #213547 !important;
+}
+
+body.dark .tasks-table {
+  background: #2a2a2a !important;
+  color: #1a0707 !important;
+  border-color: #444 !important;
+}
+
+body.dark .tasks-table tbody tr {
+  background: #2a2a2a !important;
+  color: #ffffff !important;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+body.dark .high { border-left-color: #e74a3b !important; }
+body.dark .normal { border-left-color: #f6c23e !important; }
+body.dark .low { border-left-color: #1cc88a !important; }
+
+/* Mobile */
+@media (max-width: 768px) {
+  body.dark .tasks-table tbody tr {
+    background: #2a2a2a !important;
+    border: 1px solid #444 !important;
+  }
+}
+
+/* =======================
+   SEU CSS ORIGINAL
+======================= */
+
 .dashboard-layout {
   display: flex;
   min-height: 100vh;
@@ -47,21 +181,14 @@
   background: #2e59d9;
 }
 
-/* ============================
-   TABELA DE TAREFAS
-============================ */
+/* TABELA */
 .tasks-table {
   width: 100%;
   border-collapse: collapse;
   background: #fff;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.tasks-table thead {
-  background: linear-gradient(120deg, #6a5af9, #7f30ff) !important;
-  color: #fff !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.482);
 }
 
 .tasks-table thead th {
@@ -79,12 +206,7 @@
 
 .tasks-table tbody tr {
   border-bottom: 1px solid #eee;
-  transition: background 0.2s;
   cursor: pointer;
-}
-
-.tasks-table tbody tr:hover {
-  background: #f0f4ff;
 }
 
 .high { border-left: 5px solid #e74a3b; }
@@ -109,9 +231,7 @@
 .task-actions .delete { background: #e74a3b; color: #fff; }
 .task-actions .pomodoro { background: #f6c23e; color: #fff; }
 
-/* ============================
-   MODAL POMODORO
-============================ */
+/* Pomodoro */
 .pomodoro-modal-circle {
   position: fixed;
   top: 0;
@@ -140,7 +260,6 @@
   to { opacity: 1; transform: scale(1); }
 }
 
-/* CÍRCULO ANIMADO */
 .circle-timer {
   width: 180px;
   height: 180px;
@@ -154,7 +273,7 @@
 }
 
 .circle-timer-inner {
-  background: #fff;
+  background: #7f30ff;
   width: 140px;
   height: 140px;
   border-radius: 50%;
@@ -166,7 +285,6 @@
   border: 2px solid #ddd;
 }
 
-/* BOTÕES DO MODAL */
 .pomodoro-buttons button {
   margin: 6px;
   padding: 8px 14px;
@@ -183,7 +301,6 @@
   transform: scale(1.05);
 }
 
-/* CONFIGURAÇÕES */
 .pomodoro-settings {
   margin-top: 15px;
   display: flex;
@@ -205,7 +322,6 @@
   border-radius: 6px;
 }
 
-/* HISTÓRICO */
 .pomodoro-history {
   margin-top: 20px;
   text-align: left;
@@ -234,7 +350,6 @@
   color: #7f30ff;
 }
 
-/* CONTADOR DE CICLO */
 .cycle-counter {
   margin: 8px 0;
   font-size: 15px;
@@ -243,41 +358,49 @@
 
 @media (max-width: 768px) {
 
-  .dashboard-content { padding: 15px; }
-
-  /* Remove scroll e desativa largura fixa da tabela */
   .tasks-table {
-    width: 100% !important;
-    display: table !important;
-    overflow-x: hidden !important;
+    width: 100%;
   }
 
-  .table-responsive {
-    overflow-x: hidden !important;
+  .tasks-table thead {
+    display: none;
   }
 
-  /* Cada linha vira card */
   .tasks-table tbody tr {
-    display: block;
-    padding: 15px;
-    margin-bottom: 12px;
-    border-radius: 12px;
-    border: 1px solid #eee;
-    background: #fff;
-  }
-
-  /* Campos alinhados */
-  .tasks-table td {
     display: flex;
-    justify-content: space-between;
-    padding: 6px 0;
+    flex-direction: column;
+    background: #1e1e1e;
+    border: 1px solid #333;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    color: white;
+    gap: 10px;
   }
 
-  .tasks-table td::before {
-    font-weight: 700;
-    color: #444;
-    width: 120px;
-    flex-shrink: 0;
+  .tasks-table tbody td {
+    padding: 0;
+    border: none;
+  }
+
+  /* Prioridade badge */
+  .priority-badge {
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    align-self: flex-start;
+    color: white;
+  }
+
+  .priority-alta { background: #ef4444; }
+  .priority-normal { background: #fbbf24; }
+  .priority-baixa { background: #22c55e; }
+
+  .task-meta {
+    font-size: 14px;
+    color: #cbd5e1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
 }
-

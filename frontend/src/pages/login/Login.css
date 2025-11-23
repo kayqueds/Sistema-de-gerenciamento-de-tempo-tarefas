@@ -1,31 +1,59 @@
+/* ====== Login Page ====== */
 .login-page {
   min-height: 100vh;
   padding-top: 60px;
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: background-color 0.3s ease, color 0.3s ease;
   background-color: #fff;
   color: #fff;
 }
 
+/* Tema Light */
+body.light .login-page {
+  background-color: #f8f8f8;
+  color: #213547;
+}
+
+/* Tema Dark */
+body.dark .login-page {
+  background-color: #1a1a1a;
+  color: rgba(255, 255, 255, 0.87);
+}
+
+/* ====== Container ====== */
 .login-container {
   display: flex;
   width: 900px;
   max-width: 95%;
-  background-color: #ffffff10;
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  background-color: #ffffff10;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* ====== Left Side ====== */
 .login-left {
   flex: 1;
-  background: linear-gradient(to bottom right, #9d9fc9, #535bf2);
-  color: white;
   padding: 2rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Light */
+body.light .login-left {
+  background: linear-gradient(to bottom right, #9d9fc9, #535bf2);
+  color: #213547;
+}
+
+/* Dark */
+body.dark .login-left {
+  background: linear-gradient(to bottom right, #535bf2, #1a1a1a);
+  color: #f8f9fa;
 }
 
 .login-left h2 {
@@ -39,19 +67,32 @@
   margin-bottom: 1.5rem;
 }
 
+/* ====== Inputs ====== */
 .login-left input {
   width: 100%;
   border: 1px solid #ccc;
   border-radius: 10px;
   padding: 0.6rem;
   margin-bottom: 1rem;
-  background-color: rgba(255, 255, 255, 0.8);
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light */
+body.light .login-left input {
+  background-color: rgba(255,255,255,0.8);
   color: #000;
 }
 
-.login-left input:focus { border-color: #fff; }
+/* Dark */
+body.dark .login-left input {
+  background-color: rgba(50,50,50,0.8);
+  color: #fff;
+  border-color: #555;
+}
 
-.btn-login, .btn-login-google {
+/* ====== Botões ====== */
+.btn-login,
+.btn-login-google {
   width: 100%;
   border-radius: 8px;
   border: 1px solid transparent;
@@ -60,46 +101,47 @@
   font-weight: 500;
   cursor: pointer;
   margin-top: 0.5rem;
-  transition: 0.3s;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
-.btn-login {
+/* Botão login */
+body.light .btn-login {
   background-color: #1a1a1a;
   color: white;
 }
 
-.btn-login:hover {
-  border-color: #646cff;
+body.dark .btn-login {
+  background-color: #646cff;
+  color: #fff;
 }
 
-.btn-login-google {
+.btn-login:hover { border-color: #646cff; }
+
+/* Botão Google */
+body.light .btn-login-google {
   background-color: rgba(255,255,255,0.3);
   color: white;
+}
+
+body.dark .btn-login-google {
+  background-color: rgba(255,255,255,0.15);
+  color: #f8f9fa;
 }
 
 .btn-login-google:hover {
   background-color: rgba(255,255,255,0.5);
 }
 
-/* Links */
-.form-links {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.85rem;
-  margin-bottom: 1rem;
-}
-
+/* ====== Links ====== */
 .form-links a {
-  color: #fff;
   text-decoration: underline;
+  transition: color 0.3s ease;
 }
 
-.divider {
-  text-align: center;
-  margin: 0.5rem 0;
-}
+body.light .form-links a { color: #535bf2; }
+body.dark .form-links a { color: #cfcfff; }
 
-/* Lado direito: imagens */
+/* ====== Right side / imagens ====== */
 .login-right {
   flex: 1;
   position: relative;
@@ -116,46 +158,30 @@
   transition: opacity 1s ease-in-out;
 }
 
-.login-right img.active {
-  opacity: 1;
-}
+.login-right img.active { opacity: 1; }
 
-/* Light mode */
-@media (prefers-color-scheme: light) {
-  .login-page {
-    color: #213547;
-    background-color: #ffffff;
-  }
-}
-
-/* Responsive Design */
+/* ====== Responsivo ====== */
 @media (max-width: 768px) {
   .login-page {
-    padding-top: 60px;
     padding: 60px 1rem 1rem;
   }
-  
+
   .login-container {
     flex-direction: column;
     width: 100%;
     max-width: 500px;
   }
-  
+
   .login-right {
     height: 200px;
   }
 }
 
 @media (max-width: 480px) {
-  .login-page {
-    padding-top: 50px;
-    padding: 50px 0.5rem 0.5rem;
-  }
-  
   .login-left {
     padding: 1.5rem;
   }
-  
+
   .login-left h2 {
     font-size: 1.5rem;
   }

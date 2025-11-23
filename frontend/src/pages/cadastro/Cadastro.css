@@ -1,57 +1,67 @@
+/* ====== Cadastro Page ====== */
 .cadastro-page {
   min-height: 100vh;
   padding-top: 60px;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #f8e6e600;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Tema Light */
+body.light .cadastro-page {
+  background-color: #f8f8f8;
+  color: #213547;
+}
 
+/* Tema Dark */
+body.dark .cadastro-page {
+  background-color: #1a1a1a;
+  color: rgba(255, 255, 255, 0.87);
+}
+
+/* Links */
 .cadastro-page a {
   font-weight: 500;
-  color: #646cff;
   text-decoration: inherit;
+  transition: color 0.3s ease, background-color 0.3s ease;
 }
+
+body.light .cadastro-page a { color: #646cff; }
+body.dark .cadastro-page a { color: #646cff; }
 
 .cadastro-page a:hover { color: #535bf2; }
 
-.cadastro-page main {
-  padding-top: 0px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
+/* Container principal */
 .cadastro-container {
   display: flex;
   width: 900px;
   max-width: 95%;
-  background-color: #ffffff10;
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
-.login-left input {
-  width: 100%;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  padding: 0.6rem;
-  margin-bottom: 1rem;
-  background-color: rgba(255, 255, 255, 0.8);
-  color: #000;
-}
+
+/* Left Side */
 .cadastro-left {
   flex: 1;
-  background: linear-gradient(to bottom right, #9d9fc9, #535bf2);
-  color: white;
   padding: 2rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
+body.light .cadastro-left {
+  background: linear-gradient(to bottom right, #9d9fc9, #535bf2);
+  color: #213547;
+}
+
+body.dark .cadastro-left {
+  background: linear-gradient(120deg, #535bf2, #1a1a1a);
+  color: #f8f9fa;
+}
 
 .cadastro-left h2 {
   font-size: 1.8rem;
@@ -59,50 +69,72 @@
   text-align: center;
 }
 
+/* Inputs */
 .form-control {
-  background-color: rgba(255, 255, 255, 0.8);;
   width: 100%;
   border: 1px solid #ccc;
   border-radius: 10px;
   padding: 0.6rem;
   margin-bottom: 1rem;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
-.form-check-label { font-size: 0.9rem; }
+body.light .form-control {
+  background-color: rgba(255,255,255,0.8);
+  color: #000;
+}
 
+body.dark .form-control {
+  background-color: rgba(50, 50, 50, 0.612);
+  color: #fff;
+  border-color: #555;
+}
+
+/* Botão Cadastrar */
 .btn-cadastrar {
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.25s, background-color 0.3s ease, color 0.3s ease;
+  width: 100%;
+}
+
+body.light .btn-cadastrar {
   background-color: #1a1a1a;
   color: white;
-  cursor: pointer;
-  transition: border-color 0.25s;
-  width: 100%;
+}
+
+body.dark .btn-cadastrar {
+  background-color: #353baa;
+  color: #fff;
 }
 
 .btn-cadastrar:hover { border-color: #646cff; }
 
+/* Link login */
 .link-login {
   margin-top: 1rem;
   font-size: 0.9rem;
   text-align: center;
   text-transform: capitalize;
-  background-color: #ffffff;
   border-radius: 8px;
   padding: 0.4rem;
-}
-.link-login:hover {
-  background-color: #f0f0f0;
-  transition: 0.3s;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+body.light .link-login { background-color: #ffffff; color: #213547; }
+body.light .link-login:hover { background-color: #f0f0f0; }
 
+body.dark .link-login { background-color: #333333; color: #f8f9fa; }
+body.dark .link-login:hover { background-color: #444; }
+
+/* Right side / imagens */
 .cadastro-right {
-  position: relative;
   flex: 1;
+  position: relative;
   overflow: hidden;
 }
 
@@ -119,47 +151,19 @@
 
 .cadastro-right img.active { opacity: 1; }
 
-/* Light mode */
-@media (prefers-color-scheme: light) {
-  .cadastro-page {
-    color: #213547;
-    background-color: #ffffff;
-  }
-
-  .cadastro-left {
-    color: #213547;
-  }
-}
-
-/* Responsive Design */
+/* Responsividade */
 @media (max-width: 768px) {
-  .cadastro-page {
-    padding-top: 60px;
-    padding: 60px 1rem 1rem;
-  }
-  
   .cadastro-container {
+    width: 150%;          /* deixa maior que a tela */
+    max-width: none;      /* remove limite */
+    margin-left: -25%;    /* centraliza horizontalmente */
+    display: flex;
     flex-direction: column;
-    width: 100%;
-    max-width: 500px;
+    align-items: center;
   }
-  
-  .cadastro-right {
-    height: 200px;
-  }
-}
 
-@media (max-width: 480px) {
-  .cadastro-page {
-    padding-top: 50px;
-    padding: 50px 0.5rem 0.5rem;
-  }
-  
   .cadastro-left {
-    padding: 1.5rem;
-  }
-  
-  .cadastro-left h2 {
-    font-size: 1.5rem;
+    width: 100%;
+    padding: 2rem;
   }
 }

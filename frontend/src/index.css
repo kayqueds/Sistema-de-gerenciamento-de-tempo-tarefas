@@ -2,3 +2,29 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Light theme (padrão) */
+body.light {
+  background-color: #f8f9fa; /* Bootstrap light background */
+  color: #212529; /* Bootstrap dark text */
+}
+
+/* Dark theme */
+body.dark {
+  background-color: #212529; /* Dark background */
+  color: #f8f9fa; /* Light text */
+}
+
+/* Exemplos adicionais */
+body.dark .navigation-component {
+  background-color: #343a40;
+  color: #f8f9fa;
+}
+
+body.dark .navigation-link {
+  color: #f8f9fa;
+}
+
+body.dark .navigation-link.active {
+  background-color: #495057;
+}

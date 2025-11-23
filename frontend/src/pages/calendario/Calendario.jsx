@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -10,9 +10,10 @@ import Sidebar from "../../components/common/sidebar/Sidebar";
 import "./Calendario.css";
 
 function Calendario() {
-  const [tarefas, setTarefas] = useState([]);
   const [events, setEvents] = useState([]);
+  const [tarefasSidebar, setTarefasSidebar] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
+
   const [novaTarefaData, setNovaTarefaData] = useState({
     dataHora: "",
     nome: "",
@@ -21,17 +22,35 @@ function Calendario() {
     status: "pendente",
   });
 
-  // Buscar tarefas do backend
-  const fetchTarefas = async () => {
+  // --------------------------- FETCH TAREFAS ---------------------------
+  const fetchTarefas = useCallback(async () => {
     try {
       const response = await api.get("/tarefas");
-      setTarefas(response.data);
 
-      const mappedEvents = response.data.map((t) => {
+      // Normaliza prioridade (Maiúscula)
+      const normalizadas = response.data.map((t) => ({
+        ...t,
+        prioridade:
+          t.prioridade.charAt(0).toUpperCase() + t.prioridade.slice(1),
+      }));
+
+      // Ordenar: Alta → Normal → Baixa
+      const prioridades = { Alta: 1, Normal: 2, Baixa: 3 };
+
+      const ordenadas = normalizadas.sort(
+        (a, b) => prioridades[a.prioridade] - prioridades[b.prioridade]
+      );
+
+      // Sidebar recebe tarefas ordenadas
+      setTarefasSidebar(ordenadas);
+
+      // Eventos do calendário
+      const mappedEvents = ordenadas.map((t) => {
         const data = t.data_tarefa ? t.data_tarefa.split("T")[0] : null;
-        const horario = t.horario || "00:00";
+        const horario = t.horario || "09:00";
+
         return {
-          id: t.id_tarefa,
+          id: t.id_tarefa.toString(),
           title: t.nome_tarefa,
           start: data ? `${data}T${horario}` : new Date(),
           allDay: false,
@@ -48,19 +67,28 @@ function Calendario() {
       console.error("Erro ao buscar tarefas:", error);
       toast.error("Erro ao buscar tarefas.");
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchTarefas();
-  }, []);
+  }, [fetchTarefas]);
 
-  const handleDateClick = (info) => {
-    setNovaTarefaData({ ...novaTarefaData, dataHora: info.dateStr + "T09:00" });
-    setModalOpen(true);
-  };
+  // --------------------------- CLICK NO CALENDÁRIO ---------------------------
+  const handleDateClick = useCallback(
+    (info) => {
+      setNovaTarefaData({
+        ...novaTarefaData,
+        dataHora: info.dateStr + "T09:00",
+      });
+      setModalOpen(true);
+    },
+    [novaTarefaData]
+  );
 
+  // --------------------------- CRIAR NOVA TAREFA ---------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!novaTarefaData.nome) {
       toast.error("O nome da tarefa é obrigatório!");
       return;
@@ -80,8 +108,10 @@ function Calendario() {
 
     try {
       await api.post("/tarefas", novaTarefa);
+
       toast.success("Tarefa criada!");
       setModalOpen(false);
+
       setNovaTarefaData({
         dataHora: "",
         nome: "",
@@ -89,6 +119,7 @@ function Calendario() {
         prioridade: "Normal",
         status: "pendente",
       });
+
       fetchTarefas();
     } catch (error) {
       console.error("Erro ao criar tarefa:", error);
@@ -96,31 +127,37 @@ function Calendario() {
     }
   };
 
-  const handleEventDrop = async (info) => {
-    const tarefaId = info.event.id;
-    const tarefa = tarefas.find((t) => t.id_tarefa === parseInt(tarefaId));
-    if (!tarefa) return;
+  // --------------------------- DRAG & DROP ---------------------------
+  const handleEventDrop = useCallback(
+    async (info) => {
+      const tarefaId = info.event.id;
 
-    try {
-      await api.put(`/tarefas/${tarefaId}`, {
-        ...tarefa,
-        data_tarefa: info.event.start.toISOString().split("T")[0],
-        horario: info.event.start.toTimeString().slice(0, 5),
-      });
-      toast.success("Tarefa atualizada!");
-      fetchTarefas();
-    } catch (error) {
-      console.error("Erro ao atualizar tarefa:", error);
-      toast.error("Erro ao atualizar tarefa.");
-      info.revert();
-    }
-  };
+      try {
+        await api.put(`/tarefas/${tarefaId}`, {
+          data_tarefa: info.event.start.toISOString().split("T")[0],
+          horario: info.event.start.toTimeString().slice(0, 5),
+        });
+
+        toast.success("Tarefa atualizada!");
+
+        fetchTarefas();
+      } catch (error) {
+        console.error("Erro ao atualizar tarefa:", error);
+        toast.error("Erro ao atualizar tarefa.");
+        info.revert();
+      }
+    },
+    [fetchTarefas]
+  );
 
   return (
     <div className="dashboard-layout">
-      <Sidebar />
+      {/* Sidebar recebe as tarefas ordenadas */}
+      <Sidebar tarefas={tarefasSidebar} refreshTasks={fetchTarefas} />
+
       <div className="dashboard-content">
         <h1>Calendário de Tarefas</h1>
+
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
@@ -130,14 +167,6 @@ function Calendario() {
             center: "title",
             right: "dayGridMonth,timeGridWeek,timeGridDay",
           }}
-          buttonText={{
-            today: "Hoje",
-            prev: "Anterior",
-            next: "Próximo",
-            month: "Mês",
-            week: "Semana",
-            day: "Dia",
-          }}
           events={events}
           dateClick={handleDateClick}
           editable={true}
@@ -145,19 +174,23 @@ function Calendario() {
           height="80vh"
         />
 
-        {/* Modal de criação de tarefa */}
+        {/* --------------------------- MODAL --------------------------- */}
         {modalOpen && (
           <div className="modal-overlay" onClick={() => setModalOpen(false)}>
             <div className="modal-wrapper" onClick={(e) => e.stopPropagation()}>
               <div className="modal-content">
                 <h2>Criar Nova Tarefa</h2>
+
                 <form onSubmit={handleSubmit}>
                   <label>Nome</label>
                   <input
                     type="text"
                     value={novaTarefaData.nome}
                     onChange={(e) =>
-                      setNovaTarefaData({ ...novaTarefaData, nome: e.target.value })
+                      setNovaTarefaData({
+                        ...novaTarefaData,
+                        nome: e.target.value,
+                      })
                     }
                     required
                   />
@@ -178,7 +211,10 @@ function Calendario() {
                     type="datetime-local"
                     value={novaTarefaData.dataHora}
                     onChange={(e) =>
-                      setNovaTarefaData({ ...novaTarefaData, dataHora: e.target.value })
+                      setNovaTarefaData({
+                        ...novaTarefaData,
+                        dataHora: e.target.value,
+                      })
                     }
                     required
                   />
@@ -187,7 +223,10 @@ function Calendario() {
                   <select
                     value={novaTarefaData.prioridade}
                     onChange={(e) =>
-                      setNovaTarefaData({ ...novaTarefaData, prioridade: e.target.value })
+                      setNovaTarefaData({
+                        ...novaTarefaData,
+                        prioridade: e.target.value,
+                      })
                     }
                   >
                     <option>Alta</option>
@@ -199,7 +238,10 @@ function Calendario() {
                   <select
                     value={novaTarefaData.status}
                     onChange={(e) =>
-                      setNovaTarefaData({ ...novaTarefaData, status: e.target.value })
+                      setNovaTarefaData({
+                        ...novaTarefaData,
+                        status: e.target.value,
+                      })
                     }
                   >
                     <option>pendente</option>
