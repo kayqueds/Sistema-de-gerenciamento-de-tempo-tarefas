@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import api from "../../api";
 import toastOnce from "../../utils/toastOnce";
 import Sound from '../../hooks/Sound';
+import './Grafico.css'
 
 const { playSound, listSound } = Sound();
 // 1. Registro dos elementos do Chart.js

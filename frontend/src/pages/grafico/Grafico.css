@@ -1,0 +1,69 @@
+
+/* 1. CONTAINER PRINCIPAL: O Card Suave */
+.chart-container-wrapper {
+    background-color: #f7f9fc; 
+    border: 1px solid #e0e0e0;
+    border-radius: 16px; 
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08); 
+    padding: 25px;
+    margin: 20px auto;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.chart-container-wrapper:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+/* 2. ESTILO DO BOTÃO DE DOWNLOAD */
+.download-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #5aa9e6; 
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 500;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.download-button:hover {
+    background-color: #4a9bd9;
+}
+
+
+/* 3. MENSAGENS DE STATUS (Carregando, Erro, Sem Dados) */
+.chart-status-message {
+    padding: 15px;
+    border-radius: 8px;
+    margin: 10px 0;
+    font-weight: 500;
+    text-align: center;
+}
+
+.chart-loading {
+    color: #334e68;
+    background-color: #e6f7ff;
+}
+
+.chart-error {
+    color: #d9534f;
+    background-color: #fdeded;
+    border: 1px solid #d9534f;
+}
+
+.chart-no-data {
+    color: #7f8c9a;
+    background-color: #f0f0f5;
+}
+
+.chart-canvas-container {
+    position: relative; 
+    height: auto; 
+    width: 90%; 
+    margin: 0 auto;
+}
