@@ -1,21 +1,4 @@
 
-/* 1. CONTAINER PRINCIPAL: O Card Suave */
-.chart-container-wrapper {
-    background-color: #f7f9fc; 
-    border: 1px solid #e0e0e0;
-    border-radius: 16px; 
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08); 
-    padding: 25px;
-    margin: 20px auto;
-    transition: all 0.3s ease;
-    text-align: center;
-}
-
-.chart-container-wrapper:hover {
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-    transform: translateY(-2px);
-}
-
 /* 2. ESTILO DO BOTÃO DE DOWNLOAD */
 .download-button {
     margin-top: 20px;

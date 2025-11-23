@@ -338,6 +338,7 @@ function Dashboard() {
       };
 
       if (editIndex !== null) {
+        playSound(listSound[3]);
         const ok = await showConfirmation("Deseja editar a tarefa?", "Editar");
         if (!ok) return;
         await api.put(`/tarefas/${tarefas[editIndex].id_tarefa}`, tarefaBackend);

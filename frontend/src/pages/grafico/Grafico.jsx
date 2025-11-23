@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'; // ⭐️ Importe useRef
+import React, { useState, useEffect, useRef } from 'react'; 
 import { Pie } from 'react-chartjs-2';
 import ChartDataLabels from 'chartjs-plugin-datalabels'; 
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
@@ -6,10 +6,9 @@ import { toast } from "react-toastify";
 import api from "../../api";
 import toastOnce from "../../utils/toastOnce";
 import Sound from '../../hooks/Sound';
-import './Grafico.css'
+import './Grafico.css' // Importa o CSS
 
 const { playSound, listSound } = Sound();
-// 1. Registro dos elementos do Chart.js
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
 const CHATBOT_API_URL = import.meta.env.VITE_CHATBOT_API_URL || 'http://localhost:5001';
@@ -19,9 +18,9 @@ export default function GraficoPrioridades() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-    // função para baixar o gráfico como PNG
+    // Funções e lógica de download (omitidas para brevidade, pois permanecem as mesmas)
     const chartRef = useRef(null); 
-        const baixarGrafico = () => {
+    const baixarGrafico = () => {
         const chart = chartRef.current;
         
         if (!chart) {
@@ -47,62 +46,62 @@ export default function GraficoPrioridades() {
             toast.error("Falha no download do gráfico.");
         }
     };
-// Aqui busca as tarefas e processa os dados para o gráfico
+    
   useEffect(() => {
-    async function fetchAndProcessChartData() {
-      setLoading(true);
-      setError(null);
-      try {
-        const tarefasResponse = await api.get("/tarefas");
-        const tarefas = tarefasResponse.data;
+    async function fetchAndProcessChartData() {
+        setLoading(true);
+        setError(null);
+        try {
+            const tarefasResponse = await api.get("/tarefas");
+            const tarefas = tarefasResponse.data;
 
-        if (!tarefas || tarefas.length === 0) {
-          setChartData(null);
-          setLoading(false);
-          toastOnce("noData", () => toast.info("Nenhuma tarefa disponível para gerar o gráfico."));
-          return;
-        }
+            if (!tarefas || tarefas.length === 0) {
+                setChartData(null);
+                setLoading(false);
+                toastOnce("noData", () => toast.info("Nenhuma tarefa disponível para gerar o gráfico."));
+                return;
+            }
 
-        const flaskResponse = await fetch(`${CHATBOT_API_URL}/grafico/data`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ tarefas }), 
-        });
+            const flaskResponse = await fetch(`${CHATBOT_API_URL}/grafico/data`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tarefas }), 
+            });
 
-        if (!flaskResponse.ok) {
-          throw new Error(`Falha ao buscar dados do Flask: ${flaskResponse.status}`);
-        }
+            if (!flaskResponse.ok) {
+                throw new Error(`Falha ao buscar dados do Flask: ${flaskResponse.status}`);
+            }
 
-        const data = await flaskResponse.json();
-        
-        setChartData({
-          labels: data.labels,
-          datasets: [
-            {
-              label: 'Distribuição de Tarefas',
-              data: data.values,
-              backgroundColor: [
-                '#ef4444', 
-                '#f59e0b', 
-                '#10b981', 
-                '#9ca3af', 
-              ],
-              borderColor: ['#fff'],
-              borderWidth: 1,
-            },
-          ],
-        });
+            const data = await flaskResponse.json();
+            
+            setChartData({
+                labels: data.labels,
+                datasets: [
+                    {
+                        label: 'Distribuição de Tarefas',
+                        data: data.values,
+                        backgroundColor: [
+                            '#ef4444', 
+                            '#f59e0b', 
+                            '#10b981', 
+                            '#9ca3af', 
+                        ],
+                        borderColor: ['#fff'],
+                        borderWidth: 1,
+                    },
+                ],
+            });
 
-      } catch (err) {
-        console.error("Erro ao carregar o gráfico:", err);
-        setError("Erro ao carregar o gráfico. Verifique a conexão com o servidor.");
-        toastOnce("chartError", () => toast.error("Erro ao carregar o gráfico."));
-        setChartData(null);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchAndProcessChartData();
+        } catch (err) {
+            console.error("Erro ao carregar o gráfico:", err);
+            setError("Erro ao carregar o gráfico. Verifique a conexão com o servidor.");
+            toastOnce("chartError", () => toast.error("Erro ao carregar o gráfico."));
+            setChartData(null);
+        } finally {
+            setLoading(false);
+        }
+    }
+    fetchAndProcessChartData();
   }, []); 
 
   // ---------------------------------------
@@ -134,26 +133,50 @@ export default function GraficoPrioridades() {
     },
   };
 
-  if (loading) return <div className="text-center p-4 font-semibold font-family-sans">Carregando gráfico...</div>;
-  if (error) return <div className="text-red-500 text-center p-4">{error}</div>;
-  if (!chartData) return <div className="text-gray-500 text-center p-4">Nenhum dado de tarefas para exibir.</div>;
+    let content;
 
-  return (
-    <div className="w-full max-w-md mx-auto p-4">
-        {/* ⭐️ Anexa a referência ao componente Pie */}
-      <Pie 
-            data={chartData} 
-            options={options} 
-            ref={chartRef} 
-        />
-        
-        {/* ⭐️ Adiciona o botão de download */}
-        <button 
-            onClick={baixarGrafico}
-            className="mt-4 p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-150"
-        >
-            ⬇️ Baixar Gráfico (PNG)
-        </button>
-    </div>
-  );
+    // ⭐️ APLICAÇÃO DAS CLASSES CSS NAS MENSAGENS DE STATUS 
+    if (loading) {
+        content = (
+            <div className="chart-status-message chart-loading">Carregando gráfico...</div>
+        );
+    } else if (error) {
+        content = (
+            <div className="chart-status-message chart-error">{error}</div>
+        );
+    } else if (!chartData) {
+        content = (
+            <div className="chart-status-message chart-no-data">Nenhum dado de tarefas para exibir.</div>
+        );
+    } else {
+        // Conteúdo principal (Gráfico e Botão)
+        content = (
+            <>
+                <h3 style={{ marginBottom: '15px', color: '#334e68' }}>Distribuição de Tarefas</h3>
+                
+                {/* ⭐️ CLASSE PARA DIMENSIONAMENTO DO GRÁFICO */}
+                <div className="chart-canvas-container">
+                    <Pie 
+                            data={chartData} 
+                            options={options} 
+                            ref={chartRef} 
+                        />
+                </div>
+                
+                {/* ⭐️ CLASSE PARA ESTILIZAÇÃO DO BOTÃO */}
+                <button 
+                    onClick={baixarGrafico}
+                    className="download-button"
+                >
+                    ⬇️ Baixar Gráfico (PNG)
+                </button>
+            </>
+        );
+    }
+
+    return (
+        <div className="max-w-sm mx-auto p-6 bg-white shadow-xl rounded-xl text-center">
+            {content}
+        </div>
+    );
 }
