@@ -35,23 +35,19 @@ function Sidebar({ tarefas, refreshTasks }) {
 
   const saveTaskChanges = async (id) => {
     try {
-      await fetch(`/tarefas/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nome_tarefa: editForm.titulo,
-          descricao_tarefa: editForm.descricao,
-          data_tarefa: editForm.data,
-          horario: editForm.horario,
-          prioridade: editForm.prioridade,
-          status_tarefa:
-            editForm.prioridade === "Alta"
-              ? "concluida"
-              : editForm.prioridade === "Normal"
-              ? "em andamento"
-              : "pendente",
-          id_usuario: 1,
-        }),
+      await api.put(`/tarefas/${id}`, {
+        nome_tarefa: editForm.titulo,
+        descricao_tarefa: editForm.descricao,
+        data_tarefa: editForm.data,
+        horario: editForm.horario,
+        prioridade: editForm.prioridade,
+        status_tarefa:
+          editForm.prioridade === "Alta"
+            ? "concluida"
+            : editForm.prioridade === "Normal"
+            ? "em andamento"
+            : "pendente",
+        id_usuario: 1,
       });
 
       cancelEditing();
@@ -336,9 +332,13 @@ function Sidebar({ tarefas, refreshTasks }) {
           </li>
 
           <li>
-            <span className={`${linkBaseStyle} ${linkInactiveStyle}`}>
-              Projetos
-            </span>
+            <Link to="/grafico"
+              className={`${linkBaseStyle} ${
+                location.pathname === "/grafico" ? linkActiveStyle : linkInactiveStyle
+              }`}
+            >
+              Gráfico
+            </Link>
           </li>
 
           <li>
@@ -355,9 +355,14 @@ function Sidebar({ tarefas, refreshTasks }) {
           </li>
 
           <li>
-            <span className={`${linkBaseStyle} ${linkInactiveStyle}`}>
-              Configurações
-            </span>
+            <Link
+              to="/chat"
+              className={`${linkBaseStyle} ${
+                location.pathname === "/chat" ? linkActiveStyle : linkInactiveStyle
+              }`}
+            >
+              Chat
+            </Link>
           </li>
         </ul>
       </aside>

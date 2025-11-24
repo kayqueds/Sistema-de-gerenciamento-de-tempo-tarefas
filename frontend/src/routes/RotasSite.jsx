@@ -6,7 +6,8 @@ import Sobre from "../pages/sobre/Sobre";
 import Dashboard from "../pages/dashboard/Dashboard";
 import Error404 from "../pages/error404/Error404";
 import Calendario from "../pages/calendario/Calendario";
-
+import Chat from "../components/Chat/Chat";
+import Grafico from "../pages/grafico/Grafico";
 
 // rotas do site
 function RotasSite() {
@@ -19,6 +20,8 @@ function RotasSite() {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/calendario" element={<Calendario />} />
       <Route path="*" element={< Error404/>} />
+      <Route path="/chat" element={<Chat />} />
+      <Route path="/grafico" element={<Grafico />} />
     </Routes>
   );
 }
