@@ -4,6 +4,28 @@ import matplotlib.pyplot as plt
 import io
 import requests
 from datetime import datetime
+import os
+
+
+def _parse_date_to_date(dt):
+    """Tenta normalizar uma string de data para um objeto date do Python.
+    Suporta formatos: 'YYYY-MM-DD', 'YYYY-MM-DDTHH:MM:SS', 'DD/MM/YYYY'. Retorna None se falhar."""
+    if not dt:
+        return None
+    if isinstance(dt, str):
+        s = dt.split('T')[0]
+        # tentar ISO YYYY-MM-DD
+        try:
+            return datetime.fromisoformat(s).date()
+        except Exception:
+            pass
+        # tentar outros formatos
+        for fmt in ("%d/%m/%Y", "%Y-%m-%d"):
+            try:
+                return datetime.strptime(s, fmt).date()
+            except Exception:
+                continue
+    return None
 
 app = Flask(__name__)
 CORS(app)
@@ -95,12 +117,24 @@ def grafico_sample():
 def _fetch_tarefas_backend():
     """Busca a lista de tarefas no backend Node/Express.
     Retorna lista [] em caso de erro."""
+    backend_url = os.environ.get('BACKEND_URL') or 'http://localhost:3000'
     try:
-        res = requests.get('http://localhost:3000/tarefas', timeout=5)
+        res = requests.get(f'{backend_url.rstrip('/')}/tarefas', timeout=5)
         if res.ok:
-            return res.json()
+            try:
+                data = res.json()
+                app.logger.info('Fetched %d tarefas from backend %s', len(data) if isinstance(data, list) else 0, backend_url)
+                # log sample first item for debugging
+                if isinstance(data, list) and len(data) > 0:
+                    sample = data[0]
+                    app.logger.debug('Sample tarefa keys: %s', list(sample.keys()))
+                return data
+            except Exception as e:
+                app.logger.error('Erro ao decodificar JSON do backend: %s', e)
+                return []
+        app.logger.warning('Backend respondeu com status %s', res.status_code)
     except Exception as e:
-        app.logger.error('Erro ao buscar tarefas no backend: %s', e)
+        app.logger.error('Erro ao buscar tarefas no backend (%s): %s', backend_url, e)
     return []
 
 
@@ -119,27 +153,27 @@ def chatbot():
             dt = t.get('data_tarefa')
             if not dt:
                 continue
-            try:
-                d = datetime.fromisoformat(dt).date()
-            except Exception:
-                # se estiver no formato dd/mm/yyyy
-                try:
-                    d = datetime.strptime(dt, '%d/%m/%Y').date()
-                except Exception:
-                    continue
+            d = _parse_date_to_date(dt)
+            if not d:
+                continue
             if d == today:
                 qtd += 1
         return jsonify({'resposta': f'Você tem {qtd} tarefas marcadas para hoje.'})
 
     # intent: total de tarefas
-    if 'quantas' in msg and 'total' in msg or 'no total' in msg or 'no sistema' in msg:
+    if ('quantas' in msg and 'total' in msg) or 'no total' in msg or 'no sistema' in msg:
         total = len(tarefas)
         return jsonify({'resposta': f'Há {total} tarefas cadastradas no sistema.'})
 
     # intent: tarefas por prioridade
-    if 'prioridade' in msg and ('alta' in msg or 'normal' in msg or 'baixa' in msg):
+    # aceitar tanto frases com 'prioridade' quanto frases como 'tarefas altas'
+    if (('prioridade' in msg) or ('taref' in msg) or ('tarefa' in msg) or ('tarefas' in msg)) and ('alta' in msg or 'normal' in msg or 'baixa' in msg):
         pr = 'Alta' if 'alta' in msg else 'Normal' if 'normal' in msg else 'Baixa'
-        qtd = sum(1 for t in tarefas if (t.get('prioridade') or '').lower() == pr.lower() or (t.get('status_tarefa') == 'concluida' and pr == 'Alta'))
+        qtd = sum(
+            1
+            for t in tarefas
+            if (t.get('prioridade') or '').lower() == pr.lower() or (t.get('status_tarefa') == 'concluida' and pr == 'Alta')
+        )
         return jsonify({'resposta': f'Você possui {qtd} tarefas de prioridade {pr.lower()}.'})
 
     # intent: listar pendentes
@@ -159,13 +193,9 @@ def chatbot():
             status = (t.get('status_tarefa') or '').lower()
             if not dt:
                 continue
-            try:
-                d = datetime.fromisoformat(dt).date()
-            except Exception:
-                try:
-                    d = datetime.strptime(dt, '%d/%m/%Y').date()
-                except Exception:
-                    continue
+            d = _parse_date_to_date(dt)
+            if not d:
+                continue
             if d < today and status != 'concluida':
                 atrasadas.append(t.get('nome_tarefa') or t.get('titulo') or '')
         if not atrasadas:
@@ -181,4 +211,6 @@ def chatbot():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    # Em produção, use um servidor WSGI (gunicorn) e não o servidor de desenvolvimento
+    debug = os.environ.get('FLASK_DEBUG', '1')
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5001)), debug=(debug == '1'))

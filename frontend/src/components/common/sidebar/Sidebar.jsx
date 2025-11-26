@@ -209,7 +209,12 @@ function Sidebar({ tarefas, refreshTasks }) {
                               </span>
                               <span className="text-sm text-gray-500">
                                 {task.data_tarefa
-                                  ? new Date(task.data_tarefa).toLocaleDateString()
+                                  ? (() => {
+                                      const datePart = task.data_tarefa.split("T")[0];
+                                      const [y, m, day] = datePart.split("-");
+                                      const d = new Date(Number(y), Number(m) - 1, Number(day));
+                                      return d.toLocaleDateString();
+                                    })()
                                   : "--"}{" "}
                                 - {task.horario || "--:--"}
                               </span>

@@ -269,10 +269,12 @@ function Dashboard() {
       tarefas.forEach((t) => {
         if (!t.horario || !t.data_tarefa) return;
 
-        const dataTarefa = new Date(t.data_tarefa);
-        const dataStr = `${dataTarefa.getFullYear()}-${String(
-          dataTarefa.getMonth() + 1
-        ).padStart(2, "0")}-${String(dataTarefa.getDate()).padStart(2, "0")}`;
+        const dataObj = _parseDateLocal(t.data_tarefa);
+        const dataStr = dataObj
+          ? `${dataObj.getFullYear()}-${String(dataObj.getMonth() + 1).padStart(2, "0")}-${String(
+              dataObj.getDate()
+            ).padStart(2, "0")}`
+          : null;
 
         if (dataHoje === dataStr && t.horario === horaAtual) {
           if (notified.includes(t.id_tarefa)) return;
@@ -370,8 +372,26 @@ function Dashboard() {
     }
   };
 
+  // Parse string dates (YYYY-MM-DD or YYYY-MM-DDTHH:mm:SS) into local Date to avoid timezone shift
+  const _parseDateLocal = (d) => {
+    if (!d) return null;
+    if (typeof d === "string") {
+      const datePart = d.split("T")[0];
+      const parts = datePart.split("-");
+      if (parts.length === 3) {
+        const y = Number(parts[0]);
+        const m = Number(parts[1]);
+        const day = Number(parts[2]);
+        return new Date(y, m - 1, day);
+      }
+    }
+    // fallback (handles Date objects)
+    return new Date(d);
+  };
+
   const formatarData = (d) => {
-    const data = new Date(d);
+    const data = _parseDateLocal(d);
+    if (!data) return "--";
     return `${String(data.getDate()).padStart(2, "0")}/${String(
       data.getMonth() + 1
     ).padStart(2, "0")}/${data.getFullYear()}`;
