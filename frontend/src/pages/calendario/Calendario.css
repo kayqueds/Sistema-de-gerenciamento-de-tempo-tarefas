@@ -1,0 +1,215 @@
+/* ===========================
+   FULLCALENDAR — TEMA LIGHT
+=========================== */
+.fc {
+  background: #fff;
+  color: #333;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+/* Toolbar */
+.fc .fc-toolbar {
+  margin-bottom: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.fc-toolbar-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+/* Botões */
+.fc .fc-button {
+  justify-content: center;
+  background: #646cff !important;
+  border: none !important;
+  color: #fff !important;
+  padding: 7px 12px !important;
+  font-weight: 600 !important;
+  border-radius: 10px !important;
+}
+
+.fc .fc-button:hover {
+  background: #535bf2 !important;
+}
+
+/* Dias da semana */
+.fc-daygrid-day-number {
+  font-weight: 600;
+  color: #646cff;
+}
+
+/* Hover */
+.fc-daygrid-day:hover {
+  background-color: #e1e1ff !important;
+}
+
+/* Hoje */
+.fc-day-today {
+  background: #646cff30 !important;
+  border: 2px solid #646cff !important;
+}
+
+/* Evento */
+.fc-event {
+  background: #646cff !important;
+  border: none !important;
+  color: white !important;
+  padding: 3px 6px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* ===========================
+   FULLCALENDAR — TEMA DARK
+=========================== */
+body.dark .fc {
+  background: #1f1f1f !important;
+  color: #f5f5f5 !important;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.5) !important;
+}
+
+body.dark .fc-toolbar-title {
+  color: #7a63ff !important;
+}
+
+body.dark .fc .fc-button {
+  background: #7a63ff !important;
+  color: #fff;
+}
+
+body.dark .fc .fc-button:hover {
+  background: #8c7aff !important;
+}
+
+body.dark .fc-daygrid-day-number {
+  color: #fbfbfb !important;
+}
+
+body.dark .fc-daygrid-day:hover {
+  background: #45407b !important;
+}
+
+body.dark .fc-day-today {
+  background: #9690bb40 !important;
+  border: 2px solid #a091f5 !important;
+}
+
+body.dark .fc-event {
+  background: #695bcc63 !important;
+}
+
+/* ===========================
+   FULLCALENDAR MODAL
+=========================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-wrapper {
+  background: #fff;
+  padding: 25px;
+  border-radius: 15px;
+  width: 420px;
+  max-width: 90%;
+  animation: fadeIn .3s ease;
+}
+
+body.dark .modal-wrapper {
+  background: #222;
+  color: #fff;
+}
+
+.modal-content label {
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+.modal-content input,
+.modal-content textarea,
+.modal-content select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-top: 6px;
+}
+
+body.dark .modal-content input,
+body.dark .modal-content textarea,
+body.dark .modal-content select {
+  background: #444;
+  border-color: #666;
+  color: white;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.modal-buttons button {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  background: #646cff;
+  color: white;
+}
+
+.modal-buttons button:hover {
+  background: #535bf2;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* =======================
+   FULLCALENDAR MOBILE
+======================= */
+@media (max-width: 768px) {
+  .fc-header-toolbar {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .fc-header-toolbar > div {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .fc-header-toolbar .fc-toolbar-title {
+    width: 100%;
+    text-align: center;
+    font-size: 1.2rem !important;
+    margin-bottom: 6px;
+  }
+
+  .fc .fc-button {
+    min-width: 90px;
+    padding: 8px 10px !important;
+    font-size: 0.9rem !important;
+  }
+}

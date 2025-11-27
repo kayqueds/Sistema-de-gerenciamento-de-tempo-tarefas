@@ -1,0 +1,278 @@
+/* Container principal */
+.sobre-container {
+  font-family: "Inter", system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Tema Light */
+body.light .sobre-container {
+  color: #2c2c2c;
+  background: #f7f8fa;
+}
+
+/* Tema Dark */
+body.dark .sobre-container {
+  color: #f8f9fa;
+  background: #242424;
+}
+
+/* Hero section */
+.sobre-hero {
+  width: 100%;
+  text-align: center;
+  padding: 80px 20px;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Hero Light/Dark */
+body.light .sobre-hero {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: #fff;
+}
+
+body.dark .sobre-hero {
+  background: linear-gradient(120deg, #535bf2, #1a1a1a);
+  color: #f8f9fa;
+}
+
+.sobre-hero h1 {
+  font-size: 2.8rem;
+  margin-bottom: 15px;
+}
+
+.sobre-hero p {
+  font-size: 1.2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Missão, Visão, Valores - cards */
+.sobre-missao {
+  display: flex;
+  gap: 15px;
+  margin: 40px 20px;
+  max-width: 1000px;
+  justify-content: center;
+}
+
+.sobre-card {
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 250px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light/Dark cards */
+body.light .sobre-card {
+  background: #fff;
+  color: #2c2c2c;
+}
+
+body.dark .sobre-card {
+  background: #333;
+  color: #f8f9fa;
+}
+
+.sobre-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.sobre-card h2 {
+  color: #8883ea;
+  margin-bottom: 10px;
+}
+
+/* Funcionalidades */
+.sobre-funcionalidades {
+  width: 100%;
+  text-align: center;
+  padding: 60px 20px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.light .sobre-funcionalidades {
+  background: #eef0f6;
+  color: #2c2c2c;
+}
+
+body.dark .sobre-funcionalidades {
+  background: #2b2b2b;
+  color: #f8f9fa;
+}
+
+.sobre-funcionalidades h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.sobre-funcionalidades ul {
+  list-style: none;
+  padding: 0;
+  line-height: 2;
+  font-size: 1.1rem;
+}
+
+/* Equipe / Carousel */
+.sobre-equipe {
+  padding: 50px 20px;
+  width: 100%;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.light .sobre-equipe {
+  color: #313437;
+  background-color: #eef4f7;
+}
+
+body.dark .sobre-equipe {
+  color: #f8f9fa;
+  background-color: #2b2b2b;
+}
+
+.sobre-equipe h2 {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+/* Carousel container */
+.carousel-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.carousel-container {
+  display: flex;
+  gap: 15px;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  padding: 10px 0;
+}
+
+/* Cards da equipe */
+.col-card {
+  flex: 0 0 auto;
+  width: 300px;
+}
+
+.item.box {
+  width: 100%;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  min-height: 300px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light/Dark cards equipe */
+body.light .item.box {
+  background-color: #fff;
+  color: #2c2c2c;
+}
+
+body.dark .item.box {
+  background-color: #333;
+  color: #f8f9fa;
+}
+
+.item.box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.item img {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.item .name {
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.item .title {
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 2px;
+  font-size: 0.85rem;
+  text-align: center;
+  transition: color 0.3s ease;
+}
+
+/* Light/Dark título */
+body.light .item .title { color: #d0d0d0; }
+body.dark .item .title { color: #aaa; }
+
+.item .social {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
+  font-size: 18px;
+}
+
+.item .social a {
+  color: #a2a8ae;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+body.dark .item .social a {
+  color: #cfcfff;
+}
+
+.item .social a:hover {
+  color: #4f46e5;
+  transform: translateY(-2px);
+}
+
+/* Botões do carousel */
+.carousel-btn {
+  background-color: transparent;
+  color: #4f46e5;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+
+/* Responsividade */
+@media (max-width: 4000px) {
+  .col-card { width: 400px; }
+}
+
+@media (max-width: 768px) {
+  .col-card { width: 80%; }
+  .sobre-missao { flex-direction: column; gap: 20px; }
+}
+
+@media (max-width: 480px) {
+  .col-card { width: 90%; }
+  .sobre-hero h1 { font-size: 2rem; }
+  .sobre-hero p { font-size: 1rem; }
+}
