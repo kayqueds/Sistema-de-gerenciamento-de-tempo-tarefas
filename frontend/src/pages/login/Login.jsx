@@ -81,16 +81,16 @@ function Login() {
                 required
               />
 
-              <div className="form-links">
-                <Link to="/forgot-password">Esqueci minha senha</Link>
-                <Link to="/cadastro">Cadastre-se</Link>
+              <div className="form-links text-white">
+                {/* <Link to="/forgot-password">Esqueci minha senha</Link> */}
+                <Link to="/cadastro" className="text-white font-sans no-underline">Cadastre-se</Link>
               </div>
 
               <button onClick={enviarFormulario} type="submit" className="btn-login">
                 Login
               </button>
 
-              <div className="divider">ou</div>
+              <div className="divider text-center">ou</div>
 
               <button type="button"
                 className="btn-login-google"

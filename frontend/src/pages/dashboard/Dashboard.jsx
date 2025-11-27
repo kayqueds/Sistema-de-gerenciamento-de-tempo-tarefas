@@ -414,11 +414,11 @@ function Dashboard() {
           <div className="col-md-4">
             <input
               type="text"
-              className="w-full bg-gray-800 text-white placeholder-white border border-gray-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="form-control"
               placeholder="Pesquisar tarefa..."
-              style={{ color: "white" }}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
-
           </div>
 
           <div className="col-md-2">
@@ -435,7 +435,7 @@ function Dashboard() {
           </div>
 
           <div className="col-md-1">
-            <button className="w-20 bg-[#6929cf] text-white rounded-md px-3 py-2 hover:bg-[#7f3fff] transition-colors" onClick={clearFilters}>
+            <button className="btn btn-secondary w-20" onClick={clearFilters}>
               Limpar
             </button>
           </div>
@@ -491,7 +491,7 @@ function Dashboard() {
             <p className="empty">Nenhuma tarefa encontrada.</p>
           ) : (
             <div className="table-responsive">
-              <table className="tasks-table">
+              <table className="tasks-table table">
                 <thead>
                   <tr>
                     <th>ID</th>
@@ -567,97 +567,95 @@ function Dashboard() {
       </main>
 
       {/* ============================
-   ⏱ MODAL POMODORO
-============================ */}
-{pomodoroOpen && (
-  <div className="pomodoro-modal-circle">
-    <div className="pomodoro-box">
-      <h2>Pomodoro</h2>
-      <h3>{currentTask?.nome_tarefa}</h3>
+         ⏱ MODAL POMODORO
+      ============================ */}
+      {pomodoroOpen && (
+        <div className="pomodoro-modal-circle">
+          <div className="pomodoro-box">
+            <h2>Pomodoro</h2>
+            <h3>{currentTask?.nome_tarefa}</h3>
 
-      {/* Contador visual de ciclos */}
-      <p className="cycle-counter">
-        Ciclo atual: <strong>{cycle} / 4</strong>
-      </p>
+            {/* Contador visual de ciclos */}
+            <p className="cycle-counter">
+              Ciclo atual: <strong>{cycle} / 4</strong>
+            </p>
 
-      {/* Círculo animado */}
-      <div
-        className="circle-timer"
-        style={{
-          background: `conic-gradient(#6a5af9 ${
-            360 - (timeLeft / (pomodoroTime * 60)) * 360
-          }deg, #ddd 0deg)`,
-        }}
-      >
-        <div className="circle-timer-inner">{formatTime(timeLeft)}</div>
-      </div>
-
-      {/* BOTÕES PRINCIPAIS */}
-      <div className="pomodoro-buttons">
-        {!isRunning && <button onClick={startTimer}>Iniciar</button>}
-        {isRunning && <button onClick={pauseTimer}>Pausar</button>}
-        <button onClick={resetTimer}>Resetar</button>
-        <button onClick={finishNow}>Finalizar agora</button>
-        <button onClick={skipBreak}>Pular pausa</button>
-        <button onClick={() => setPomodoroOpen(false)}>Fechar</button>
-      </div>
-
-      {/* CONFIGURAÇÕES */}
-      <div className="pomodoro-settings">
-        <label>
-          Pomodoro:
-          <input
-            type="number"
-            value={pomodoroTime}
-            onChange={(e) => setPomodoroTime(Number(e.target.value))}
-          />
-        </label>
-
-        <label>
-          Pausa curta:
-          <input
-            type="number"
-            value={shortBreak}
-            onChange={(e) => setShortBreak(Number(e.target.value))}
-          />
-        </label>
-
-        <label>
-          Pausa longa:
-          <input
-            type="number"
-            value={longBreak}
-            onChange={(e) => setLongBreak(Number(e.target.value))}
-          />
-        </label>
-      </div>
-
-      {/* HISTÓRICO */}
-      <div className="pomodoro-history">
-        <h4>Histórico</h4>
-        <div className="history-list">
-          {history.length === 0 && <p>Nenhum registro ainda.</p>}
-          {history.map((h, i) => (
-            <div key={i} className="history-item">
-              <strong>
-                {h.type === "pomodoro"
-                  ? "Pomodoro"
-                  : h.type === "short_break"
-                  ? "Pausa curta"
-                  : "Pausa longa"}
-              </strong>
-              {h.task && <span> — {h.task}</span>}
-              <br />
-              <small>{new Date(h.date).toLocaleString()}</small>
+            {/* Círculo animado */}
+            <div
+              className="circle-timer"
+              style={{
+                background: `conic-gradient(#6a5af9 ${
+                  360 - (timeLeft / (pomodoroTime * 60)) * 360
+                }deg, #ddd 0deg)`,
+              }}
+            >
+              <div className="circle-timer-inner">{formatTime(timeLeft)}</div>
             </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  </div>
-)}
 
-     
+            {/* BOTÕES PRINCIPAIS */}
+            <div className="pomodoro-buttons">
+              {!isRunning && <button onClick={startTimer}>Iniciar</button>}
+              {isRunning && <button onClick={pauseTimer}>Pausar</button>}
+              <button onClick={resetTimer}>Resetar</button>
+              <button onClick={finishNow}>Finalizar agora</button>
+              <button onClick={skipBreak}>Pular pausa</button>
+              <button onClick={() => setPomodoroOpen(false)}>Fechar</button>
+            </div>
+
+            {/* CONFIGURAÇÕES */}
+            <div className="pomodoro-settings">
+              <label>
+                Pomodoro:
+                <input
+                  type="number"
+                  value={pomodoroTime}
+                  onChange={(e) => setPomodoroTime(Number(e.target.value))}
+                />
+              </label>
+
+              <label>
+                Pausa curta:
+                <input
+                  type="number"
+                  value={shortBreak}
+                  onChange={(e) => setShortBreak(Number(e.target.value))}
+                />
+              </label>
+
+              <label>
+                Pausa longa:
+                <input
+                  type="number"
+                  value={longBreak}
+                  onChange={(e) => setLongBreak(Number(e.target.value))}
+                />
+              </label>
+            </div>
+
+            {/* HISTÓRICO */}
+            <div className="pomodoro-history">
+              <h4>Histórico</h4>
+              <div className="history-list">
+                {history.length === 0 && <p>Nenhum registro ainda.</p>}
+                {history.map((h, i) => (
+                  <div key={i} className="history-item">
+                    <strong>
+                      {h.type === "pomodoro"
+                        ? "Pomodoro"
+                        : h.type === "short_break"
+                        ? "Pausa curta"
+                        : "Pausa longa"}
+                    </strong>
+                    {h.task && <span> — {h.task}</span>}
+                    <br />
+                    <small>{new Date(h.date).toLocaleString()}</small>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
