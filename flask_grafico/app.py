@@ -92,24 +92,23 @@ def grafico_sample():
     return jsonify(sample)
 
 
-def _fetch_tarefas_backend():
-    """Busca a lista de tarefas no backend Node/Express.
-    Retorna lista [] em caso de erro."""
-    try:
-        res = requests.get('http://localhost:3000/tarefas', timeout=5)
-        if res.ok:
-            return res.json()
-    except Exception as e:
-        app.logger.error('Erro ao buscar tarefas no backend: %s', e)
-    return []
+# 🚫 REMOVIDA: A função _fetch_tarefas_backend() foi removida.
+# Ela causava erro em produção ao tentar acessar 'http://localhost:3000'.
+# A lista de tarefas agora é obtida diretamente do JSON da requisição.
 
 
 @app.route('/chatbot', methods=['POST'])
 def chatbot():
     body = request.get_json(force=True, silent=True) or {}
     msg = (body.get('mensagem') or '').lower()
-
-    tarefas = _fetch_tarefas_backend()
+    
+    # ⭐️ CORREÇÃO 1: Pega as tarefas diretamente do corpo da requisição POST
+    # O frontend (React) é quem busca e envia a lista completa.
+    tarefas = body.get('tarefas', []) 
+    
+    # Adicionando uma checagem para dar uma resposta mais útil
+    if not tarefas:
+        return jsonify({'resposta': 'Não consegui acessar sua lista de tarefas. Certifique-se de que sua lista está carregada.'})
 
     # intent: tarefas hoje
     if 'hoje' in msg and 'taref' in msg:

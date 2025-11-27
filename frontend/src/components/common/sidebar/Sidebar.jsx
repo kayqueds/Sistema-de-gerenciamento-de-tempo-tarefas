@@ -321,7 +321,6 @@ function Sidebar() {
                               Salvar
                             </button>
                           </div>
-
                         </div>
                       )}
 
