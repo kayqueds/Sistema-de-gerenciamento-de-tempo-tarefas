@@ -168,3 +168,39 @@
   .navigation-brand { font-size: 1.2rem; }
   .navigation-container { padding: 0 0.5rem; }
 }
+
+.navigation-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  text-decoration: none;
+  color: #ddd;
+  transition: 0.3s ease;
+}
+
+.navigation-link .icon {
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+/* HOVER: aumenta o ícone e muda a cor */
+.navigation-link:hover .icon {
+  transform: scale(1.2);
+  color: #4da6ff;
+}
+
+/* HOVER no texto */
+.navigation-link:hover {
+  color: #4da6ff;
+}
+
+/* ACTIVE (página atual) */
+.navigation-link.active {
+  color: #4da6ff;
+  font-weight: bold;
+}
+
+.navigation-link.active .icon {
+  color: #4da6ff;
+  transform: scale(1.15);
+}

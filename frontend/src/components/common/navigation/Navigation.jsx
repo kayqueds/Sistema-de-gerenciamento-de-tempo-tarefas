@@ -3,6 +3,7 @@ import { useState, useContext } from "react";
 import "./Navigation.css";
 import ThemeToggle from "../ThemeToggle/ThemeToggle.jsx";
 import { ThemeContext } from "../theme/Theme.jsx";
+import { FiHome, FiUserPlus, FiLogIn, FiInfo } from "react-icons/fi";
 
 function Navigation() {
   const location = useLocation();
@@ -35,6 +36,7 @@ function Navigation() {
                 to="/"
                 onClick={closeMenu}
               >
+                 <FiHome className="icon" />
                 Início
               </Link>
             </li>
@@ -44,6 +46,7 @@ function Navigation() {
                 to="/sobre"
                 onClick={closeMenu}
               >
+                 <FiInfo className="icon" />
                 Sobre
               </Link>
             </li>
@@ -53,6 +56,7 @@ function Navigation() {
                 to="/cadastro"
                 onClick={closeMenu}
               >
+                <FiUserPlus className="icon" />
                 Cadastro
               </Link>
             </li>
@@ -62,6 +66,7 @@ function Navigation() {
                 to="/login"
                 onClick={closeMenu}
               >
+                 <FiLogIn className="icon" />
                 Login
               </Link>
             </li>
