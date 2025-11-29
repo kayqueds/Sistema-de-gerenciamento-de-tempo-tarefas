@@ -114,36 +114,23 @@ def grafico_sample():
     return jsonify(sample)
 
 
-def _fetch_tarefas_backend():
-    """Busca a lista de tarefas no backend Node/Express.
-    Retorna lista [] em caso de erro."""
-    backend_url = os.environ.get('BACKEND_URL') or 'http://localhost:3000'
-    try:
-        res = requests.get(f'{backend_url.rstrip('/')}/tarefas', timeout=5)
-        if res.ok:
-            try:
-                data = res.json()
-                app.logger.info('Fetched %d tarefas from backend %s', len(data) if isinstance(data, list) else 0, backend_url)
-                # log sample first item for debugging
-                if isinstance(data, list) and len(data) > 0:
-                    sample = data[0]
-                    app.logger.debug('Sample tarefa keys: %s', list(sample.keys()))
-                return data
-            except Exception as e:
-                app.logger.error('Erro ao decodificar JSON do backend: %s', e)
-                return []
-        app.logger.warning('Backend respondeu com status %s', res.status_code)
-    except Exception as e:
-        app.logger.error('Erro ao buscar tarefas no backend (%s): %s', backend_url, e)
-    return []
+# 🚫 REMOVIDA: A função _fetch_tarefas_backend() foi removida.
+# Ela causava erro em produção ao tentar acessar 'http://localhost:3000'.
+# A lista de tarefas agora é obtida diretamente do JSON da requisição.
 
 
 @app.route('/chatbot', methods=['POST'])
 def chatbot():
     body = request.get_json(force=True, silent=True) or {}
     msg = (body.get('mensagem') or '').lower()
-
-    tarefas = _fetch_tarefas_backend()
+    
+    # ⭐️ CORREÇÃO 1: Pega as tarefas diretamente do corpo da requisição POST
+    # O frontend (React) é quem busca e envia a lista completa.
+    tarefas = body.get('tarefas', []) 
+    
+    # Adicionando uma checagem para dar uma resposta mais útil
+    if not tarefas:
+        return jsonify({'resposta': 'Não consegui acessar sua lista de tarefas. Certifique-se de que sua lista está carregada.'})
 
     # intent: tarefas hoje
     if 'hoje' in msg and 'taref' in msg:
@@ -211,6 +198,4 @@ def chatbot():
 
 
 if __name__ == '__main__':
-    # Em produção, use um servidor WSGI (gunicorn) e não o servidor de desenvolvimento
-    debug = os.environ.get('FLASK_DEBUG', '1')
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5001)), debug=(debug == '1'))
+    app.run(host='0.0.0.0', port=5001, debug=True)

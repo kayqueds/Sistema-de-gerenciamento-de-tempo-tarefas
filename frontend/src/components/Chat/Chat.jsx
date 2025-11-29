@@ -45,8 +45,8 @@ export default function Chat({ tarefas }) {
   };
 
   return (
-    <div className="chat-card">
-      <div className="chat-header">Chatbot</div>
+    <div className="chat-card flex flex-col p-4 border rounded-lg shadow-lg bg-white">
+      <div className="chat-header text-center text-2xl font-bold">Chatbot</div>
       <div className="chat-body">
         {messages.map((m, i) => (
           <div key={i} className={`chat-msg ${m.role === 'user' ? 'user' : 'bot'}`}>
