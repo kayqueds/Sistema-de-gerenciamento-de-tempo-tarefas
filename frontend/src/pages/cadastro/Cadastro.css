@@ -27,10 +27,16 @@ body.dark .cadastro-page {
   transition: color 0.3s ease, background-color 0.3s ease;
 }
 
-body.light .cadastro-page a { color: #646cff; }
-body.dark .cadastro-page a { color: #646cff; }
+body.light .cadastro-page a {
+  color: #646cff;
+}
+body.dark .cadastro-page a {
+  color: #646cff;
+}
 
-.cadastro-page a:hover { color: #535bf2; }
+.cadastro-page a:hover {
+  color: #535bf2;
+}
 
 /* Container principal */
 .cadastro-container {
@@ -39,7 +45,7 @@ body.dark .cadastro-page a { color: #646cff; }
   max-width: 95%;
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -51,6 +57,14 @@ body.dark .cadastro-page a { color: #646cff; }
   flex-direction: column;
   justify-content: center;
   transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Limita e centraliza o card para maior controle de largura */
+.cadastro-left {
+  max-width: 460px;
+  margin: 0 auto;
+  border-radius: 12px;
+  min-width: 320px; /* evita que o card fique muito estreito */
 }
 
 body.light .cadastro-left {
@@ -76,11 +90,12 @@ body.dark .cadastro-left {
   border-radius: 10px;
   padding: 0.6rem;
   margin-bottom: 1rem;
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease,
+    border-color 0.3s ease;
 }
 
 body.light .form-control {
-  background-color: rgba(255,255,255,0.8);
+  background-color: rgba(255, 255, 255, 0.8);
   color: #000;
 }
 
@@ -112,7 +127,9 @@ body.dark .btn-cadastrar {
   color: #fff;
 }
 
-.btn-cadastrar:hover { border-color: #646cff; }
+.btn-cadastrar:hover {
+  border-color: #646cff;
+}
 
 /* Link login */
 .link-login {
@@ -125,11 +142,21 @@ body.dark .btn-cadastrar {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-body.light .link-login { background-color: #ffffff; color: #213547; }
-body.light .link-login:hover { background-color: #f0f0f0; }
+body.light .link-login {
+  background-color: #ffffff;
+  color: #213547;
+}
+body.light .link-login:hover {
+  background-color: #f0f0f0;
+}
 
-body.dark .link-login { background-color: #333333; color: #f8f9fa; }
-body.dark .link-login:hover { background-color: #444; }
+body.dark .link-login {
+  background-color: #333333;
+  color: #f8f9fa;
+}
+body.dark .link-login:hover {
+  background-color: #444;
+}
 
 /* Right side / imagens */
 .cadastro-right {
@@ -149,21 +176,28 @@ body.dark .link-login:hover { background-color: #444; }
   transition: opacity 1s ease-in-out;
 }
 
-.cadastro-right img.active { opacity: 1; }
+.cadastro-right img.active {
+  opacity: 1;
+}
 
 /* Responsividade */
 @media (max-width: 768px) {
   .cadastro-container {
-    width: 150%;          /* deixa maior que a tela */
-    max-width: none;      /* remove limite */
-    margin-left: -25%;    /* centraliza horizontalmente */
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
     align-items: center;
   }
 
   .cadastro-left {
-    width: 100%;
-    padding: 2rem;
+    width: 90%;
+    max-width: 420px;
+    padding: 1.25rem;
+    min-width: 300px;
+  }
+  .cadastro-right {
+    display: none;
   }
 }

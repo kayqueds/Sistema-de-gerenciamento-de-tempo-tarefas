@@ -10,15 +10,17 @@ export default function Chat({ tarefas }) {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const send = async () => {
+	const CHAT_URL = import.meta.env.VITE_CHATBOT_URL || 'http://localhost:5001/chatbot';
+
+	const send = async () => {
     const text = input.trim();
     if (!text) return;
     const userMsg = { role: 'user', text };
     setMessages((m) => [...m, userMsg]);
     setInput('');
     setLoading(true);
-    try {
-      const res = await fetch('http://localhost:5001/chatbot', {
+		try {
+			const res = await fetch(CHAT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -27,23 +29,24 @@ export default function Chat({ tarefas }) {
         }),
       });
       if (!res.ok) {
-        const textErr = `Erro ${res.status}`;
-        setMessages((m) => [...m, { role: 'bot', text: textErr }]);
+				const textErr = `Erro ${res.status} ao contatar ${CHAT_URL}`;
+				setMessages((m) => [...m, { role: 'bot', text: textErr }]);
       } else {
         const j = await res.json();
         const botText = j.resposta || 'Desculpe, não entendi.';
         setMessages((m) => [...m, { role: 'bot', text: botText }]);
       }
     } catch (e) {
-      setMessages((m) => [...m, { role: 'bot', text: 'Erro ao contactar o servidor de chatbot.' }]);
+			const detail = e && e.message ? e.message : String(e);
+			setMessages((m) => [...m, { role: 'bot', text: `Erro ao contactar o servidor de chatbot: ${detail}` }]);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="chat-card">
-      <div className="chat-header">Chatbot</div>
+    <div className="chat-card flex flex-col p-4 border rounded-lg shadow-lg bg-white">
+      <div className="chat-header text-center text-2xl font-bold">Chatbot</div>
       <div className="chat-body">
         {messages.map((m, i) => (
           <div key={i} className={`chat-msg ${m.role === 'user' ? 'user' : 'bot'}`}>
